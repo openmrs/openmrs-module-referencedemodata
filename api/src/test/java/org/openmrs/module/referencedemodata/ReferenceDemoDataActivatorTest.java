@@ -17,9 +17,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 
-public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTest {
+public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
 	
 	/**
 	 * @see ReferenceDemoDataActivator#started()
