@@ -7,7 +7,7 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Reference Demo Data Module</name>
-	<description>Contains metadata nor data required to run an instance of the reference application</description>
+	<description>Contains metadata and data required to run an instance of the reference application</description>
 	<url>https://wiki.openmrs.org/display/docs/Reference+Demo+Data+Module+Module</url>
 	
 	<developers>
