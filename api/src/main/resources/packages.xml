@@ -4,8 +4,8 @@ Defines packages to be loaded by the Metadata Sharing module on startup of this 
 <org.openmrs.module.emrapi.metadata.MetadataPackagesConfig>
     <packages>
         <org.openmrs.module.emrapi.metadata.MetadataPackageConfig>
-            <filenameBase>Reference_Demo_Data_Locations</filenameBase>
-            <groupUuid>df8df296-ed10-4ded-8301-b4ee0100476e</groupUuid>
+            <filenameBase>Reference_Application_Demo_Locations</filenameBase>
+            <groupUuid>45e85c52-f2b3-4fca-9f6d-8e5945765ca6</groupUuid>
             <version>1</version>
             <importMode>MIRROR</importMode>
         </org.openmrs.module.emrapi.metadata.MetadataPackageConfig>
