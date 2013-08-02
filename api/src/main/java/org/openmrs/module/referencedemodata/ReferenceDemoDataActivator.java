@@ -43,7 +43,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			MetadataUtil.setupStandardMetadata(getClass().getClassLoader());
 		}
 		catch (Exception e) {
-			log.error("Error", e);
 			throw new ModuleException("Failed to load reference demo data MDS packages", e);
 		}
 		
