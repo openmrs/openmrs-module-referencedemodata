@@ -32,6 +32,6 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		
 		new ReferenceDemoDataActivator().started();
 		
-		Assert.assertEquals(initialLocationCount + 5, ls.getAllLocations().size());
+		Assert.assertEquals(initialLocationCount + 7, ls.getAllLocations().size());
 	}
 }
