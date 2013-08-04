@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
 	
@@ -26,6 +27,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 	 * @verifies install the metadata package on startup
 	 */
 	@Test
+	@DirtiesContext
 	public void started_shouldInstallTheMetadataPackageOnStartup() throws Exception {
 		LocationService ls = Context.getLocationService();
 		final int initialLocationCount = ls.getAllLocations().size();
