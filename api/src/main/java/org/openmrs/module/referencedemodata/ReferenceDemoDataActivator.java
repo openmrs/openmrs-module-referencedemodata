@@ -157,7 +157,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					gp = new GlobalProperty();
 					gp.setProperty(entry.getKey());
 				}
-				gp.setProperty(entry.getValue());
+				gp.setPropertyValue(entry.getValue());
 				as.saveGlobalProperty(gp);
 			}
 		}
