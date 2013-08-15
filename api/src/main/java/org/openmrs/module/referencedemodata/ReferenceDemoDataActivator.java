@@ -13,11 +13,6 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +34,11 @@ import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.util.PrivilegeConstants;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -130,7 +130,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			
 			Map<String, String> pihSourceConceptMappings = new HashMap<String, String>();
 			//Apparently this concept's uuid is different for different installations
-			pihSourceConceptMappings.put(cs.getConceptByName("RETURN VISIT DATE").getUuid(), "RETURN VISIT DATE");
+			final String conceptNameAndMappingCode = "RETURN VISIT DATE";
+			Concept returnVisitConcept = cs.getConceptByName(conceptNameAndMappingCode);
+			if (returnVisitConcept != null) {
+				pihSourceConceptMappings.put(returnVisitConcept.getUuid(), conceptNameAndMappingCode);
+			}
 			
 			Map<String, Map<String, String>> sourceConceptMappingsMap = new HashMap<String, Map<String, String>>();
 			sourceConceptMappingsMap.put("org.openmrs.module.emr", emrSourceConceptMappings);
