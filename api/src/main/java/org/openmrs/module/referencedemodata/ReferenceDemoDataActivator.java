@@ -120,24 +120,37 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				cs.saveConcept(visitDiagnosisConcept);
 			}
 			
-			Map<String, String> conceptUuidCodeMap = new HashMap<String, String>();
-			conceptUuidCodeMap.put("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Concept Set");
-			conceptUuidCodeMap.put("161602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Non-Coded Diagnosis");
-			conceptUuidCodeMap.put("159946AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Order");
-			conceptUuidCodeMap.put("159394AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Certainty");
+			//Map<conceputUuid, Code>
+			Map<String, String> emrSourceConceptMappings = new HashMap<String, String>();
+			emrSourceConceptMappings.put("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Concept Set");
+			emrSourceConceptMappings.put("161602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Non-Coded Diagnosis");
+			emrSourceConceptMappings.put("159946AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Order");
+			emrSourceConceptMappings.put("159394AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Certainty");
+			emrSourceConceptMappings.put("159395AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Consult Free Text Comments");
 			
-			ConceptSource source = cs.getConceptSourceByName("org.openmrs.module.emr");
-			if (source != null) {
-				for (Map.Entry<String, String> entry : conceptUuidCodeMap.entrySet()) {
-					boolean hasMapping = cs.getConceptByMapping(entry.getValue(), source.getName(), false) != null;
-					if (!hasMapping) {
-						Concept c = cs.getConceptByUuid(entry.getKey());
-						ConceptReferenceTerm term = new ConceptReferenceTerm(source, entry.getValue(), null);
-						c.addConceptMapping(new ConceptMap(term, sameAsMapType));
-						cs.saveConcept(c);
+			Map<String, String> pihSourceConceptMappings = new HashMap<String, String>();
+			//Apparently this concept's uuid is different for different installations
+			pihSourceConceptMappings.put(cs.getConceptByName("RETURN VISIT DATE").getUuid(), "RETURN VISIT DATE");
+			
+			Map<String, Map<String, String>> sourceConceptMappingsMap = new HashMap<String, Map<String, String>>();
+			sourceConceptMappingsMap.put("org.openmrs.module.emr", emrSourceConceptMappings);
+			sourceConceptMappingsMap.put("PIH", pihSourceConceptMappings);
+			
+			for (Map.Entry<String, Map<String, String>> sourceAndMappings : sourceConceptMappingsMap.entrySet()) {
+				ConceptSource source = cs.getConceptSourceByName(sourceAndMappings.getKey());
+				if (source != null) {
+					for (Map.Entry<String, String> entry : sourceAndMappings.getValue().entrySet()) {
+						boolean hasMapping = cs.getConceptByMapping(entry.getValue(), source.getName(), false) != null;
+						if (!hasMapping) {
+							Concept c = cs.getConceptByUuid(entry.getKey());
+							ConceptReferenceTerm term = new ConceptReferenceTerm(source, entry.getValue(), null);
+							c.addConceptMapping(new ConceptMap(term, sameAsMapType));
+							cs.saveConcept(c);
+						}
 					}
 				}
 			}
+			
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPTS);
