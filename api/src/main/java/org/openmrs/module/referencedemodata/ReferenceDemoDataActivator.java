@@ -147,7 +147,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						boolean hasMapping = cs.getConceptByMapping(entry.getValue(), source.getName(), false) != null;
 						if (!hasMapping) {
 							Concept c = cs.getConceptByUuid(entry.getKey());
-							ConceptReferenceTerm term = new ConceptReferenceTerm(source, entry.getValue(), null);
+                            ConceptReferenceTerm term = cs.getConceptReferenceTermByCode(entry.getValue(), source);
+                            if (term == null) {
+                                term = new ConceptReferenceTerm(source, entry.getValue(), null);
+                                cs.saveConceptReferenceTerm(term);
+                            }
 							c.addConceptMapping(new ConceptMap(term, sameAsMapType));
 							cs.saveConcept(c);
 						}
