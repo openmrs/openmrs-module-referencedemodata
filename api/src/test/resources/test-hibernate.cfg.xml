@@ -7,5 +7,8 @@
     <session-factory>
       <mapping resource="ImportedPackage.hbm.xml" />
       <mapping resource="ImportedItem.hbm.xml" />
+      <mapping resource="IdentifierSource.hbm.xml" />
+      <mapping resource="ProviderRole.hbm.xml" />
+      <mapping resource="Provider.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

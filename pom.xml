@@ -36,6 +36,9 @@
 		<openMRSVersion>1.9.3</openMRSVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <referencemetadataVersion>1.0-SNAPSHOT</referencemetadataVersion>
+        <idgenVersion>2.8-SNAPSHOT</idgenVersion>
+        <providermanagementVersion>2.1-SNAPSHOT</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -108,6 +111,24 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>emrapi-api</artifactId>
             <version>${emrapiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>referencemetadata-api</artifactId>
+            <version>${referencemetadataVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>idgen-api</artifactId>
+            <version>${idgenVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>providermanagement-api</artifactId>
+            <version>${providermanagementVersion}</version>
             <scope>provided</scope>
         </dependency>
 

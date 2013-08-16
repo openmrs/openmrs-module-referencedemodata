@@ -13,25 +13,63 @@
  */
 package org.openmrs.module.referencedemodata;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Role;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.ProviderService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emrapi.metadata.MetadataPackagesConfig;
+import org.openmrs.module.emrapi.utils.MetadataUtil;
+import org.openmrs.module.metadatasharing.MetadataSharing;
+import org.openmrs.module.referencemetadata.ReferenceMetadataActivator;
+import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.isNotNull;
+
+@SkipBaseSetup
 public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	@Autowired
+	UserService userService;
+
+	@Autowired
+	ProviderService providerService;
+
 	/**
 	 * @see ReferenceDemoDataActivator#started()
 	 * @verifies install the metadata package on startup
 	 */
 	@Test
 	public void started_shouldInstallTheMetadataPackageOnStartup() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet("requiredDataTestDataset.xml");
+		authenticate();
+
+		new ReferenceMetadataActivator().started();
+
 		LocationService ls = Context.getLocationService();
 		final int initialLocationCount = ls.getAllLocations().size();
 		
 		new ReferenceDemoDataActivator().started();
 		
 		Assert.assertEquals(initialLocationCount + 7, ls.getAllLocations().size());
+
+		assertThat(userService.getUserByUsername("clerk"), is(notNullValue()));
+		assertThat(userService.getUserByUsername("nurse"), is(notNullValue()));
+		assertThat(userService.getUserByUsername("doctor"), is(notNullValue()));
+
+		assertThat(providerService.getProviderByIdentifier("clerk"), is(notNullValue()));
+		assertThat(providerService.getProviderByIdentifier("nurse"), is(notNullValue()));
+		assertThat(providerService.getProviderByIdentifier("doctor"), is(notNullValue()));
 	}
 }
