@@ -255,5 +255,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				as.saveGlobalProperty(gp);
 			}
 		}
+
+		as.saveGlobalProperty(new GlobalProperty("scheduler.username", "admin"));
+		as.saveGlobalProperty(new GlobalProperty("scheduler.password", "Admin123"));
 	}
 }
