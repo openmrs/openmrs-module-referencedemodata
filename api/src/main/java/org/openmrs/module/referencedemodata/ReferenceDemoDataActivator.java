@@ -112,10 +112,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		Role clerkRole = userService.getRoleByUuid(ReferenceDemoDataConstants.CLERK_ROLE_UUID);
 		Role nurseRole = userService.getRoleByUuid(ReferenceDemoDataConstants.NURSE_ROLE_UUID);
 		Role doctorRole = userService.getRoleByUuid(ReferenceDemoDataConstants.DOCTOR_ROLE_UUID);
+		//It's added temporarily until we figure out which privileges/roles should be included
+		Role adminRole = userService.getRole("System Developer");
 
-		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
-		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
-		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
+		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole, adminRole);
+		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole, adminRole);
+		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole, adminRole);
 
 		ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
 
@@ -126,15 +128,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		providerManagementService.assignProviderRoleToPerson(clerkPerson, clerkProviderRole, "clerk");
 		providerManagementService.assignProviderRoleToPerson(nursePerson, nurseProviderRole, "nurse");
 		providerManagementService.assignProviderRoleToPerson(doctorPerson, doctorProviderRole, "doctor");
-
-		//It's added temporarily until we figure out which privileges/roles should be included
-		Role adminRole = userService.getRole("System Developer");
-		clerkRole.getInheritedRoles().add(adminRole);
-		nurseRole.getInheritedRoles().add(adminRole);
-		doctorRole.getInheritedRoles().add(adminRole);
-		userService.saveRole(clerkRole);
-		userService.saveRole(nurseRole);
-		userService.saveRole(doctorRole);
 	}
 
 	private User setupUser(String uuid, String username, Person person, String password, Role... roles) {
