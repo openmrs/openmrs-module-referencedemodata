@@ -13,12 +13,25 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import java.util.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.*;
-import org.openmrs.api.*;
+import org.openmrs.Concept;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
+import org.openmrs.GlobalProperty;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
+import org.openmrs.Provider;
+import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.ProviderService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
@@ -28,8 +41,10 @@ import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.util.PrivilegeConstants;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -191,21 +206,16 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			emrSourceConceptMappings.put("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Concept Set");
 			emrSourceConceptMappings.put("161602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Non-Coded Diagnosis");
 			emrSourceConceptMappings.put("159946AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Order");
+            emrSourceConceptMappings.put("159943AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Primary");
+            emrSourceConceptMappings.put("159944AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Secondary");
 			emrSourceConceptMappings.put("159394AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Certainty");
-			emrSourceConceptMappings.put("159395AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Consult Free Text Comments");
-			
-			Map<String, String> pihSourceConceptMappings = new HashMap<String, String>();
-			//Apparently this concept's uuid is different for different installations
-			final String conceptNameAndMappingCode = "RETURN VISIT DATE";
-			Concept returnVisitConcept = cs.getConceptByName(conceptNameAndMappingCode);
-			if (returnVisitConcept != null) {
-				pihSourceConceptMappings.put(returnVisitConcept.getUuid(), conceptNameAndMappingCode);
-			}
+			emrSourceConceptMappings.put("159392AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Confirmed");
+			emrSourceConceptMappings.put("159393AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Presumed");
+			emrSourceConceptMappings.put("159395AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Visit Note Free Text Comments");
 			
 			Map<String, Map<String, String>> sourceConceptMappingsMap = new HashMap<String, Map<String, String>>();
 			sourceConceptMappingsMap.put("org.openmrs.module.emr", emrSourceConceptMappings);
-			sourceConceptMappingsMap.put("PIH", pihSourceConceptMappings);
-			
+
 			for (Map.Entry<String, Map<String, String>> sourceAndMappings : sourceConceptMappingsMap.entrySet()) {
 				ConceptSource source = cs.getConceptSourceByName(sourceAndMappings.getKey());
 				if (source != null) {
