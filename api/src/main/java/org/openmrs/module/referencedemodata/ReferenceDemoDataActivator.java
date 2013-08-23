@@ -261,5 +261,29 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
 		as.saveGlobalProperty(new GlobalProperty("scheduler.username", "admin"));
 		as.saveGlobalProperty(new GlobalProperty("scheduler.password", "Admin123"));
+
+		as.saveGlobalProperty(new GlobalProperty("layout.address.format", "<org.openmrs.layout.web.address.AddressTemplate>\n" +
+				"     <nameMappings class=\"properties\">\n" +
+				"       <property name=\"postalCode\" value=\"Location.postalCode\"/>\n" +
+				"       <property name=\"address2\" value=\"Location.address2\"/>\n" +
+				"       <property name=\"address1\" value=\"Location.address1\"/>\n" +
+				"       <property name=\"country\" value=\"Location.country\"/>\n" +
+				"       <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n" +
+				"       <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n" +
+				"     </nameMappings>\n" +
+				"     <sizeMappings class=\"properties\">\n" +
+				"       <property name=\"postalCode\" value=\"10\"/>\n" +
+				"       <property name=\"address2\" value=\"40\"/>\n" +
+				"       <property name=\"address1\" value=\"40\"/>\n" +
+				"       <property name=\"country\" value=\"10\"/>\n" +
+				"       <property name=\"stateProvince\" value=\"10\"/>\n" +
+				"       <property name=\"cityVillage\" value=\"10\"/>\n" +
+				"     </sizeMappings>\n" +
+				"     <lineByLineFormat>\n" +
+				"       <string>address1</string>\n" +
+				"       <string>address2</string>\n" +
+				"       <string>cityVillage stateProvince country postalCode</string>\n" +
+				"     </lineByLineFormat>\n" +
+				"   </org.openmrs.layout.web.address.AddressTemplate>"));
 	}
 }
