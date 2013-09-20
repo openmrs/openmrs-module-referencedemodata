@@ -40,6 +40,7 @@ import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -66,6 +67,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	 * @see ModuleActivator#started()
 	 * @should install the metadata package on startup
 	 * @should link the admin account to unknown provider
+     * @should create a scheduler user and set the related global properties
 	 */
 	public void started() {
 		installMDSPackages();
@@ -75,6 +77,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		configureConceptsIfNecessary();
 		setRequiredGlobalProperties();
 		setupUsersAndProviders();
+        createSchedulerUserAndGPs();
 	}
 	
 	private void installMDSPackages() {
@@ -159,7 +162,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
 		user.getRoles().clear();
 		user.getRoles().addAll(Arrays.asList(roles));
-
 		user = userService.saveUser(user, password);
 
 		return user;
@@ -191,16 +193,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPTS);
 			ConceptService cs = Context.getConceptService();
 			ConceptMapType sameAsMapType = cs.getConceptMapTypeByUuid("35543629-7d8c-11e1-909d-c80aa9edcf4e");
-			//Not bothering to check for null because i know demo data should have these
-			Concept visitDiagnosisConcept = cs.getConceptByUuid("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-			
-			//diagnosis concept is required to be a set member of visit diagnosis concept
-			Concept diagnosisConcept = cs.getConceptByUuid("226ed7ad-b776-4b99-966d-fd818d3302c2");
-			if (visitDiagnosisConcept != null && !visitDiagnosisConcept.getSetMembers().contains(diagnosisConcept)) {
-				visitDiagnosisConcept.addSetMember(diagnosisConcept);
-				cs.saveConcept(visitDiagnosisConcept);
-			}
-			
+
 			//Map<conceputUuid, Code>
 			Map<String, String> emrSourceConceptMappings = new HashMap<String, String>();
 			emrSourceConceptMappings.put("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Concept Set");
@@ -286,4 +279,23 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				"     </lineByLineFormat>\n" +
 				"   </org.openmrs.layout.web.address.AddressTemplate>"));
 	}
+
+    private void createSchedulerUserAndGPs() {
+        UserService us = Context.getUserService();
+        if (us.getUserByUsername(ReferenceDemoDataConstants.SCHEDULER_USERNAME) == null) {
+            Person person = Context.getPersonService().getPerson(1);
+            //Apparently admin has no name, set it to pass validation
+            person.addName(new PersonName("super", null, "user"));
+            Role superuserRole = us.getRole(RoleConstants.SUPERUSER);
+            setupUser(ReferenceDemoDataConstants.SCHEDULER_USER_UUID, ReferenceDemoDataConstants.SCHEDULER_USERNAME, person,
+                    "Scheduler123", superuserRole);
+            AdministrationService adminService = Context.getAdministrationService();
+            GlobalProperty usernameGP = adminService.getGlobalPropertyObject("scheduler.username");
+            usernameGP.setPropertyValue(ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+            adminService.saveGlobalProperty(usernameGP);
+            GlobalProperty passwordGP = adminService.getGlobalPropertyObject("scheduler.password");
+            passwordGP.setPropertyValue("Scheduler123");
+            adminService.saveGlobalProperty(passwordGP);
+        }
+    }
 }

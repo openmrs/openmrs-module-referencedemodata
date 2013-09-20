@@ -30,4 +30,7 @@ public class ReferenceDemoDataConstants {
 	public static final String CLERK_PROVIDER_ROLE_UUID = "87d2122b-691c-4e06-9366-111f5ab2f526";
 	public static final String NURSE_PROVIDER_ROLE_UUID = "da13814f-f560-46df-8bb2-219e146c2811";
 	public static final String DOCTOR_PROVIDER_ROLE_UUID = "c110f9bc-c65f-44a2-a028-2af7e8fff534";
+    public static final String SCHEDULER_USERNAME = "scheduler";
+    public static final String SCHEDULER_PERSON_UUID = "14410ae4-2174-11e3-8ad1-1b02b898d14d";
+    public static final String SCHEDULER_USER_UUID = "0a3493e8-21f8-11e3-8ad1-1b02b898d14d";
 }

@@ -13,28 +13,25 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import org.hamcrest.MatcherAssert;
-import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.Role;
+import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emrapi.metadata.MetadataPackagesConfig;
-import org.openmrs.module.emrapi.utils.MetadataUtil;
-import org.openmrs.module.metadatasharing.MetadataSharing;
 import org.openmrs.module.referencemetadata.ReferenceMetadataActivator;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.isNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SkipBaseSetup
 public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
@@ -44,6 +41,9 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 
 	@Autowired
 	ProviderService providerService;
+
+    @Autowired
+    AdministrationService adminService;
 
 	/**
 	 * @see ReferenceDemoDataActivator#started()
@@ -62,7 +62,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		
 		new ReferenceDemoDataActivator().started();
 		
-		Assert.assertEquals(initialLocationCount + 7, ls.getAllLocations().size());
+		assertEquals(initialLocationCount + 7, ls.getAllLocations().size());
 
 		assertThat(userService.getUserByUsername("clerk"), is(notNullValue()));
 		assertThat(userService.getUserByUsername("nurse"), is(notNullValue()));
@@ -72,4 +72,28 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		assertThat(providerService.getProviderByIdentifier("nurse"), is(notNullValue()));
 		assertThat(providerService.getProviderByIdentifier("doctor"), is(notNullValue()));
 	}
+
+    /**
+     * @verifies create a scheduler user and set the related global properties
+     * @see ReferenceDemoDataActivator#started()
+     */
+    @Test
+    public void started_shouldCreateASchedulerUserAndSetTheRelatedGlobalProperties() throws Exception {
+        initializeInMemoryDatabase();
+        executeDataSet("requiredDataTestDataset.xml");
+        authenticate();
+
+        new ReferenceMetadataActivator().started();
+
+        User user = userService.getUserByUsername(ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+        assertNull(user);
+
+        new ReferenceDemoDataActivator().started();
+
+        user = userService.getUserByUsername(ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+        assertNotNull(user);
+        assertTrue(user.isSuperUser());
+        assertEquals(ReferenceDemoDataConstants.SCHEDULER_USERNAME, adminService.getGlobalProperty("scheduler.username"));
+        assertEquals("Scheduler123", adminService.getGlobalProperty("scheduler.password"));
+    }
 }
