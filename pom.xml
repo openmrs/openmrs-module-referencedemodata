@@ -38,7 +38,7 @@
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <referencemetadataVersion>1.0-SNAPSHOT</referencemetadataVersion>
         <idgenVersion>2.8-SNAPSHOT</idgenVersion>
-        <providermanagementVersion>2.1-SNAPSHOT</providermanagementVersion>
+        <providermanagementVersion>2.1</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
