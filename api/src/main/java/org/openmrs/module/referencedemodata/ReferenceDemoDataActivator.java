@@ -236,13 +236,22 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
             person.addName(new PersonName("super", null, "user"));
             Role superuserRole = us.getRole(RoleConstants.SUPERUSER);
             setupUser(ReferenceDemoDataConstants.SCHEDULER_USER_UUID, ReferenceDemoDataConstants.SCHEDULER_USERNAME, person,
-                    "Scheduler123", superuserRole);
+                    ReferenceDemoDataConstants.SCHEDULER_PASSWORD, superuserRole);
             AdministrationService adminService = Context.getAdministrationService();
             GlobalProperty usernameGP = adminService.getGlobalPropertyObject("scheduler.username");
-            usernameGP.setPropertyValue(ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+            if (usernameGP == null) {
+                usernameGP = new GlobalProperty("scheduler.username", ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+            } else {
+                usernameGP.setPropertyValue(ReferenceDemoDataConstants.SCHEDULER_USERNAME);
+            }
             adminService.saveGlobalProperty(usernameGP);
+
             GlobalProperty passwordGP = adminService.getGlobalPropertyObject("scheduler.password");
-            passwordGP.setPropertyValue("Scheduler123");
+            if (passwordGP == null) {
+                passwordGP = new GlobalProperty("scheduler.password", ReferenceDemoDataConstants.SCHEDULER_PASSWORD);
+            } else {
+                passwordGP.setPropertyValue(ReferenceDemoDataConstants.SCHEDULER_PASSWORD);
+            }
             adminService.saveGlobalProperty(passwordGP);
         }
     }
