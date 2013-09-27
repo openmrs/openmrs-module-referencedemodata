@@ -203,9 +203,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			}
 		}
 
-		as.saveGlobalProperty(new GlobalProperty("scheduler.username", "admin"));
-		as.saveGlobalProperty(new GlobalProperty("scheduler.password", "Admin123"));
-
 		as.saveGlobalProperty(new GlobalProperty("layout.address.format", "<org.openmrs.layout.web.address.AddressTemplate>\n" +
 				"     <nameMappings class=\"properties\">\n" +
 				"       <property name=\"postalCode\" value=\"Location.postalCode\"/>\n" +
