@@ -74,7 +74,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		//This should probably be removed once a test user is added to demo data
 		//See https://tickets.openmrs.org/browse/RA-184
 		linkAdminAccountToAProviderIfNecessary();
-		configureConceptsIfNecessary();
 		setRequiredGlobalProperties();
 		setupUsersAndProviders();
         createSchedulerUserAndGPs();
@@ -184,52 +183,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		name.setFamilyName(familyName);
 
 		return person;
-	}
-
-	private void configureConceptsIfNecessary() {
-		try {
-			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPTS);
-			ConceptService cs = Context.getConceptService();
-			ConceptMapType sameAsMapType = cs.getConceptMapTypeByUuid("35543629-7d8c-11e1-909d-c80aa9edcf4e");
-
-			//Map<conceputUuid, Code>
-			Map<String, String> emrSourceConceptMappings = new HashMap<String, String>();
-			emrSourceConceptMappings.put("159947AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Concept Set");
-			emrSourceConceptMappings.put("161602AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Non-Coded Diagnosis");
-			emrSourceConceptMappings.put("159946AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Order");
-            emrSourceConceptMappings.put("159943AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Primary");
-            emrSourceConceptMappings.put("159944AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Secondary");
-			emrSourceConceptMappings.put("159394AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Diagnosis Certainty");
-			emrSourceConceptMappings.put("159392AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Confirmed");
-			emrSourceConceptMappings.put("159393AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Presumed");
-			emrSourceConceptMappings.put("159395AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Visit Note Free Text Comments");
-			
-			Map<String, Map<String, String>> sourceConceptMappingsMap = new HashMap<String, Map<String, String>>();
-			sourceConceptMappingsMap.put("org.openmrs.module.emr", emrSourceConceptMappings);
-
-			for (Map.Entry<String, Map<String, String>> sourceAndMappings : sourceConceptMappingsMap.entrySet()) {
-				ConceptSource source = cs.getConceptSourceByName(sourceAndMappings.getKey());
-				if (source != null) {
-					for (Map.Entry<String, String> entry : sourceAndMappings.getValue().entrySet()) {
-						boolean hasMapping = cs.getConceptByMapping(entry.getValue(), source.getName(), false) != null;
-						if (!hasMapping) {
-							Concept c = cs.getConceptByUuid(entry.getKey());
-                            ConceptReferenceTerm term = cs.getConceptReferenceTermByCode(entry.getValue(), source);
-                            if (term == null) {
-                                term = new ConceptReferenceTerm(source, entry.getValue(), null);
-                                cs.saveConceptReferenceTerm(term);
-                            }
-							c.addConceptMapping(new ConceptMap(term, sameAsMapType));
-							cs.saveConcept(c);
-						}
-					}
-				}
-			}
-			
-		}
-		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPTS);
-		}
 	}
 	
 	private void setRequiredGlobalProperties() {
