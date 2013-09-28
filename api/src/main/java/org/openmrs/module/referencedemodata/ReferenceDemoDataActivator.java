@@ -20,15 +20,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.LocalDate;
-import org.openmrs.EncounterType;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Period;
+import org.openmrs.Concept;
+import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -41,7 +44,9 @@ import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProviderService;
@@ -64,7 +69,6 @@ import org.openmrs.util.RoleConstants;
  */
 public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
-	public static final String CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP = "referencedemodata.createDemoPatientsOnNextStartup";
 	protected Log log = LogFactory.getLog(getClass());
 	private IdentifierSourceService iss;	// So unit test can mock it.
 	
@@ -205,7 +209,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		Map<String, String> propertyValueMap = new HashMap<String, String>();
 		//Add more GPs here
 		propertyValueMap.put("registrationcore.identifierSourceId", "1");
-		propertyValueMap.put(CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "0");
+		propertyValueMap.put(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "0");
 		
 		for (Map.Entry<String, String> entry : propertyValueMap.entrySet()) {
 			if (StringUtils.isBlank(as.getGlobalProperty(entry.getKey()))) {
@@ -272,34 +276,41 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         }
     }
 
+    // TODO Perhaps all this demo-patient stuff should be in a separate module?
 	private void createDemoPatients() {
 		AdministrationService as = Context.getAdministrationService();
-		GlobalProperty gp = as.getGlobalPropertyObject(CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
+		GlobalProperty gp = as.getGlobalPropertyObject(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
 		if (gp == null || (gp.getPropertyValue().equals("0"))) {
 			return;
 		}
 		int patientCount = Integer.parseInt(gp.getPropertyValue());
 
 		PatientService ps = Context.getPatientService();
-		List<Location> locations = Context.getLocationService().getAllLocations();
+		Location rootLocation = randomArrayEntry(Context.getLocationService().getRootLocations(false));
 		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(ReferenceMetadataConstants.OPENMRS_ID_NAME);
 		for (int i = 0; i < patientCount; i++) {
-			createDemoPatient(ps, patientIdentifierType, randomArrayEntry(locations));
+			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
+// for debugging:
+System.out.println("created patient: " + patient.getPatientIdentifier() + " " + patient.getGivenName() + " " + patient.getFamilyName());
 		}
-		
+
 		// Set the global to zero so we won't create demo patients next time.
 		gp.setPropertyValue("0");
 		as.saveGlobalProperty(gp);
     }
 
-	private void createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
-	    Patient patient = ps.savePatient(createBasicDemoPatient(patientIdentifierType, location));
-	    // TODO
-//	    VisitService vs = Context.getVisitService();
-//	    int visitCount = randomBetween(0, 10);
-//	    for (int i = 0; i < visitCount; i++) {
-//	    	vs.saveVisit(createDemoVisit(patient, vs.getAllVisitTypes()));
-//        }
+	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
+	    Patient patient = createBasicDemoPatient(patientIdentifierType, location);
+		patient = ps.savePatient(patient);
+		List<Location> locations = Context.getLocationService().getAllLocations();
+	    VisitService vs = Context.getVisitService();
+	    int visitCount = randomBetween(0, 10);
+	    for (int i = 0; i < visitCount; i++) {
+	    	boolean shortVisit = i < (visitCount * 0.75);
+	    	Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), locations, shortVisit);
+			vs.saveVisit(visit);
+        }
+	    return patient;
     }
 
 	// Used by unit test
@@ -318,7 +329,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		Patient patient = new Patient();
 		
 		PersonName pName = new PersonName();
-		boolean male = ((int)Math.round(Math.random())) == 0;
+		String gender = randomArrayEntry(GENDERS);
+		boolean male = gender.equals("M");
 		pName.setGivenName(randomArrayEntry(male ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES));
 		pName.setFamilyName(randomArrayEntry(FAMILY_NAMES));
 		patient.addName(pName);
@@ -330,32 +342,90 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		pAddress.setStateProvince("State" + randomSuffix);
 		pAddress.setCountry("Country" + randomSuffix);
 		pAddress.setPostalCode(randomSuffix(5));
-		Set<PersonAddress> pAddressList = patient.getAddresses();
-		pAddressList.add(pAddress);
-		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
 		
 		patient.setBirthdate(randomBirthdate());
 		patient.setBirthdateEstimated(false);
-		patient.setGender(male ? "M" : "F");
+		patient.setGender(gender);
 		
 		PatientIdentifier pa1 = new PatientIdentifier();
 		pa1.setIdentifier(getIdentifierSourceService().generateIdentifier(patientIdentifierType, "DemoData"));
 		pa1.setIdentifierType(patientIdentifierType);
 		pa1.setDateCreated(new Date());
-		pa1.setVoided(false);
 		pa1.setLocation(location);
 		patient.addIdentifier(pa1);
 
 		return patient;
 	}
 	
+	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, List<Location> locations, boolean shortVisit) {
+		LocalDateTime visitStart = LocalDateTime.now().minus(Period.days(randomBetween(0, 365*2)).withHours(1));	// past 2 years
+		Visit visit = new Visit(patient, randomArrayEntry(visitTypes), visitStart.toDate());
+		Location visitLocation = randomArrayEntry(locations);
+		visit.setLocation(visitLocation);	// TODO is it correct to set a random location on each visit?
+		LocalDateTime vitalsTime = visitStart.plus(Period.minutes(randomBetween(1, 60)));
+		Encounter vitals = createDemoVitalsEncounter(patient, vitalsTime.toDate(), visitLocation);
+		visit.addEncounter(vitals);
+		LocalDateTime visitNoteTime = visitStart.plus(Period.minutes(randomBetween(60, 120)));
+		// TODO add a Visit Note
+		if (shortVisit) {
+			LocalDateTime visitEndTime = visitNoteTime.plus(Period.minutes(30));
+			visit.setStopDatetime(visitEndTime.toDate());
+		} else {
+			// admit now and discharge a few days later
+			visit.addEncounter(createEncounter("Admission", patient, visitNoteTime.toDate(), visitLocation));
+			LocalDateTime dischargeDateTime = visitNoteTime.plus(Period.days(randomBetween(1, 3)));
+			visit.addEncounter(createEncounter("Discharge", patient, dischargeDateTime.toDate(), visitLocation));
+			visit.setStopDatetime(dischargeDateTime.toDate());
+		}
+		return visit;
+	}
+	
+	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location) {
+		Encounter encounter = createEncounter("Vitals", patient, encounterTime, location);
+		createDemoVitalsObs(patient, encounter, encounterTime, location);
+		return encounter;
+	}
+	
+	private Encounter createEncounter(String encounterType, Patient patient, Date encounterTime, Location location) {
+		EncounterService es = Context.getEncounterService();
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(encounterTime);
+		encounter.setEncounterType(es.getEncounterType(encounterType));
+		encounter.setPatient(patient);
+		encounter.setLocation(location);
+		es.saveEncounter(encounter);
+		return encounter;
+	}
+	
+	private void createDemoVitalsObs(Patient patient, Encounter encounter, Date encounterTime, Location location) {
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+        createNumericObs("Height (cm)", 10, 228, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Weight (kg)", 1, 250, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Temperature (C)", 25, 43, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Pulse", 0, 230, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Respiratory rate", 5, 100, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("SYSTOLIC BLOOD PRESSURE", 0, 250, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("DIASTOLIC BLOOD PRESSURE", 0, 150, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Blood oxygen saturation", 0, 100, patient, encounter, encounterTime, location, os, cs);
+	}
+
+	private void createNumericObs(String conceptName, int min, int max, Patient patient, Encounter encounter, Date encounterTime, Location location,
+                                  ObsService os, ConceptService cs) {
+	    Concept concept = cs.getConcept(conceptName);
+		Obs obs = new Obs(patient, concept, encounterTime, location);
+		obs.setValueNumeric((double) randomBetween(min, max));
+		os.saveObs(obs, null);
+		encounter.addObs(obs);
+    }
+	
 	private static final int MIN_AGE = 16;
 	private static final int MAX_AGE = 90;
 	
 	private Date randomBirthdate() {
 		LocalDate now = LocalDate.now();
-		LocalDate joda = new LocalDate(randomBetween(now.getYear() - MAX_AGE, now.getYear() - MIN_AGE), randomBetween(1,12), randomBetween(1, 28));	// TODO day 29-31?
+		LocalDate joda = new LocalDate(randomBetween(now.getYear() - MAX_AGE, now.getYear() - MIN_AGE), randomBetween(1,12), randomBetween(1, 28));
 	    return joda.toDate();
     }
 
@@ -363,20 +433,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	    return min + (int) (Math.random() * (max-min+1));
     }
 
-	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes) {
-		Visit visit = new Visit(patient, randomArrayEntry(visitTypes), new Date());	// TODO Date
-		// TODO
-//		EncounterService es = Context.getEncounterService();
-//		List<EncounterType> encounterTypes = es.getAllEncounterTypes();
-//		for (EncounterType encounterType : encounterTypes) {
-//	        System.out.println(encounterType.getName() + " " + encounterType.getDescription());
-//        }
-//		es.createEncounter(arg0);
-//		ObsService os = Context.getObsService();
-//		os.saveObs(new Obs(patient, question, new Date(), location), "test");
-		return visit;
-	}
-	
 	static int randomArrayIndex(int length) {
 		return (int) (Math.random() * length);
 	}
@@ -390,13 +446,15 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		return list.get(randomArrayIndex(list.size()));
 	}
 	static String randomSuffix() {
-		return randomSuffix(6);
+		return randomSuffix(4);
 	}
 	static String randomSuffix(int digits) {
-		// First n digits of the current time.
-		return String.valueOf(System.currentTimeMillis()).substring(0, digits);
+		// Last n digits of the current time.
+		return StringUtils.right(String.valueOf(System.currentTimeMillis()), digits);
 	}
 
+	private static final String[] GENDERS = {"M", "F"};
+	
 	private static final String[] MALE_FIRST_NAMES = { "James", "John", "Robert", "Michael", "William", "David", "Richard",
         "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "Donald", "Anthony", "Paul", "Mark",
         "George", "Steven", "Kenneth", "Andrew", "Edward", "Brian", "Joshua", "Kevin" };

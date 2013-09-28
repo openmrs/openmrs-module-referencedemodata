@@ -34,4 +34,5 @@ public class ReferenceDemoDataConstants {
     public static final String SCHEDULER_PASSWORD = "Scheduler123";
     public static final String SCHEDULER_PERSON_UUID = "14410ae4-2174-11e3-8ad1-1b02b898d14d";
     public static final String SCHEDULER_USER_UUID = "0a3493e8-21f8-11e3-8ad1-1b02b898d14d";
+	public static final String CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP = "referencedemodata.createDemoPatientsOnNextStartup";
 }

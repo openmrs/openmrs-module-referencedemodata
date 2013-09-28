@@ -141,25 +141,25 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
         executeDataSet("requiredDataTestDataset.xml");
         authenticate();
 
-        GlobalProperty createDemoPatients = new GlobalProperty(ReferenceDemoDataActivator.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "10");
+        GlobalProperty createDemoPatients = new GlobalProperty(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "10");
         adminService.saveGlobalProperty(createDemoPatients);
         
         new ReferenceMetadataActivator().started();
         
-        ReferenceDemoDataActivator referenceDemoDataActivator = new ReferenceDemoDataActivator();
+		ReferenceDemoDataActivator referenceDemoDataActivator = new ReferenceDemoDataActivator();
         initMockGenerator(referenceDemoDataActivator);
 		referenceDemoDataActivator.started();
 
-        List<Patient> allPatients = patientService.getAllPatients();
+		List<Patient> allPatients = patientService.getAllPatients();
         for (Patient patient : allPatients) {
-	        System.out.println(patient + " " + patient.getPatientIdentifier() + " " + patient.getPersonName() + " " + patient.getBirthdate());
+	        System.out.println(patient + " " + patient.getPatientIdentifier() + " " + patient.getPersonName() + " " + patient.getBirthdate() + " " + patient.getAddresses());
         }
 		assertTrue(allPatients.size() > 0);
         List<Visit> allVisits = visitService.getAllVisits();
         for (Visit visit : allVisits) {
-	        System.out.println(visit);
+	        System.out.println(visit + " " + visit.getStartDatetime() + " - " + visit.getStopDatetime() + " " + visit.getEncounters());
         }
-//		assertTrue(allVisits.size() > 0);
+		assertTrue(allVisits.size() > 0);
     }
     
     long seed = 0;
