@@ -33,7 +33,7 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.9.3</openMRSVersion>
+		<openMRSVersion>1.9.4</openMRSVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <referencemetadataVersion>1.0-SNAPSHOT</referencemetadataVersion>

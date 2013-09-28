@@ -13,53 +13,66 @@
  */
 package org.openmrs.module.referencedemodata;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.ConceptMap;
-import org.openmrs.ConceptMapType;
-import org.openmrs.ConceptReferenceTerm;
-import org.openmrs.ConceptSource;
+import org.joda.time.LocalDate;
+import org.openmrs.EncounterType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
+import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
+import org.openmrs.module.referencemetadata.ReferenceMetadataConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
 public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
+	public static final String CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP = "referencedemodata.createDemoPatientsOnNextStartup";
 	protected Log log = LogFactory.getLog(getClass());
+	private IdentifierSourceService iss;	// So unit test can mock it.
 	
 	/**
 	 * @see ModuleActivator#contextRefreshed()
 	 */
-	public void contextRefreshed() {
+	@Override
+    public void contextRefreshed() {
 		log.info("Reference Demo Data Module refreshed");
 	}
 	
@@ -69,7 +82,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	 * @should link the admin account to unknown provider
      * @should create a scheduler user and set the related global properties
 	 */
-	public void started() {
+	@Override
+    public void started() {
 		installMDSPackages();
 		//This should probably be removed once a test user is added to demo data
 		//See https://tickets.openmrs.org/browse/RA-184
@@ -77,6 +91,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		setRequiredGlobalProperties();
 		setupUsersAndProviders();
         createSchedulerUserAndGPs();
+        createDemoPatients();
 	}
 	
 	private void installMDSPackages() {
@@ -190,6 +205,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		Map<String, String> propertyValueMap = new HashMap<String, String>();
 		//Add more GPs here
 		propertyValueMap.put("registrationcore.identifierSourceId", "1");
+		propertyValueMap.put(CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "0");
 		
 		for (Map.Entry<String, String> entry : propertyValueMap.entrySet()) {
 			if (StringUtils.isBlank(as.getGlobalProperty(entry.getKey()))) {
@@ -255,4 +271,143 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
             adminService.saveGlobalProperty(passwordGP);
         }
     }
+
+	private void createDemoPatients() {
+		AdministrationService as = Context.getAdministrationService();
+		GlobalProperty gp = as.getGlobalPropertyObject(CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
+		if (gp == null || (gp.getPropertyValue().equals("0"))) {
+			return;
+		}
+		int patientCount = Integer.parseInt(gp.getPropertyValue());
+
+		PatientService ps = Context.getPatientService();
+		List<Location> locations = Context.getLocationService().getAllLocations();
+		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(ReferenceMetadataConstants.OPENMRS_ID_NAME);
+		for (int i = 0; i < patientCount; i++) {
+			createDemoPatient(ps, patientIdentifierType, randomArrayEntry(locations));
+		}
+		
+		// Set the global to zero so we won't create demo patients next time.
+		gp.setPropertyValue("0");
+		as.saveGlobalProperty(gp);
+    }
+
+	private void createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
+	    Patient patient = ps.savePatient(createBasicDemoPatient(patientIdentifierType, location));
+	    // TODO
+//	    VisitService vs = Context.getVisitService();
+//	    int visitCount = randomBetween(0, 10);
+//	    for (int i = 0; i < visitCount; i++) {
+//	    	vs.saveVisit(createDemoVisit(patient, vs.getAllVisitTypes()));
+//        }
+    }
+
+	// Used by unit test
+    public void setIdentifierSourceService(IdentifierSourceService iss) {
+    	this.iss = iss;
+    }
+
+	private IdentifierSourceService getIdentifierSourceService() {
+		if (iss == null) {
+			iss = Context.getService(IdentifierSourceService.class);
+		}
+		return iss;
+	}
+
+	private Patient createBasicDemoPatient(PatientIdentifierType patientIdentifierType, Location location) {
+		Patient patient = new Patient();
+		
+		PersonName pName = new PersonName();
+		boolean male = ((int)Math.round(Math.random())) == 0;
+		pName.setGivenName(randomArrayEntry(male ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES));
+		pName.setFamilyName(randomArrayEntry(FAMILY_NAMES));
+		patient.addName(pName);
+		
+		PersonAddress pAddress = new PersonAddress();
+		String randomSuffix = randomSuffix();
+		pAddress.setAddress1("Address1" + randomSuffix);
+		pAddress.setCityVillage("City" + randomSuffix);
+		pAddress.setStateProvince("State" + randomSuffix);
+		pAddress.setCountry("Country" + randomSuffix);
+		pAddress.setPostalCode(randomSuffix(5));
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		
+		patient.setBirthdate(randomBirthdate());
+		patient.setBirthdateEstimated(false);
+		patient.setGender(male ? "M" : "F");
+		
+		PatientIdentifier pa1 = new PatientIdentifier();
+		pa1.setIdentifier(getIdentifierSourceService().generateIdentifier(patientIdentifierType, "DemoData"));
+		pa1.setIdentifierType(patientIdentifierType);
+		pa1.setDateCreated(new Date());
+		pa1.setVoided(false);
+		pa1.setLocation(location);
+		patient.addIdentifier(pa1);
+
+		return patient;
+	}
+	
+	private static final int MIN_AGE = 16;
+	private static final int MAX_AGE = 90;
+	
+	private Date randomBirthdate() {
+		LocalDate now = LocalDate.now();
+		LocalDate joda = new LocalDate(randomBetween(now.getYear() - MAX_AGE, now.getYear() - MIN_AGE), randomBetween(1,12), randomBetween(1, 28));	// TODO day 29-31?
+	    return joda.toDate();
+    }
+
+	private int randomBetween(int min, int max) {
+	    return min + (int) (Math.random() * (max-min+1));
+    }
+
+	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes) {
+		Visit visit = new Visit(patient, randomArrayEntry(visitTypes), new Date());	// TODO Date
+		// TODO
+//		EncounterService es = Context.getEncounterService();
+//		List<EncounterType> encounterTypes = es.getAllEncounterTypes();
+//		for (EncounterType encounterType : encounterTypes) {
+//	        System.out.println(encounterType.getName() + " " + encounterType.getDescription());
+//        }
+//		es.createEncounter(arg0);
+//		ObsService os = Context.getObsService();
+//		os.saveObs(new Obs(patient, question, new Date(), location), "test");
+		return visit;
+	}
+	
+	static int randomArrayIndex(int length) {
+		return (int) (Math.random() * length);
+	}
+	static int randomArrayIndex(String[] array) {
+		return randomArrayIndex(array.length);
+	}
+	static String randomArrayEntry(String[] array) {
+		return array[randomArrayIndex(array)];
+	}
+	static <T> T randomArrayEntry(List<T> list) {
+		return list.get(randomArrayIndex(list.size()));
+	}
+	static String randomSuffix() {
+		return randomSuffix(6);
+	}
+	static String randomSuffix(int digits) {
+		// First n digits of the current time.
+		return String.valueOf(System.currentTimeMillis()).substring(0, digits);
+	}
+
+	private static final String[] MALE_FIRST_NAMES = { "James", "John", "Robert", "Michael", "William", "David", "Richard",
+        "Joseph", "Charles", "Thomas", "Christopher", "Daniel", "Matthew", "Donald", "Anthony", "Paul", "Mark",
+        "George", "Steven", "Kenneth", "Andrew", "Edward", "Brian", "Joshua", "Kevin" };
+
+	private static final String[] FEMALE_FIRST_NAMES = { "Mary", "Patricia", "Elizabeth", "Jennifer", "Linda", "Barbara",
+        "Susan", "Margaret", "Jessica", "Dorothy", "Sarah", "Karen", "Nancy", "Betty", "Lisa", "Sandra", "Helen",
+        "Donna", "Ashley", "Kimberly", "Carol", "Michelle", "Amanda", "Emily", "Melissa" };
+
+	private static final String[] FAMILY_NAMES = { "Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis",
+        "García", "Rodríguez", "Wilson", "Martínez", "Anderson", "Taylor", "Thomas", "Hernández", "Moore", "Martin",
+        "Jackson", "Thompson", "White", "López", "Lee", "González", "Harris", "Clark", "Lewis", "Robinson", "Walker",
+        "Pérez", "Hall", "Young", "Allen", "Sánchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson",
+        "Hill", "Ramírez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres" };
 }
