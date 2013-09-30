@@ -56,6 +56,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.ModuleException;
+import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.providermanagement.ProviderRole;
@@ -358,29 +359,74 @@ System.out.println("created patient: " + patient.getPatientIdentifier() + " " + 
 		return patient;
 	}
 	
+	private static final int ADMISSION_DAYS_MIN = 1;
+	private static final int ADMISSION_DAYS_MAX = 3;
+	
 	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, List<Location> locations, boolean shortVisit) {
 		LocalDateTime visitStart = LocalDateTime.now().minus(Period.days(randomBetween(0, 365*2)).withHours(1));	// past 2 years
+		if (!shortVisit) {
+			visitStart = visitStart.minus(Period.days(ADMISSION_DAYS_MAX+1));	// just in case the start is today, back it up a few days.
+		}
 		Visit visit = new Visit(patient, randomArrayEntry(visitTypes), visitStart.toDate());
 		Location visitLocation = randomArrayEntry(locations);
 		visit.setLocation(visitLocation);	// TODO is it correct to set a random location on each visit?
 		LocalDateTime vitalsTime = visitStart.plus(Period.minutes(randomBetween(1, 60)));
-		Encounter vitals = createDemoVitalsEncounter(patient, vitalsTime.toDate(), visitLocation);
-		visit.addEncounter(vitals);
+		visit.addEncounter(createDemoVitalsEncounter(patient, vitalsTime.toDate(), visitLocation));
 		LocalDateTime visitNoteTime = visitStart.plus(Period.minutes(randomBetween(60, 120)));
-		// TODO add a Visit Note
+		visit.addEncounter(createVisitNote(patient, visitNoteTime.toDate(), visitLocation));
 		if (shortVisit) {
 			LocalDateTime visitEndTime = visitNoteTime.plus(Period.minutes(30));
 			visit.setStopDatetime(visitEndTime.toDate());
 		} else {
 			// admit now and discharge a few days later
 			visit.addEncounter(createEncounter("Admission", patient, visitNoteTime.toDate(), visitLocation));
-			LocalDateTime dischargeDateTime = visitNoteTime.plus(Period.days(randomBetween(1, 3)));
+			LocalDateTime dischargeDateTime = visitNoteTime.plus(Period.days(randomBetween(ADMISSION_DAYS_MIN, ADMISSION_DAYS_MAX)));
 			visit.addEncounter(createEncounter("Discharge", patient, dischargeDateTime.toDate(), visitLocation));
 			visit.setStopDatetime(dischargeDateTime.toDate());
 		}
 		return visit;
 	}
 	
+	private Encounter createVisitNote(Patient patient, Date encounterTime, Location location) {
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+	    Encounter visitNote = createEncounter("Visit Note", patient, encounterTime, location);
+	    visitNote.setForm(Context.getFormService().getForm("Visit Note"));
+	    Context.getEncounterService().saveEncounter(visitNote);
+	    
+	    createTextObs("Clinical impression", randomArrayEntry(RANDOM_TEXT), patient, visitNote, encounterTime, location, os, cs);
+
+	    createDiagnosisObsGroup(true, patient, visitNote, encounterTime, location, os, cs);
+	    
+	    if (flipACoin()) {
+	    	// add a second diagnosis
+		    createDiagnosisObsGroup(false, patient, visitNote, encounterTime, location, os, cs);
+	    }
+
+	    return visitNote;
+    }
+
+	private void createDiagnosisObsGroup(boolean primary, Patient patient, Encounter visitNote, Date encounterTime,
+                                    Location location, ObsService os, ConceptService cs) {
+		Obs obsGroup = createBasicObs("Visit Diagnoses", patient, encounterTime, location, cs);
+	    obsGroup.setValueText("");	// TODO I was getting "noValue" validation error without this
+	    os.saveObs(obsGroup, null);
+	    visitNote.addObs(obsGroup);
+
+	    String certainty = flipACoin() ? "Presumed diagnosis" : "Confirmed diagnosis";
+	    Obs obs = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_CERTAINTY, certainty, patient, visitNote, encounterTime, location, os, cs);
+	    obsGroup.addGroupMember(obs);
+
+	    // TODO 5% of diagnoses should be non-coded.
+	    List<Concept> allDiagnoses = cs.getConceptsByClass(cs.getConceptClassByName("Diagnosis"));
+	    obs = createCodedObs("DIAGNOSIS LIST", randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime, location, os, cs);
+	    obsGroup.addGroupMember(obs);
+	    
+	    String order = primary ? EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_PRIMARY : EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_SECONDARY;
+	    obs = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER, order, patient, visitNote, encounterTime, location, os, cs);
+	    obsGroup.addGroupMember(obs);
+    }
+
 	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location) {
 		Encounter encounter = createEncounter("Vitals", patient, encounterTime, location);
 		createDemoVitalsObs(patient, encounter, encounterTime, location);
@@ -413,12 +459,37 @@ System.out.println("created patient: " + patient.getPatientIdentifier() + " " + 
 
 	private void createNumericObs(String conceptName, int min, int max, Patient patient, Encounter encounter, Date encounterTime, Location location,
                                   ObsService os, ConceptService cs) {
-	    Concept concept = cs.getConcept(conceptName);
-		Obs obs = new Obs(patient, concept, encounterTime, location);
+		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
 		obs.setValueNumeric((double) randomBetween(min, max));
 		os.saveObs(obs, null);
 		encounter.addObs(obs);
     }
+	
+	private void createTextObs(String conceptName, String text, Patient patient, Encounter encounter, Date encounterTime,
+	                           Location location, ObsService os, ConceptService cs) {
+		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
+		obs.setValueText(text);
+		os.saveObs(obs, null);
+		encounter.addObs(obs);
+	}
+	
+	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter, Date encounterTime,
+	                           Location location, ObsService os, ConceptService cs) {
+		return createCodedObs(conceptName, cs.getConcept(codedConceptName), patient, encounter, encounterTime, location, os, cs);
+	}
+	
+	private Obs createCodedObs(String conceptName, Concept concept, Patient patient, Encounter encounter,
+                               Date encounterTime, Location location, ObsService os, ConceptService cs) {
+		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
+		obs.setValueCoded(concept);
+		os.saveObs(obs, null);
+		encounter.addObs(obs);
+		return obs;
+    }
+
+	private Obs createBasicObs(String conceptName, Patient patient, Date encounterTime, Location location, ConceptService cs) {
+		return new Obs(patient, cs.getConcept(conceptName), encounterTime, location);
+	}
 	
 	private static final int MIN_AGE = 16;
 	private static final int MAX_AGE = 90;
@@ -429,10 +500,9 @@ System.out.println("created patient: " + patient.getPatientIdentifier() + " " + 
 	    return joda.toDate();
     }
 
-	private int randomBetween(int min, int max) {
+	static private int randomBetween(int min, int max) {
 	    return min + (int) (Math.random() * (max-min+1));
     }
-
 	static int randomArrayIndex(int length) {
 		return (int) (Math.random() * length);
 	}
@@ -452,6 +522,9 @@ System.out.println("created patient: " + patient.getPatientIdentifier() + " " + 
 		// Last n digits of the current time.
 		return StringUtils.right(String.valueOf(System.currentTimeMillis()), digits);
 	}
+	static boolean flipACoin() {
+		return randomBetween(0,1) == 0;
+	}
 
 	private static final String[] GENDERS = {"M", "F"};
 	
@@ -468,4 +541,19 @@ System.out.println("created patient: " + patient.getPatientIdentifier() + " " + 
         "Jackson", "Thompson", "White", "López", "Lee", "González", "Harris", "Clark", "Lewis", "Robinson", "Walker",
         "Pérez", "Hall", "Young", "Allen", "Sánchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson",
         "Hill", "Ramírez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres" };
+	
+	private static final String[] RANDOM_TEXT = {
+		"Lorem ipsum dolor sit amet", 
+		"consectetur adipisicing elit", 
+		"sed do eiusmod tempor incididunt", 
+		"ut labore et dolore magna aliqua",
+		"Ut enim ad minim veniam", 
+		"quis nostrud exercitation ullamco laboris",
+		"nisi ut aliquip ex ea commodo consequat.",
+		"Duis aute irure dolor in reprehenderit in voluptat",
+		"velit esse cillum dolore eu fugiat nulla pariatur.",
+		"Excepteur sint occaecat cupidatat non proident", 
+		"sunt in culpa qui officia deserunt",
+		"mollit anim id est laborum."};
+	
 }

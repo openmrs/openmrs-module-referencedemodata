@@ -137,11 +137,12 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
      */
     @Test
     public void started_shouldCreateDemoPatients() throws Exception {
+    	final int demoPatientCount = 10;
         initializeInMemoryDatabase();
         executeDataSet("requiredDataTestDataset.xml");
         authenticate();
 
-        GlobalProperty createDemoPatients = new GlobalProperty(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "10");
+        GlobalProperty createDemoPatients = new GlobalProperty(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, ""+demoPatientCount);
         adminService.saveGlobalProperty(createDemoPatients);
         
         new ReferenceMetadataActivator().started();
@@ -154,12 +155,12 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
         for (Patient patient : allPatients) {
 	        System.out.println(patient + " " + patient.getPatientIdentifier() + " " + patient.getPersonName() + " " + patient.getBirthdate() + " " + patient.getAddresses());
         }
-		assertTrue(allPatients.size() > 0);
+		assertEquals(demoPatientCount, allPatients.size());
         List<Visit> allVisits = visitService.getAllVisits();
         for (Visit visit : allVisits) {
 	        System.out.println(visit + " " + visit.getStartDatetime() + " - " + visit.getStopDatetime() + " " + visit.getEncounters());
         }
-		assertTrue(allVisits.size() > 0);
+		assertTrue(allVisits.size() > demoPatientCount);
     }
     
     long seed = 0;
