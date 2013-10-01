@@ -291,8 +291,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(ReferenceMetadataConstants.OPENMRS_ID_NAME);
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
-// for debugging:
-System.out.println("created patient: " + patient.getPatientIdentifier() + " " + patient.getGivenName() + " " + patient.getFamilyName());
+			log.info("created demo patient: " + patient.getPatientIdentifier() + " " + patient.getGivenName() + " " + patient.getFamilyName());
 		}
 
 		// Set the global to zero so we won't create demo patients next time.
