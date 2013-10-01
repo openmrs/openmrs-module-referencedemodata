@@ -362,7 +362,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private static final int ADMISSION_DAYS_MAX = 3;
 	
 	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, List<Location> locations, boolean shortVisit) {
-		LocalDateTime visitStart = LocalDateTime.now().minus(Period.days(randomBetween(0, 365*2)).withHours(1));	// past 2 years
+		LocalDateTime visitStart = LocalDateTime.now().minus(Period.days(randomBetween(0, 365*2)).withHours(3));	// past 2 years
 		if (!shortVisit) {
 			visitStart = visitStart.minus(Period.days(ADMISSION_DAYS_MAX+1));	// just in case the start is today, back it up a few days.
 		}
