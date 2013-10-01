@@ -62,6 +62,8 @@ import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.referencemetadata.ReferenceMetadataConstants;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 
@@ -277,13 +279,15 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         }
     }
 
-    // TODO Perhaps all this demo-patient stuff should be in a separate module?
+    // TODO Move all this demo-patient stuff to a separate class.
 	private void createDemoPatients() {
 		AdministrationService as = Context.getAdministrationService();
 		GlobalProperty gp = as.getGlobalPropertyObject(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
 		if (gp == null || (gp.getPropertyValue().equals("0"))) {
 			return;
 		}
+		OpenmrsUtil.applyLogLevel(getClass().getName(), OpenmrsConstants.LOG_LEVEL_INFO);	// force the "created demo patient" below to show up
+		
 		int patientCount = Integer.parseInt(gp.getPropertyValue());
 
 		PatientService ps = Context.getPatientService();
@@ -292,6 +296,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
 			log.info("created demo patient: " + patient.getPatientIdentifier() + " " + patient.getGivenName() + " " + patient.getFamilyName());
+			Context.flushSession();
 		}
 
 		// Set the global to zero so we won't create demo patients next time.
@@ -302,12 +307,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
 	    Patient patient = createBasicDemoPatient(patientIdentifierType, location);
 		patient = ps.savePatient(patient);
-		List<Location> locations = Context.getLocationService().getAllLocations();
 	    VisitService vs = Context.getVisitService();
 	    int visitCount = randomBetween(0, 10);
 	    for (int i = 0; i < visitCount; i++) {
 	    	boolean shortVisit = i < (visitCount * 0.75);
-	    	Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), locations, shortVisit);
+	    	Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), location, shortVisit);
 			vs.saveVisit(visit);
         }
 	    return patient;
@@ -361,26 +365,26 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private static final int ADMISSION_DAYS_MIN = 1;
 	private static final int ADMISSION_DAYS_MAX = 3;
 	
-	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, List<Location> locations, boolean shortVisit) {
+	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, Location location, boolean shortVisit) {
 		LocalDateTime visitStart = LocalDateTime.now().minus(Period.days(randomBetween(0, 365*2)).withHours(3));	// past 2 years
 		if (!shortVisit) {
 			visitStart = visitStart.minus(Period.days(ADMISSION_DAYS_MAX+1));	// just in case the start is today, back it up a few days.
 		}
 		Visit visit = new Visit(patient, randomArrayEntry(visitTypes), visitStart.toDate());
-		Location visitLocation = randomArrayEntry(locations);
-		visit.setLocation(visitLocation);	// TODO is it correct to set a random location on each visit?
+		visit.setLocation(location);
 		LocalDateTime vitalsTime = visitStart.plus(Period.minutes(randomBetween(1, 60)));
-		visit.addEncounter(createDemoVitalsEncounter(patient, vitalsTime.toDate(), visitLocation));
+		visit.addEncounter(createDemoVitalsEncounter(patient, vitalsTime.toDate()));
 		LocalDateTime visitNoteTime = visitStart.plus(Period.minutes(randomBetween(60, 120)));
-		visit.addEncounter(createVisitNote(patient, visitNoteTime.toDate(), visitLocation));
+		visit.addEncounter(createVisitNote(patient, visitNoteTime.toDate(), location));
 		if (shortVisit) {
 			LocalDateTime visitEndTime = visitNoteTime.plus(Period.minutes(30));
 			visit.setStopDatetime(visitEndTime.toDate());
 		} else {
 			// admit now and discharge a few days later
-			visit.addEncounter(createEncounter("Admission", patient, visitNoteTime.toDate(), visitLocation));
+			Location admitLocation = Context.getLocationService().getLocation("Inpatient Ward");
+			visit.addEncounter(createEncounter("Admission", patient, visitNoteTime.toDate(), admitLocation));
 			LocalDateTime dischargeDateTime = visitNoteTime.plus(Period.days(randomBetween(ADMISSION_DAYS_MIN, ADMISSION_DAYS_MAX)));
-			visit.addEncounter(createEncounter("Discharge", patient, dischargeDateTime.toDate(), visitLocation));
+			visit.addEncounter(createEncounter("Discharge", patient, dischargeDateTime.toDate(), admitLocation));
 			visit.setStopDatetime(dischargeDateTime.toDate());
 		}
 		return visit;
@@ -408,8 +412,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private void createDiagnosisObsGroup(boolean primary, Patient patient, Encounter visitNote, Date encounterTime,
                                     Location location, ObsService os, ConceptService cs) {
 		Obs obsGroup = createBasicObs("Visit Diagnoses", patient, encounterTime, location, cs);
-	    obsGroup.setValueText("");	// TODO I was getting "noValue" validation error without this
-	    os.saveObs(obsGroup, null);
 	    visitNote.addObs(obsGroup);
 
 	    String certainty = flipACoin() ? "Presumed diagnosis" : "Confirmed diagnosis";
@@ -426,7 +428,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	    obsGroup.addGroupMember(obs);
     }
 
-	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location) {
+	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime) {
+		Location location = Context.getLocationService().getLocation("Outpatient Clinic");
 		Encounter encounter = createEncounter("Vitals", patient, encounterTime, location);
 		createDemoVitalsObs(patient, encounter, encounterTime, location);
 		return encounter;
