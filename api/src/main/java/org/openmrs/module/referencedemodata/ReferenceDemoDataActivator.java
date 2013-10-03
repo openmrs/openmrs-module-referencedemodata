@@ -431,6 +431,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime) {
 		Location location = Context.getLocationService().getLocation("Outpatient Clinic");
 		Encounter encounter = createEncounter("Vitals", patient, encounterTime, location);
+	    encounter.setForm(Context.getFormService().getForm("Vitals"));
 		createDemoVitalsObs(patient, encounter, encounterTime, location);
 		return encounter;
 	}
