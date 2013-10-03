@@ -35,9 +35,9 @@
 	<properties>
 		<openMRSVersion>1.9.4</openMRSVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
-        <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <emrapiVersion>1.0</emrapiVersion>
         <referencemetadataVersion>1.0-SNAPSHOT</referencemetadataVersion>
-        <idgenVersion>2.8-SNAPSHOT</idgenVersion>
+        <idgenVersion>2.7</idgenVersion>
         <providermanagementVersion>2.1</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
