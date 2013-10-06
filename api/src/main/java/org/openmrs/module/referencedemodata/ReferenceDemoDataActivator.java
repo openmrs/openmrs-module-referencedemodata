@@ -397,7 +397,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	    visitNote.setForm(Context.getFormService().getForm("Visit Note"));
 	    Context.getEncounterService().saveEncounter(visitNote);
 	    
-	    createTextObs("Clinical impression", randomArrayEntry(RANDOM_TEXT), patient, visitNote, encounterTime, location, os, cs);
+	    createTextObs("Text of encounter note"/*CIEL:162169*/, randomArrayEntry(RANDOM_TEXT), patient, visitNote, encounterTime, location, os, cs);
 
 	    createDiagnosisObsGroup(true, patient, visitNote, encounterTime, location, os, cs);
 	    
@@ -491,7 +491,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     }
 
 	private Obs createBasicObs(String conceptName, Patient patient, Date encounterTime, Location location, ConceptService cs) {
-		return new Obs(patient, cs.getConcept(conceptName), encounterTime, location);
+		Concept concept = cs.getConcept(conceptName);
+		if (concept == null) {
+			log.warn("incorrect concept name? " + conceptName);
+		}
+		return new Obs(patient, concept, encounterTime, location);
 	}
 	
 	private static final int MIN_AGE = 16;
