@@ -34,10 +34,10 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.9.4</openMRSVersion>
+		<openMRSVersion>1.9.6</openMRSVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <emrapiVersion>1.0</emrapiVersion>
-        <referencemetadataVersion>1.0-SNAPSHOT</referencemetadataVersion>
+        <referencemetadataVersion>1.0</referencemetadataVersion>
         <idgenVersion>2.6</idgenVersion>
         <providermanagementVersion>2.1</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
