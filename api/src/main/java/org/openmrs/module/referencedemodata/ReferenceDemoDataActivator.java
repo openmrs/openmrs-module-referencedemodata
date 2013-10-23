@@ -29,6 +29,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -46,6 +47,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.FormService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
@@ -286,6 +288,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		if (gp == null || (gp.getPropertyValue().equals("0"))) {
 			return;
 		}
+		createVitalsForm();
 		OpenmrsUtil.applyLogLevel(getClass().getName(), OpenmrsConstants.LOG_LEVEL_INFO);	// force the "created demo patient" below to show up
 		
 		int patientCount = Integer.parseInt(gp.getPropertyValue());
@@ -302,6 +305,20 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		// Set the global to zero so we won't create demo patients next time.
 		gp.setPropertyValue("0");
 		as.saveGlobalProperty(gp);
+    }
+
+	// A bit of a hack - see https://tickets.openmrs.org/browse/RA-264. 
+	private void createVitalsForm() {
+		FormService fs = Context.getFormService();
+		if (fs.getFormByUuid(ReferenceDemoDataConstants.VITALS_FORM_UUID) != null) {
+			return;
+		}
+		Form form = new Form();
+		form.setUuid(ReferenceDemoDataConstants.VITALS_FORM_UUID);
+		form.setName(ReferenceDemoDataConstants.VITALS_FORM_NAME);
+		form.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(ReferenceDemoDataConstants.VITALS_FORM_ENCOUNTERTYPE_UUID));
+		form.setVersion("1.0");
+		fs.saveForm(form);
     }
 
 	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
