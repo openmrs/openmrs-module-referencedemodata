@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>referencedemodata</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>pom</packaging>
 	<name>Reference Demo Data Module</name>
 	<description>Contains metadata and data required to run an instance of the reference application</description>
@@ -24,7 +24,7 @@
         <connection>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</connection>
         <developerConnection>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</developerConnection>
         <url>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</url>
-      <tag>HEAD</tag>
+      <tag>1.1</tag>
 	</scm>
 
 	<modules>
