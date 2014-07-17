@@ -13,13 +13,7 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -76,6 +70,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
 	protected Log log = LogFactory.getLog(getClass());
 	private IdentifierSourceService iss;	// So unit test can mock it.
+    private static Random ConstRand=new Random(0);
 	
 	/**
 	 * @see ModuleActivator#contextRefreshed()
@@ -525,10 +520,10 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     }
 
 	static private int randomBetween(int min, int max) {
-	    return min + (int) (Math.random() * (max-min+1));
+	    return min + (int) (ConstRand.nextDouble() * (max-min+1));
     }
 	static int randomArrayIndex(int length) {
-		return (int) (Math.random() * length);
+		return (int) (ConstRand.nextDouble() * length);
 	}
 	static int randomArrayIndex(String[] array) {
 		return randomArrayIndex(array.length);
