@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Random;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -76,6 +76,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
 	protected Log log = LogFactory.getLog(getClass());
 	private IdentifierSourceService iss;	// So unit test can mock it.
+    private static Random ConstRand=new Random(0);
 	
 	/**
 	 * @see ModuleActivator#contextRefreshed()
@@ -525,10 +526,10 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     }
 
 	static private int randomBetween(int min, int max) {
-	    return min + (int) (Math.random() * (max-min+1));
+	    return min + (int) (ConstRand.nextDouble() * (max-min+1));
     }
 	static int randomArrayIndex(int length) {
-		return (int) (Math.random() * length);
+		return (int) (ConstRand.nextDouble() * length);
 	}
 	static int randomArrayIndex(String[] array) {
 		return randomArrayIndex(array.length);
