@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,6 +79,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	protected Log log = LogFactory.getLog(getClass());
 	private IdentifierSourceService iss;	// So unit test can mock it.
     private static Random ConstRand=new Random(0);
+    
+    private Map<String, Concept> cachedConcepts = new WeakHashMap<String, Concept>();
 	
 	/**
 	 * @see ModuleActivator#contextRefreshed()
@@ -102,6 +106,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		setupUsersAndProviders();
         createSchedulerUserAndGPs();
         createDemoPatients();
+        
+        cachedConcepts.clear();
 	}
 	
 	private void installMDSPackages() {
@@ -497,8 +503,18 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	
 	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter, Date encounterTime,
 	                           Location location, ObsService os, ConceptService cs) {
-		return createCodedObs(conceptName, cs.getConcept(codedConceptName), patient, encounter, encounterTime, location, os, cs);
+		return createCodedObs(conceptName, findConcept(codedConceptName, cs), patient, encounter, encounterTime, location, os, cs);
 	}
+
+	private Concept findConcept(String conceptName, ConceptService cs) {
+		if (cachedConcepts.containsKey(conceptName)) {
+			return cachedConcepts.get(conceptName);
+		} else {
+			Concept concept = cs.getConcept(conceptName);
+			cachedConcepts.put(conceptName, concept);
+			return concept;
+		}
+    }
 	
 	private Obs createCodedObs(String conceptName, Concept concept, Patient patient, Encounter encounter,
                                Date encounterTime, Location location, ObsService os, ConceptService cs) {
@@ -510,7 +526,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     }
 
 	private Obs createBasicObs(String conceptName, Patient patient, Date encounterTime, Location location, ConceptService cs) {
-		Concept concept = cs.getConcept(conceptName);
+		Concept concept = findConcept(conceptName, cs);
 		if (concept == null) {
 			log.warn("incorrect concept name? " + conceptName);
 		}
