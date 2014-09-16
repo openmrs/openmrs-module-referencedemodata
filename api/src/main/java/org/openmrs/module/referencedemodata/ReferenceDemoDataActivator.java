@@ -301,6 +301,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
 			log.info("created demo patient: " + patient.getPatientIdentifier() + " " + patient.getGivenName() + " " + patient.getFamilyName());
 			Context.flushSession();
+			Context.clearSession();
 		}
 
 		// Set the global to zero so we won't create demo patients next time.

@@ -34,7 +34,7 @@
 	
 	<properties>
 		<openMRSVersion>1.9.6</openMRSVersion>
-        <metadatasharingVersion>1.1.8</metadatasharingVersion>
+        <metadatasharingVersion>1.1.9-SNAPSHOT</metadatasharingVersion>
         <emrapiVersion>1.0</emrapiVersion>
         <referencemetadataVersion>1.0</referencemetadataVersion>
         <idgenVersion>2.6</idgenVersion>
