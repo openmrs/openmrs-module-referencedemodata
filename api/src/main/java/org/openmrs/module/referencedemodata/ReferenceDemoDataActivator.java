@@ -155,6 +155,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Smith");
 		Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Smith");
 		Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Smith");
+        Person sysadminPerson = setupPerson(ReferenceDemoDataConstants.SYSADMIN_PERSON_UUID, "F", "Julie", "Smith");
 
 		UserService userService = Context.getUserService();
 		Role clerkRole = userService.getRoleByUuid(ReferenceDemoDataConstants.CLERK_ROLE_UUID);
@@ -164,6 +165,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
 		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
 		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
+        setupUser(ReferenceDemoDataConstants.SYSADMIN_USER_UUID, "sysadmin", sysadminPerson, "Sysadmin123",
+                userService.getRole("Application: Administers System"),
+                userService.getRole("Application: Manages Atlas"),
+                userService.getRole("Application: Configures Metadata"),
+                userService.getRole("Application: Configures Forms") );
 
 		ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
 
@@ -189,7 +195,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		user.setPerson(person);
 
 		user.getRoles().clear();
-		user.getRoles().addAll(Arrays.asList(roles));
+        for (Role role : roles) {
+            // we try to grant some module-defined roles without first verifying those modules/roles exist.
+            if (role != null) {
+                user.addRole(role);
+            }
+        }
 		user = userService.saveUser(user, password);
 
 		return user;

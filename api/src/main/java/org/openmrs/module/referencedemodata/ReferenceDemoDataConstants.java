@@ -18,12 +18,14 @@ public class ReferenceDemoDataConstants {
 	public static final String CLERK_PERSON_UUID = "007037a0-0500-11e3-8ffd-0800200c9a66";
 	public static final String NURSE_PERSON_UUID = "9bed23d0-0502-11e3-8ffd-0800200c9a66";
 	public static final String DOCTOR_PERSON_UUID = "af7c3340-0503-11e3-8ffd-0800200c9a66";
+    public static final String SYSADMIN_PERSON_UUID = "b7009090-4015-11e4-8e9b-2939a1809c8e";
 	public static final String CLERK_PROVIDER_UUID = "043d8490-0506-11e3-8ffd-0800200c9a66";
 	public static final String NURSE_PROVIDER_UUID = "bfee3950-0506-11e3-8ffd-0800200c9a66";
 	public static final String DOCTOR_PROVIDER_UUID = "e9489e80-0506-11e3-8ffd-0800200c9a66";
 	public static final String CLERK_USER_UUID = "4882dd60-0508-11e3-8ffd-0800200c9a66";
 	public static final String NURSE_USER_UUID = "564b2790-0508-11e3-8ffd-0800200c9a66";
 	public static final String DOCTOR_USER_UUID = "67bfd7f0-0508-11e3-8ffd-0800200c9a66";
+	public static final String SYSADMIN_USER_UUID = "8295e796-4016-11e4-8e9b-2939a1809c8e";
 	public static final String NURSE_ROLE_UUID = "9d92d41e-e0f8-4e8e-8f1d-cf43eefca86b";
 	public static final String CLERK_ROLE_UUID = "59dd27aa-887a-468d-9793-af0b490ec7b9";
 	public static final String DOCTOR_ROLE_UUID = "339cafe1-acd6-4bd5-8d28-15cc493d2607";
