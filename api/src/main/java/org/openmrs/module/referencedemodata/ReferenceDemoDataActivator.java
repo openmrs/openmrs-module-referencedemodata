@@ -13,16 +13,6 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.WeakHashMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,6 +60,15 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.WeakHashMap;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -158,18 +157,15 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         Person sysadminPerson = setupPerson(ReferenceDemoDataConstants.SYSADMIN_PERSON_UUID, "F", "Julie", "Smith");
 
 		UserService userService = Context.getUserService();
-		Role clerkRole = userService.getRoleByUuid(ReferenceDemoDataConstants.CLERK_ROLE_UUID);
-		Role nurseRole = userService.getRoleByUuid(ReferenceDemoDataConstants.NURSE_ROLE_UUID);
-		Role doctorRole = userService.getRoleByUuid(ReferenceDemoDataConstants.DOCTOR_ROLE_UUID);
+		Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
+		Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
+		Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
+		Role sysadminRole = userService.getRole(ReferenceDemoDataConstants.SYSADMIN_ROLE);
 
 		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
 		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
 		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
-        setupUser(ReferenceDemoDataConstants.SYSADMIN_USER_UUID, "sysadmin", sysadminPerson, "Sysadmin123",
-                userService.getRole("Application: Administers System"),
-                userService.getRole("Application: Manages Atlas"),
-                userService.getRole("Application: Configures Metadata"),
-                userService.getRole("Application: Configures Forms") );
+        setupUser(ReferenceDemoDataConstants.SYSADMIN_USER_UUID, "sysadmin", sysadminPerson, "Sysadmin123", sysadminRole);
 
 		ProviderManagementService providerManagementService = Context.getService(ProviderManagementService.class);
 
