@@ -18,9 +18,13 @@
 	<!-- Required Modules -->
 	<require_modules>
 																											
-		<require_module version="${metadatasharingVersion}">
-			org.openmrs.module.metadatasharing
+		<require_module version="${metadatadeployVersion}">
+			org.openmrs.module.metadatadeploy
 		</require_module>
+
+        <require_module version="${metadatasharingVersion}">
+            org.openmrs.module.metadatasharing
+        </require_module>
 
         <require_module version="1.0">
             org.openmrs.module.emrapi
