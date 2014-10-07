@@ -13,17 +13,6 @@
  */
 package org.openmrs.module.referencedemodata;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.Properties;
-
 import org.hibernate.cfg.Environment;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -46,12 +35,23 @@ import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.idgen.validator.LuhnMod30IdentifierValidator;
 import org.openmrs.module.referencemetadata.ReferenceMetadataActivator;
 import org.openmrs.module.referencemetadata.ReferenceMetadataConstants;
+import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 @SkipBaseSetup
-public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
+public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTest {
 
 	@Autowired
 	UserService userService;
@@ -173,7 +173,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
     	mockIdGenerator.setName(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_NAME);
     	mockIdGenerator.setUuid(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_UUID);
     	mockIdGenerator.setBaseCharacterSet(new LuhnMod30IdentifierValidator().getBaseCharacters());
-    	mockIdGenerator.setLength(6);
+    	mockIdGenerator.setMinLength(6);
     	mockIdGenerator.setFirstIdentifierBase("10000");
 
         IdentifierSourceService mockIss = Mockito.mock(IdentifierSourceService.class);
