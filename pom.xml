@@ -21,10 +21,10 @@
 	</organization>
 
 	<scm>
-        <connection>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</connection>
-        <developerConnection>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</developerConnection>
-        <url>scm:git:https://github.com/openmrs/openmrs-module-referencedemodata</url>
-      <tag>HEAD</tag>
+        <connection>scm:git:git@github.com:openmrs/openmrs-module-referencedemodata.git</connection>
+        <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-referencedemodata.git</developerConnection>
+        <url>https://github.com/openmrs/openmrs-module-referencedemodata.git</url>
+        <tag>HEAD</tag>
 	</scm>
 
 	<modules>
@@ -36,7 +36,7 @@
 		<openMRSVersion>1.9.7</openMRSVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <emrapiVersion>1.0</emrapiVersion>
-        <referencemetadataVersion>1.0</referencemetadataVersion>
+        <referencemetadataVersion>2.1.1</referencemetadataVersion>
         <idgenVersion>2.6</idgenVersion>
         <providermanagementVersion>2.1</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
