@@ -37,12 +37,6 @@
         <distro.groupId>org.openmrs.distro</distro.groupId>
         <distro.artifactId>referenceapplication</distro.artifactId>
         <distro.version>2.2-SNAPSHOT</distro.version>
-        <metadatadeployVersion>1.2</metadatadeployVersion>
-        <metadatasharingVersion>1.1.8</metadatasharingVersion>
-        <emrapiVersion>1.0</emrapiVersion>
-        <referencemetadataVersion>2.1.1</referencemetadataVersion>
-        <idgenVersion>2.9.1</idgenVersion>
-        <providermanagementVersion>2.1</providermanagementVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -95,6 +89,16 @@
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>emrapi-api</artifactId>
+        </dependency>
+		
+		<dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api-1.9</artifactId>
+        </dependency>
+		
+		<dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api-1.10</artifactId>
         </dependency>
 
         <dependency>
