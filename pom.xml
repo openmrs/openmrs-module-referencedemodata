@@ -38,6 +38,8 @@
         <distro.artifactId>referenceapplication</distro.artifactId>
         <distro.version>LATEST</distro.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <metadatadeployVersion>1.4</metadatadeployVersion>
+        <appointmentschedulingVersion>1.2</appointmentschedulingVersion>
 	</properties>
 
     <dependencyManagement>
@@ -132,6 +134,18 @@
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>serialization.xstream-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>metadatadeploy-api</artifactId>
+            <version>${metadatadeployVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appointmentscheduling-api</artifactId>
+            <version>${appointmentschedulingVersion}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

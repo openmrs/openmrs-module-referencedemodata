@@ -37,6 +37,14 @@
         <require_module version="2.0">
             org.openmrs.module.providermanagement
         </require_module>
+
+        <require_module version="${metadatadeployVersion}">
+            org.openmrs.module.metadatadeploy
+        </require_module>
+
+        <require_module version="${appointmentschedulingVersion}">
+            org.openmrs.module.appointmentscheduling
+        </require_module>
 			
 	</require_modules>
 	<!-- / Required Modules -->
