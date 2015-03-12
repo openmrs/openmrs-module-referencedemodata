@@ -9,6 +9,11 @@
  */
 package org.openmrs.module.referencedemodata.bundle;
 
+import static org.openmrs.module.metadatadeploy.bundle.CoreConstructors.role;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import org.openmrs.module.appointmentscheduling.AppointmentType;
 import org.openmrs.module.metadatadeploy.bundle.AbstractMetadataBundle;
 import org.springframework.stereotype.Component;
@@ -18,6 +23,11 @@ public class AppointmentMetadata extends AbstractMetadataBundle {
 	
 	@Override
 	public void install() {
+		installAppointmentTypes();
+		installAppointmentRoles();
+	}
+	
+	private void installAppointmentTypes() {
 		install(appointmentType("Dermatology", 10, "4da187c6-c436-11e4-a470-82b0ea87e2d8"));
 		install(appointmentType("Dermatology (New Patient)", 20, "5ab6d8a8-c436-11e4-a470-82b0ea87e2d8"));
 		install(appointmentType("General Medicine", 15, "7dd9ac8e-c436-11e4-a470-82b0ea87e2d8"));
@@ -49,5 +59,36 @@ public class AppointmentMetadata extends AbstractMetadataBundle {
 		aType.setUuid(uuid);
 		
 		return aType;
+	}
+	
+	private void installAppointmentRoles() {
+		install(role("Application Role: scheduleAdministrator",
+		    "Gives user the ability to manage provider schedules and service types", null,
+		    asSet("App: appointmentschedulingui.home", "App: appointmentschedulingui.scheduleAdmin")));
+		install(role(
+		    "Application Role: scheduleManager",
+		    "Gives user access to all apps and tasks within the Appointment Scheduling UI module",
+		    null,
+		    asSet("App: appointmentschedulingui.home", "App: appointmentschedulingui.scheduleAdmin",
+		        "App: appointmentschedulingui.viewAppointments", "Task: appointmentschedulingui.bookAppointments",
+		        "Task: appointmentschedulingui.overbookAppointments", "Task: appointmentschedulingui.viewConfidential")));
+		install(role(
+		    "Application Role: scheduler",
+		    "Gives user the ability to view and schedule appointments within the appointmentschedulingui module "
+		            + "(but not to administer provider schedules or to overbook appointments)",
+		    null,
+		    asSet("App: appointmentschedulingui.home", "App: appointmentschedulingui.viewAppointments",
+		        "Task: appointmentschedulingui.bookAppointments", "Task: appointmentschedulingui.viewConfidential")));
+		install(role("Application Role: scheduleViewer",
+		    "Gives user the ability to view appointment schedules (but not to modify them)", null,
+		    asSet("App: appointmentschedulingui.home", "App: appointmentschedulingui.viewAppointments")));
+	}
+	
+	private <T> Set<T> asSet(T... items) {
+		Set<T> set = new HashSet<T>(items.length);
+		for (T item : items) {
+			set.add(item);
+		}
+		return set;
 	}
 }
