@@ -14,7 +14,7 @@ import org.openmrs.module.metadatadeploy.bundle.AbstractMetadataBundle;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AppointmentTypeMetadata extends AbstractMetadataBundle {
+public class AppointmentMetadata extends AbstractMetadataBundle {
 	
 	@Override
 	public void install() {
