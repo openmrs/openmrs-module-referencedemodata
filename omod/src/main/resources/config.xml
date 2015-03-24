@@ -26,7 +26,7 @@
             org.openmrs.module.metadatasharing
         </require_module>
 
-        <require_module version="1.0">
+        <require_module version="${emrapiVersion}">
             org.openmrs.module.emrapi
         </require_module>
 
