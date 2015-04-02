@@ -39,7 +39,6 @@
         <distro.version>LATEST</distro.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metadatadeployVersion>1.4</metadatadeployVersion>
-        <appointmentschedulingVersion>1.2</appointmentschedulingVersion>
         <emrapiVersion>1.5</emrapiVersion>
         <referencemetadataVersion>2.2</referencemetadataVersion>
         <providermanagementVersion>2.0</providermanagementVersion>
@@ -176,12 +175,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>metadatadeploy-api</artifactId>
             <version>${metadatadeployVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>appointmentscheduling-api</artifactId>
-            <version>${appointmentschedulingVersion}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

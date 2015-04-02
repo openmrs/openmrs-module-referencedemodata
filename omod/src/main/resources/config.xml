@@ -42,10 +42,6 @@
             org.openmrs.module.metadatadeploy
         </require_module>
 
-        <require_module version="${appointmentschedulingVersion}">
-            org.openmrs.module.appointmentscheduling
-        </require_module>
-
         <require_module version="${idgenVersion}">
             org.openmrs.module.idgen
         </require_module>

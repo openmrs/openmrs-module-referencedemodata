@@ -53,10 +53,8 @@ import org.openmrs.module.ModuleException;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
-import org.openmrs.module.metadatadeploy.api.MetadataDeployService;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
-import org.openmrs.module.referencedemodata.bundle.AppointmentMetadata;
 import org.openmrs.module.referencemetadata.ReferenceMetadataConstants;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -107,8 +105,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		setupUsersAndProviders();
         createSchedulerUserAndGPs();
         createDemoPatients();
-        Collection bundles = Context.getRegisteredComponents(AppointmentMetadata.class);
-        Context.getService(MetadataDeployService.class).installBundles(bundles);
         
         cachedConcepts.clear();
 	}
