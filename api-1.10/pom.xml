@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.openmrs.module</groupId>
+		<artifactId>referencedemodata</artifactId>
+		<version>1.4.2-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>referencedemodata-api-1.10</artifactId>
+	<packaging>jar</packaging>
+	<name>Reference Demo Data Module API 1.10</name>
+	<description>API 1.10 project for Reference Demo Data Module</description>
+
+	<properties>
+		<openmrs.1.10.api.version>1.10.2</openmrs.1.10.api.version>
+	</properties>
+
+	<dependencies>
+		
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>${project.parent.artifactId}-api</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.test</groupId>
+			<artifactId>openmrs-test</artifactId>
+			<version>${openmrs.1.10.api.version}</version><!--$NO-MVN-MAN-VER$-->
+			<type>pom</type>
+		</dependency>
+
+	</dependencies>
+</project>

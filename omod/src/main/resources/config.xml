@@ -52,5 +52,18 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ReferenceDemoDataActivator</activator>
 
+	<!-- Conditional Resources -->
+    <conditionalResources>
+    	<conditionalResource>
+            <path>/lib/referencedemodata-api-1.10-${project.parent.version}.jar</path>
+            <openmrsVersion>1.10.2 - 1.12.*</openmrsVersion>
+        </conditionalResource>
+        <conditionalResource>
+            <path>/lib/referencedemodata-api-2.0-${project.parent.version}.jar</path>
+            <openmrsVersion>2.0.*</openmrsVersion>
+        </conditionalResource>
+    </conditionalResources>
+    <!-- / Conditional Resources -->
+    
 </module>
 

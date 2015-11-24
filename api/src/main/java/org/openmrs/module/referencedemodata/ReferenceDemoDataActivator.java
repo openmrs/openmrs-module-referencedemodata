@@ -13,6 +13,15 @@
  */
 package org.openmrs.module.referencedemodata;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.WeakHashMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,15 +70,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.WeakHashMap;
-
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
@@ -80,7 +80,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     private static Random ConstRand=new Random(0);
     
     private Map<String, Concept> cachedConcepts = new WeakHashMap<String, Concept>();
-	
+
 	/**
 	 * @see ModuleActivator#contextRefreshed()
 	 */
@@ -121,10 +121,13 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	}
 	
 	private void linkAdminAccountToAProviderIfNecessary() {
+		
+		PrivilegeCompatibility privilegeCompatibility = Context.getRegisteredComponents(PrivilegeCompatibility.class).get(0);
+
 		try {
 			//If unknown provider isn't yet linked to admin, then do it
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_PROVIDERS);
-			Context.addProxyPrivilege(PrivilegeConstants.VIEW_PERSONS);
+			Context.addProxyPrivilege(privilegeCompatibility.GET_PROVIDERS());
+			Context.addProxyPrivilege(privilegeCompatibility.GET_PERSONS());
 			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_PROVIDERS);
 			ProviderService ps = Context.getProviderService();
 			Person adminPerson = Context.getPersonService().getPerson(1);
@@ -144,8 +147,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			}
 		}
 		finally {
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_PROVIDERS);
-			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_PERSONS);
+			Context.removeProxyPrivilege(privilegeCompatibility.GET_PROVIDERS());
+			Context.removeProxyPrivilege(privilegeCompatibility.GET_PERSONS());
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PROVIDERS);
 		}
 	}
@@ -197,7 +200,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
                 user.addRole(role);
             }
         }
-		user = userService.saveUser(user, password);
+		user = Context.getRegisteredComponents(UserServiceCompatibility.class).get(0).saveUser(user, password);
 
 		return user;
 	}
