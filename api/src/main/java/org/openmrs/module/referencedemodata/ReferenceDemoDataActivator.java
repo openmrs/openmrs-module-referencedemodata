@@ -59,6 +59,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.ModuleException;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
@@ -245,7 +246,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			}
 		}
 
-		as.saveGlobalProperty(new GlobalProperty("layout.address.format", "<org.openmrs.layout.web.address.AddressTemplate>\n" +
+		GlobalProperty gp = new GlobalProperty("layout.address.format", "<org.openmrs.layout.address.AddressTemplate>\n" +
 				"     <nameMappings class=\"properties\">\n" +
 				"       <property name=\"postalCode\" value=\"Location.postalCode\"/>\n" +
 				"       <property name=\"address2\" value=\"Location.address2\"/>\n" +
@@ -267,13 +268,41 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				"       <string>address2</string>\n" +
 				"       <string>cityVillage stateProvince country postalCode</string>\n" +
 				"     </lineByLineFormat>\n" +
-				"   </org.openmrs.layout.web.address.AddressTemplate>"));
+				"   </org.openmrs.layout.address.AddressTemplate>");
 		
+		//versions before platform 2.0 use a package in web
+		if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, "2.*")) {
+			gp = new GlobalProperty("layout.address.format", "<org.openmrs.layout.web.address.AddressTemplate>\n" +
+					"     <nameMappings class=\"properties\">\n" +
+					"       <property name=\"postalCode\" value=\"Location.postalCode\"/>\n" +
+					"       <property name=\"address2\" value=\"Location.address2\"/>\n" +
+					"       <property name=\"address1\" value=\"Location.address1\"/>\n" +
+					"       <property name=\"country\" value=\"Location.country\"/>\n" +
+					"       <property name=\"stateProvince\" value=\"Location.stateProvince\"/>\n" +
+					"       <property name=\"cityVillage\" value=\"Location.cityVillage\"/>\n" +
+					"     </nameMappings>\n" +
+					"     <sizeMappings class=\"properties\">\n" +
+					"       <property name=\"postalCode\" value=\"10\"/>\n" +
+					"       <property name=\"address2\" value=\"40\"/>\n" +
+					"       <property name=\"address1\" value=\"40\"/>\n" +
+					"       <property name=\"country\" value=\"10\"/>\n" +
+					"       <property name=\"stateProvince\" value=\"10\"/>\n" +
+					"       <property name=\"cityVillage\" value=\"10\"/>\n" +
+					"     </sizeMappings>\n" +
+					"     <lineByLineFormat>\n" +
+					"       <string>address1</string>\n" +
+					"       <string>address2</string>\n" +
+					"       <string>cityVillage stateProvince country postalCode</string>\n" +
+					"     </lineByLineFormat>\n" +
+					"   </org.openmrs.layout.web.address.AddressTemplate>");
+		}
 		
+		as.saveGlobalProperty(gp);
+				
 		//Hack to address RA-631 - clear out bogus default regex for patient name validation
 		//and then blanks out the global property if it contains the bogus entry set by platform
 		//TODO this can be removed once the 1.11.3 platform is released with the fix
-		GlobalProperty gp = as.getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
+		gp = as.getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_NAME_REGEX);
 		if (gp != null && "^[a-zA-Z \\-]+$".equals(gp.getValue())) {
 			gp.setPropertyValue(null);
 			as.saveGlobalProperty(gp);
