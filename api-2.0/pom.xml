@@ -14,7 +14,7 @@
 	<description>API 2.0 project for Reference Demo Data Module</description>
 
 	<properties>
-		<openmrs.2.0.api.version>2.0.0-SNAPSHOT</openmrs.2.0.api.version>
+		<openmrs.2.0.api.version>2.0.0-beta</openmrs.2.0.api.version>
 	</properties>
 
 	<dependencies>
