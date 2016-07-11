@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.referencedemodata;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,6 +64,8 @@ import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.utils.MetadataUtil;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
+import org.openmrs.module.metadatadeploy.api.MetadataDeployService;
+import org.openmrs.module.metadatadeploy.bundle.MetadataBundle;
 import org.openmrs.module.providermanagement.ProviderRole;
 import org.openmrs.module.providermanagement.api.ProviderManagementService;
 import org.openmrs.module.referencemetadata.ReferenceMetadataConstants;
@@ -105,9 +108,15 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		setRequiredGlobalProperties();
 		setupUsersAndProviders();
         createSchedulerUserAndGPs();
+        createAppointmentTypes();
         createDemoPatients();
         
         cachedConcepts.clear();
+	}
+	
+	private void createAppointmentTypes() {
+		MetadataBundle bundle = Context.getRegisteredComponent("appointmentschedulingMetadata", MetadataBundle.class);
+		Context.getService(MetadataDeployService.class).installBundles(Arrays.asList(bundle));
 	}
 	
 	private void installMDSPackages() {
