@@ -498,17 +498,19 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	    visitNote.addObs(obsGroup);
 
 	    String certainty = flipACoin() ? "Presumed diagnosis" : "Confirmed diagnosis";
-	    Obs obs = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_CERTAINTY, certainty, patient, visitNote, encounterTime, location, os, cs);
-	    obsGroup.addGroupMember(obs);
-
+	    Obs obs1 = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_CERTAINTY, certainty, patient, visitNote, encounterTime, location, os, cs);
+	    
 	    // TODO 5% of diagnoses should be non-coded.
 	    List<Concept> allDiagnoses = cs.getConceptsByClass(cs.getConceptClassByName("Diagnosis"));
-	    obs = createCodedObs("DIAGNOSIS LIST", randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime, location, os, cs);
-	    obsGroup.addGroupMember(obs);
+	    Obs obs2 = createCodedObs("DIAGNOSIS LIST", randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime, location, os, cs);
 	    
 	    String order = primary ? EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_PRIMARY : EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_SECONDARY;
-	    obs = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER, order, patient, visitNote, encounterTime, location, os, cs);
-	    obsGroup.addGroupMember(obs);
+	    Obs obs3 = createCodedObs(EmrApiConstants.CONCEPT_CODE_DIAGNOSIS_ORDER, order, patient, visitNote, encounterTime, location, os, cs);
+	    
+	    obsGroup.addGroupMember(obs1);
+	    obsGroup.addGroupMember(obs2);
+	    obsGroup.addGroupMember(obs3);
+	    os.saveObs(obsGroup, "testing");
     }
 
 	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime) {
@@ -547,16 +549,18 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
                                   ObsService os, ConceptService cs) {
 		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
 		obs.setValueNumeric((double) randomBetween(min, max));
-		os.saveObs(obs, null);
 		encounter.addObs(obs);
+		os.saveObs(obs, null);
+		
     }
 	
 	private void createTextObs(String conceptName, String text, Patient patient, Encounter encounter, Date encounterTime,
 	                           Location location, ObsService os, ConceptService cs) {
 		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
 		obs.setValueText(text);
-		os.saveObs(obs, null);
 		encounter.addObs(obs);
+		os.saveObs(obs, null);
+		
 	}
 	
 	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter, Date encounterTime,
@@ -578,8 +582,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
                                Date encounterTime, Location location, ObsService os, ConceptService cs) {
 		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
 		obs.setValueCoded(concept);
-		os.saveObs(obs, null);
 		encounter.addObs(obs);
+		os.saveObs(obs, null);
 		return obs;
     }
 
