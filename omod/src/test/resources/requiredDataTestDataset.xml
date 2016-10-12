@@ -35,5 +35,14 @@
     <concept_datatype concept_datatype_id="13" name="Complex" hl7_abbreviation="ED"
                       description="Complex value.  Analogous to HL7 Embedded Datatype" creator="1"
                       date_created="2008-06-11 13:22:00.0" retired="false" uuid="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/>
+                      
+    <privilege privilege="App: appointmentschedulingui.home" description="This is a test privilege" uuid="a239d066-51e6-647c-9d4b-cb575ef97f0f"/>
+    <privilege privilege="App: appointmentschedulingui.viewAppointments" description="This is a test privilege" uuid="c259d066-51e6-647c-9d4b-cb575ef97f0f"/>
+    <privilege privilege="App: appointmentschedulingui.providerSchedules" description="This is a test privilege" uuid="c359d066-51e6-647c-9d4b-cb675ef97f0f"/>
+    <privilege privilege="App: appointmentschedulingui.appointmentTypes" description="This is a test privilege" uuid="e359d066-51e6-456c-9d4b-cb675ef97f0f"/>
+    <privilege privilege="Task: appointmentschedulingui.requestAppointments" description="This is a test privilege" uuid="b249d066-51e6-647c-9d4b-cb575ef97f0f"/>
+    <privilege privilege="Task: appointmentschedulingui.bookAppointments" description="This is a test privilege" uuid="d269d066-51e6-647c-9d4b-cb575ef97f0f"/>
+    <privilege privilege="Task: appointmentschedulingui.overbookAppointments" description="This is a test privilege" uuid="e279d066-51e6-647c-9d4b-cb575ef97f0f"/>
+    <privilege privilege="Task: appointmentschedulingui.viewConfidential" description="This is a test privilege" uuid="f289d066-51e6-647c-9d4b-cb575ef97f0f"/>
 
 </dataset>

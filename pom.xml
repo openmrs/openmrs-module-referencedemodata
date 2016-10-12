@@ -35,41 +35,29 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.10.2</openMRSVersion>
-        <distro.groupId>org.openmrs.distro</distro.groupId>
-        <distro.artifactId>referenceapplication</distro.artifactId>
-        <distro.version>LATEST</distro.version>
+		<openMRSVersion>1.12.0</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <metadatadeployVersion>1.4</metadatadeployVersion>
-        <emrapiVersion>1.5</emrapiVersion>
-        <referencemetadataVersion>2.2</referencemetadataVersion>
-        <providermanagementVersion>2.0</providermanagementVersion>
-        <metadatasharingVersion>1.1.9</metadatasharingVersion>
-        <reportingVersion>0.9.3</reportingVersion>
-        <calculationVersion>1.1</calculationVersion>
-        <idgenVersion>3.2</idgenVersion>
-        <serializationVersion>0.2.7</serializationVersion>
-        <dataexchangeVersion>1.3.1</dataexchangeVersion>
-        <appointmentschedulingVersion>1.3</appointmentschedulingVersion>
+        <metadatadeployVersion>1.7</metadatadeployVersion>
+        <emrapiVersion>1.18</emrapiVersion>
+        <referencemetadataVersion>2.5-SNAPSHOT</referencemetadataVersion>
+        <providermanagementVersion>2.5.0</providermanagementVersion>
+        <metadatasharingVersion>1.2.2</metadatasharingVersion>
+        <reportingVersion>0.10.4</reportingVersion>
+        <calculationVersion>1.2</calculationVersion>
+        <idgenVersion>4.4.0</idgenVersion>
+        <serializationVersion>0.2.12</serializationVersion>
+        <dataexchangeVersion>1.3.2</dataexchangeVersion>
+        <appointmentschedulingVersion>1.7.0</appointmentschedulingVersion>
+        <appointmentschedulinguiVersion>1.4.0</appointmentschedulinguiVersion>
+        <htmlformentryVersion>3.3.0</htmlformentryVersion>
 	</properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>${distro.groupId}</groupId>
-                <artifactId>${distro.artifactId}</artifactId>
-                <version>${distro.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 	<dependencies>
         <dependency>
             <groupId>org.openmrs.api</groupId>
             <artifactId>openmrs-api</artifactId>
             <version>${openMRSVersion}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -77,6 +65,7 @@
             <artifactId>openmrs-api</artifactId>
             <version>${openMRSVersion}</version>
             <classifier>tests</classifier>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -84,6 +73,7 @@
 			<artifactId>openmrs-web</artifactId>
             <version>${openMRSVersion}</version>
 			<type>jar</type>
+			<scope>provided</scope>
 		</dependency>
 
         <dependency>
@@ -91,6 +81,7 @@
             <artifactId>openmrs-test</artifactId>
             <version>${openMRSVersion}</version>
             <type>pom</type>
+            <scope>test</scope>
         </dependency>
 						
         <dependency>
@@ -113,17 +104,24 @@
             <version>${emrapiVersion}</version>
             <scope>provided</scope>
         </dependency>
-		
-		<dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>emrapi-api-1.9</artifactId>
-            <version>${emrapiVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-		
+
 		<dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>emrapi-api-1.10</artifactId>
+            <version>${emrapiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api-1.11</artifactId>
+            <version>${emrapiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api-1.12</artifactId>
             <version>${emrapiVersion}</version>
             <scope>provided</scope>
         </dependency>
@@ -176,6 +174,24 @@
         </dependency>
         <dependency>
             <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api-1.9</artifactId>
+            <version>${serializationVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api-1.10</artifactId>
+            <version>${serializationVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api-2.0</artifactId>
+            <version>${serializationVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
             <artifactId>metadatadeploy-api</artifactId>
             <version>${metadatadeployVersion}</version>
             <scope>provided</scope>
@@ -186,6 +202,24 @@
 			<version>${appointmentschedulingVersion}</version>
 			<scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+			<artifactId>appointmentschedulingui-api</artifactId>
+			<version>${appointmentschedulinguiVersion}</version>
+			<scope>test</scope>
+        </dependency>
+        <dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>htmlformentry-api</artifactId>
+			<version>${htmlformentryVersion}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>htmlformentry-api-1.10</artifactId>
+			<version>${htmlformentryVersion}</version>
+			<scope>test</scope>
+		</dependency>
     </dependencies>
 
 	<build>
