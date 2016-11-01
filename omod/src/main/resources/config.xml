@@ -38,10 +38,6 @@
             org.openmrs.module.providermanagement
         </require_module>
 
-        <require_module version="${metadatadeployVersion}">
-            org.openmrs.module.metadatadeploy
-        </require_module>
-
         <require_module version="${idgenVersion}">
             org.openmrs.module.idgen
         </require_module>
