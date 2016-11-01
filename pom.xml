@@ -39,7 +39,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <metadatadeployVersion>1.7</metadatadeployVersion>
         <emrapiVersion>1.18</emrapiVersion>
-        <referencemetadataVersion>2.5-SNAPSHOT</referencemetadataVersion>
+        <referencemetadataVersion>2.5.0</referencemetadataVersion>
         <providermanagementVersion>2.5.0</providermanagementVersion>
         <metadatasharingVersion>1.2.2</metadatasharingVersion>
         <reportingVersion>0.10.4</reportingVersion>
