@@ -18,7 +18,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.springframework.stereotype.Component;
 
 @Component("referencedemodata.PrivilegeCompatibility")
-@OpenmrsProfile(openmrsPlatformVersion = "2.0.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.*")
 public class PrivilegeCompatibility2_0 implements PrivilegeCompatibility {
 
 	@Override

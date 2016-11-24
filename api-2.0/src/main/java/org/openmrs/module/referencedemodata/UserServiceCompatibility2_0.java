@@ -19,7 +19,7 @@ import org.openmrs.api.context.Context;
 import org.springframework.stereotype.Component;
 
 @Component("referencedemodata.UserServiceCompatibility")
-@OpenmrsProfile(openmrsPlatformVersion = "2.0.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.*")
 public class UserServiceCompatibility2_0 implements UserServiceCompatibility {
 
 	@Override

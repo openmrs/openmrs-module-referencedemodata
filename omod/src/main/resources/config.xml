@@ -56,7 +56,7 @@
         </conditionalResource>
         <conditionalResource>
             <path>/lib/referencedemodata-api-2.0-${project.parent.version}.jar</path>
-            <openmrsVersion>2.0.*</openmrsVersion>
+            <openmrsVersion>2.*</openmrsVersion>
         </conditionalResource>
     </conditionalResources>
     <!-- / Conditional Resources -->
