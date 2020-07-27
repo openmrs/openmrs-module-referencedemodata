@@ -43,7 +43,7 @@ public class AppointmentMetadata extends AbstractMetadataBundle {
 		install(appointmentType("Surgery", 10, "3f5a8ca2-c437-11e4-a470-82b0ea87e2d8"));
 		install(appointmentType("Surgery (New Patient)", 20, "452c596c-c437-11e4-a470-82b0ea87e2d8"));
 		install(appointmentType("Urology", 20, "4d3b6396-c437-11e4-a470-82b0ea87e2d8"));
-		install(appointmentType("Urology (New Patient)", 20, "4d85dda4-c437-11e4-a470-82b0ea87e2d8e"));
+		install(appointmentType("Urology (New Patient)", 20, "4d85dda4-c437-11e4-a470-82b0ea87e2d8"));
 	}
 	
 	private static AppointmentType appointmentType(String name, Integer duration, String uuid) {
