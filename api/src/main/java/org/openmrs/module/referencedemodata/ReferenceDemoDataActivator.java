@@ -540,8 +540,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         createNumericObs("Temperature (C)", 25, 43, patient, encounter, encounterTime, location, os, cs);
         createNumericObs("Pulse", 0, 230, patient, encounter, encounterTime, location, os, cs);
         createNumericObs("Respiratory rate", 5, 100, patient, encounter, encounterTime, location, os, cs);
-        createNumericObs("SYSTOLIC BLOOD PRESSURE", 0, 250, patient, encounter, encounterTime, location, os, cs);
-        createNumericObs("DIASTOLIC BLOOD PRESSURE", 0, 150, patient, encounter, encounterTime, location, os, cs);
+		createNumericObs("Systolic blood pressure", 0, 250, patient, encounter, encounterTime, location, os, cs);
+		createNumericObs("Diastolic blood pressure", 0, 150, patient, encounter, encounterTime, location, os, cs);
         createNumericObs("Blood oxygen saturation", 0, 100, patient, encounter, encounterTime, location, os, cs);
 	}
 
