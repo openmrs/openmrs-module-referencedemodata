@@ -137,23 +137,17 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 
 	private void setupUsersAndProvidersIfNecessary() {
 		UserService userService = Context.getUserService();
-		if (userService.getUserByUuid(ReferenceDemoDataConstants.CLERK_USER_UUID) == null) {
-			Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Clerk");
-			Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
-			setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
-		}
-		
-		if (userService.getUserByUuid(ReferenceDemoDataConstants.NURSE_PERSON_UUID) == null) {
-			Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Nurse");
-			Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
-			setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
-		}
-		
-		if (userService.getUserByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID) == null) {
-			Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Doctor");
-			Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
-			setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
-		}
+		Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Clerk");
+		Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
+		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
+	
+		Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Nurse");
+		Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
+		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
+	
+		Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Doctor");
+		Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
+		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
 	}
 
 	private void setupUser(String uuid, String username, Person person, String password, Role... roles) {
@@ -177,7 +171,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
             }
         }
 		
-		Context.getUserService().createUser(user, password);
+		if (user.getId() == null) {
+			userService.createUser(user, password);
+		} else {
+			userService.saveUser(user);
+			userService.changePassword(user, null, password);
+		}
 	}
 
 	private Person setupPerson(String uuid, String gender, String givenName, String familyName) {
