@@ -70,7 +70,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			
 			try {
 				linkAdminAccountToAProviderIfNecessary();
-				setupUsersAndProviders();
+				setupUsersAndProvidersIfNecessary();
 				
 				ClassLoader cl = null;
 				try {
@@ -84,7 +84,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				}
 				
 				PathMatchingResourcePatternResolver patternResolver =
-						new PathMatchingResourcePatternResolver(new DefaultResourceLoader(ClassLoader.getSystemClassLoader()));
+						new PathMatchingResourcePatternResolver(new DefaultResourceLoader(cl));
 				
 				new DemoPatientGenerator(patternResolver).createDemoPatients(patientCount);
 			}
@@ -135,22 +135,25 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		}
 	}
 
-	private void setupUsersAndProviders() {
-		Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Clerk");
-		Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Nurse");
-		Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Doctor");
-        Person sysadminPerson = setupPerson(ReferenceDemoDataConstants.SYSADMIN_PERSON_UUID, "F", "Julie", "Sysadmin");
-
+	private void setupUsersAndProvidersIfNecessary() {
 		UserService userService = Context.getUserService();
-		Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
-		Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
-		Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
-		Role sysadminRole = userService.getRole(ReferenceDemoDataConstants.SYSADMIN_ROLE);
-
-		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
-		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
-		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
-        setupUser(ReferenceDemoDataConstants.SYSADMIN_USER_UUID, "sysadmin", sysadminPerson, "Sysadmin123", sysadminRole);
+		if (userService.getUserByUuid(ReferenceDemoDataConstants.CLERK_USER_UUID) == null) {
+			Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Clerk");
+			Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
+			setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
+		}
+		
+		if (userService.getUserByUuid(ReferenceDemoDataConstants.NURSE_PERSON_UUID) == null) {
+			Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Nurse");
+			Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
+			setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
+		}
+		
+		if (userService.getUserByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID) == null) {
+			Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Doctor");
+			Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
+			setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
+		}
 	}
 
 	private void setupUser(String uuid, String username, Person person, String password, Role... roles) {
