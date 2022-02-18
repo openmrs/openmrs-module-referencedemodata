@@ -4,7 +4,7 @@
     "minimum": 2,
     "maximum": 17
   },
-  "precision": "double",
+  "precision": "float",
   "decayType": "linear",
   "trend": 0,
   "standardDeviation": 0.4
