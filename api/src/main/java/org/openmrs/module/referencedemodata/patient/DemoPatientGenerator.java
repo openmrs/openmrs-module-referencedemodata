@@ -448,7 +448,7 @@ public class DemoPatientGenerator {
 	
 	private List<NumericObsValueDescriptor> loadVitalsDescriptors(ResourcePatternResolver patternResolver)
 			throws IOException {
-		return loadObsValueDescriptorsFor(patternResolver, "classpath:vitalsValueDescriptors/*.json");
+		return loadObsValueDescriptorsFor(patternResolver, "classpath*:vitalsValueDescriptors/*.json");
 	}
 	
 	private List<NumericObsValueDescriptor> loadLabDescriptors(ResourcePatternResolver patternResolver)
