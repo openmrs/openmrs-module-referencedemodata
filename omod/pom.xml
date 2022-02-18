@@ -4,17 +4,13 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>referencedemodata</artifactId>
-		<version>1.4.8-SNAPSHOT</version>
+		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>referencedemodata-omod</artifactId>
 	<packaging>jar</packaging>
 	<name>Reference Demo Data Module OMOD</name>
 	<description>OMOD project for ReferenceDemoData</description>
-
-	<properties>
-		<openMRSVersion>2.0.0</openMRSVersion>
-	</properties>
 	
     <dependencies>
         <dependency>
@@ -22,16 +18,6 @@
             <artifactId>${project.parent.artifactId}-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>${project.parent.artifactId}-api-1.10</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>${project.parent.artifactId}-api-2.0</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
     </dependencies>
 
 
