@@ -179,6 +179,10 @@ public class DemoPatientGenerator {
 		Location rootLocation = randomArrayEntry(Context.getLocationService().getRootLocations(false));
 		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
 		
+		if (patientIdentifierType == null) {
+			throw new APIException("Could not find identifier type " + OPENMRS_ID_NAME);
+		}
+		
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
 			log.info("created demo patient: {} {} {}", patient.getPatientIdentifier(), patient.getGivenName(), patient.getFamilyName());

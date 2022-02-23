@@ -11,7 +11,7 @@ package org.openmrs.module.referencedemodata;
 
 public class ReferenceDemoDataConstants {
 
-	public static final String OPENMRS_ID_NAME = "OpenMRS Identification Number";
+	public static final String OPENMRS_ID_NAME = "OpenMRS ID";
 	public static final String CLERK_PERSON_UUID = "007037a0-0500-11e3-8ffd-0800200c9a66";
 	public static final String NURSE_PERSON_UUID = "9bed23d0-0502-11e3-8ffd-0800200c9a66";
 	public static final String DOCTOR_PERSON_UUID = "af7c3340-0503-11e3-8ffd-0800200c9a66";

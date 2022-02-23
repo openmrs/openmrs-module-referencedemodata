@@ -121,7 +121,7 @@
     <visit_type visit_type_id="3" name="Hospitalization" description="Hospitalization Description" creator="1"
                 date_created="2005-01-01 00:00:00.0" retired="true" retire_reason="Some Retire Reason"
                 uuid="759799ab-c9a5-435e-b671-77773ada74e6"/>
-    <patient_identifier_type patient_identifier_type_id="1" name="OpenMRS Identification Number"
+    <patient_identifier_type patient_identifier_type_id="1" name="OpenMRS ID"
                              description="Unique number used in OpenMRS" format="" creator="1"
                              location_behavior="NOT_USED" date_created="2005-09-22 00:00:00.0" required="false"
                              validator="org.openmrs.patient.impl.LuhnIdentifierValidator" retired="false"
