@@ -95,14 +95,20 @@ public class ObsValueGenerator {
 	}
 	
 	private static double applyDoubleDelta(NumericObsValueDescriptor.DecayType decayType, double doubleValue, double delta) {
+		double newValue;
 		switch (decayType) {
 			case LINEAR:
-				return doubleValue + delta;
+				newValue = doubleValue + delta;
+				break;
 			case EXPONENTIAL:
-				return doubleValue * delta;
+				newValue = doubleValue * delta;
+				break;
+			default:
+				throw new IllegalStateException("Unknown DecayType [" + decayType + "]");
 		}
 		
-		throw new IllegalStateException("Unknown DecayType [" + decayType + "]");
+		// round to one decimal place
+		return Math.round(newValue * 10d) / 10d;
 	}
 	
 }
