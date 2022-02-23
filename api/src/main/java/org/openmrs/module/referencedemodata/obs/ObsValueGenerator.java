@@ -35,11 +35,11 @@ public class ObsValueGenerator {
 		
 		ConceptNumeric concept = valueDescriptor.getConcept();
 		
-		if (concept.getHiAbsolute() != null && (double) newValue > concept.getHiAbsolute()) {
+		if (concept.getHiAbsolute() != null && newValue.doubleValue() > concept.getHiAbsolute()) {
 			newValue = concept.getHiAbsolute();
 		}
 		
-		if (concept.getLowAbsolute() != null && (double) newValue < concept.getLowAbsolute()) {
+		if (concept.getLowAbsolute() != null && newValue.doubleValue() < concept.getLowAbsolute()) {
 			newValue = concept.getLowAbsolute();
 		}
 		
