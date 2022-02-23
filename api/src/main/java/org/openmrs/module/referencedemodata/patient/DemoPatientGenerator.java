@@ -198,7 +198,7 @@ public class DemoPatientGenerator {
 		VisitService vs = Context.getVisitService();
 		int visitCount = randomBetween(0, 20);
 		for (int i = 0; i < visitCount; i++) {
-			boolean shortVisit = i < (visitCount * 0.8);
+			boolean shortVisit = randomDoubleBetween(0, 1) < 0.8d;
 			Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), location, shortVisit);
 			vs.saveVisit(visit);
 		}
@@ -246,6 +246,7 @@ public class DemoPatientGenerator {
 			if (randomDoubleBetween(0.0, 1.0) < .67) {
 				int labStartMinutes = randomBetween(0, 120);
 				lastEncounterTime = lastEncounterTime.plusMinutes(labStartMinutes);
+				visit.addEncounter(createDemoLabsEncounter(patient, toDate(lastEncounterTime), location));
 			}
 			
 			LocalDateTime visitEndTime = lastEncounterTime.plusMinutes(randomBetween(20, 40));
