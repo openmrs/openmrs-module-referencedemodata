@@ -34,12 +34,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
+import static org.openmrs.util.OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON;
+
 /**
  * This is the activator responsible for setting up the demo data, if required. Note that setup will only be done
  * if the `referencedemodata.createDemoPatientsOnNextStartup` setting has a non-zero value.
  */
 public class ReferenceDemoDataActivator extends BaseModuleActivator {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(ReferenceDemoDataActivator.class);
 	
 	private static final String MODULE_ID = "referencedemodata";
@@ -48,7 +50,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	 * @see ModuleActivator#started()
 	 */
 	@Override
-    public void started() {
+	public void started() {
 		try {
 			AdministrationService as = Context.getAdministrationService();
 			GlobalProperty gp = as.getGlobalPropertyObject(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
@@ -59,7 +61,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			int patientCount;
 			try {
 				patientCount = Integer.parseInt(gp.getPropertyValue());
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				log.error("Could not parse [{}] as an integer", gp.getPropertyValue(), e);
 				return;
 			}
@@ -75,7 +78,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				ClassLoader cl = null;
 				try {
 					cl = ModuleFactory.getModuleClassLoader(MODULE_ID);
-				} catch (NullPointerException ignored) {
+				}
+				catch (NullPointerException ignored) {
 				
 				}
 				
@@ -86,7 +90,18 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				PathMatchingResourcePatternResolver patternResolver =
 						new PathMatchingResourcePatternResolver(new DefaultResourceLoader(cl));
 				
-				new DemoPatientGenerator(patternResolver).createDemoPatients(patientCount);
+				// Here we are going to make global property set to true. Reason, is while fetching concepts the case for concept name is different
+				// from what we are sending to service call. This causes problem in PostgreSQL. This is not a problem in MySQL because For MySQL,
+				// the collation is utf8_general_ci that is case insensitive so case does not matter but in other dbs like PostgreSQL it does.
+				boolean valueBefore = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
+				try {
+					new DemoPatientGenerator(patternResolver).createDemoPatients(patientCount);
+				}
+				finally {
+					// Restore the value of Global Property
+					Context.getAdministrationService()
+							.setGlobalProperty(GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, String.valueOf(valueBefore));
+				}
 			}
 			catch (Exception e) {
 				log.error("Exception caught while creating demo data", e);
@@ -96,7 +111,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				gp.setPropertyValue("0");
 				as.saveGlobalProperty(gp);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Failed to load ReferenceDemoData module due to exception", e);
 			ModuleFactory.stopModule(ModuleFactory.getModuleById(MODULE_ID));
 		}
@@ -115,7 +131,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			Collection<Provider> possibleProvider = ps.getProvidersByPerson(adminPerson);
 			if (possibleProvider.size() == 0) {
 				List<Provider> providers = ps.getAllProviders(false);
-
+				
 				Provider provider;
 				if (providers.size() == 0) {
 					provider = new Provider();
@@ -134,25 +150,25 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PROVIDERS);
 		}
 	}
-
+	
 	private void setupUsersAndProvidersIfNecessary() {
 		UserService userService = Context.getUserService();
 		Person clerkPerson = setupPerson(ReferenceDemoDataConstants.CLERK_PERSON_UUID, "M", "John", "Clerk");
 		Role clerkRole = userService.getRole(ReferenceDemoDataConstants.CLERK_ROLE);
 		setupUser(ReferenceDemoDataConstants.CLERK_USER_UUID, "clerk", clerkPerson, "Clerk123", clerkRole);
-	
+		
 		Person nursePerson = setupPerson(ReferenceDemoDataConstants.NURSE_PERSON_UUID, "F", "Jane", "Nurse");
 		Role nurseRole = userService.getRole(ReferenceDemoDataConstants.NURSE_ROLE);
 		setupUser(ReferenceDemoDataConstants.NURSE_USER_UUID, "nurse", nursePerson, "Nurse123", nurseRole);
-	
+		
 		Person doctorPerson = setupPerson(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID, "M", "Jake", "Doctor");
 		Role doctorRole = userService.getRole(ReferenceDemoDataConstants.DOCTOR_ROLE);
 		setupUser(ReferenceDemoDataConstants.DOCTOR_USER_UUID, "doctor", doctorPerson, "Doctor123", doctorRole);
 	}
-
+	
 	private void setupUser(String uuid, String username, Person person, String password, Role... roles) {
 		UserService userService = Context.getUserService();
-
+		
 		User user = userService.getUserByUuid(uuid);
 		if (user == null) {
 			user = new User();
@@ -162,14 +178,14 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		
 		user.setUsername(username);
 		user.setPerson(person);
-
+		
 		user.getRoles().clear();
-        for (Role role : roles) {
-            // we try to grant some module-defined roles without first verifying those modules/roles exist.
-            if (role != null) {
-                user.addRole(role);
-            }
-        }
+		for (Role role : roles) {
+			// we try to grant some module-defined roles without first verifying those modules/roles exist.
+			if (role != null) {
+				user.addRole(role);
+			}
+		}
 		
 		if (user.getId() == null) {
 			userService.createUser(user, password);
@@ -178,10 +194,10 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			userService.changePassword(user, null, password);
 		}
 	}
-
+	
 	private Person setupPerson(String uuid, String gender, String givenName, String familyName) {
 		PersonService personService = Context.getPersonService();
-
+		
 		Person person = personService.getPersonByUuid(uuid);
 		if (person == null) {
 			person = new Person();
@@ -189,7 +205,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		}
 		
 		person.setGender(gender);
-
+		
 		PersonName name = person.getPersonName();
 		if (name == null) {
 			name = new PersonName();
@@ -197,7 +213,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		}
 		name.setGivenName(givenName);
 		name.setFamilyName(familyName);
-
+		
 		return person;
 	}
 }

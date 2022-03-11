@@ -310,10 +310,6 @@ public class DemoPatientGenerator {
 		Obs obsGroup = createBasicObs(CONCEPT_DIAGNOSIS_CONCEPT_SET, patient, encounterTime, location);
 		visitNote.addObs(obsGroup);
 		
-		// Here we are going to make global property set to true. Reason, is while fetching concepts the case for concept name is different
-		// from what we are sending to service call. This causes problem in PostgreSQL. This is not a problem in MySQL because For MySQL,
-		// the collation is utf8_general_ci that is case insensitive so case does not matter but in other dbs like PostgreSQL it does.
-		boolean valueBefore = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
 		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
 				"true");
 		
@@ -328,11 +324,7 @@ public class DemoPatientGenerator {
 		obsGroup.addGroupMember(obs1);
 		obsGroup.addGroupMember(obs2);
 		obsGroup.addGroupMember(obs3);
-		os.saveObs(obsGroup, null);
-		
-		// Restore the value of Global Property
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
-				String.valueOf(valueBefore));
+		os.saveObs(obsGroup, "Creating Obs Group");
 	}
 	
 	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime) {
@@ -434,7 +426,6 @@ public class DemoPatientGenerator {
 		obs.setValueCoded(concept);
 		encounter.addObs(obs);
 		
-		getObsService().saveObs(obs, null);
 		return obs;
 	}
 	
