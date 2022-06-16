@@ -30,6 +30,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Period;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Encounter;
 import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
@@ -559,6 +560,18 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	private void createNumericObs(String conceptName, int min, int max, Patient patient, Encounter encounter, Date encounterTime, Location location,
                                   ObsService os, ConceptService cs) {
 		Obs obs = createBasicObs(conceptName, patient, encounterTime, location, cs);
+		
+		Concept concept = obs.getConcept();
+		if (concept != null) {
+			ConceptNumeric conceptNumeric = cs.getConceptNumeric(concept.getConceptId());
+			if (conceptNumeric.getHiAbsolute() != null) {
+				max = conceptNumeric.getHiAbsolute().intValue();
+			}
+			if (conceptNumeric.getLowAbsolute() != null) {
+				min = conceptNumeric.getLowAbsolute().intValue();
+			}
+		}
+		
 		obs.setValueNumeric((double) randomBetween(min, max));
 		encounter.addObs(obs);
 		os.saveObs(obs, null);
