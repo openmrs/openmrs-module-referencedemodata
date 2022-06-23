@@ -68,6 +68,7 @@ import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CO
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_DIAGNOSIS_LIST;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OPENMRS_ID_NAME;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
+import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toLocalDateTime;
 import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.populatePerson;
 
 @Getter
@@ -75,7 +76,9 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
 public class DemoPatientGenerator {
 	
 	private static final Logger log = LoggerFactory.getLogger(DemoPatientGenerator.class);
+	
 	private static final int ADMISSION_DAYS_MIN = 1;
+	
 	private static final int ADMISSION_DAYS_MAX = 3;
 	
 	private static final String[] NOTE_TEXT = {
@@ -174,7 +177,6 @@ public class DemoPatientGenerator {
 		
 		allDiagnoses = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Diagnosis"));
 		
-		
 		PatientService ps = Context.getPatientService();
 		Location rootLocation = randomArrayEntry(Context.getLocationService().getRootLocations(false));
 		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
@@ -185,31 +187,36 @@ public class DemoPatientGenerator {
 		
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
-			log.info("created demo patient: {} {} {}", patient.getPatientIdentifier(), patient.getGivenName(), patient.getFamilyName());
+			log.info("created demo patient: {} {} {}", patient.getPatientIdentifier(), patient.getGivenName(),
+					patient.getFamilyName());
 			Context.flushSession();
 			Context.clearSession();
 		}
 	}
 	
 	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
-		Patient patient = createBasicDemoPatient(patientIdentifierType, location);
+		int visitCount = randomBetween(1, 20);
+		
+		Patient patient = createBasicDemoPatient(patientIdentifierType, location, visitCount);
 		patient = ps.savePatient(patient);
 		
 		VisitService vs = Context.getVisitService();
-		int visitCount = randomBetween(0, 20);
+		Visit lastVisit = null;
 		for (int i = 0; i < visitCount; i++) {
 			boolean shortVisit = randomDoubleBetween(0, 1) < 0.8d;
-			Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), location, shortVisit);
+			Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), location, shortVisit, lastVisit,
+					visitCount - (i + 1));
 			vs.saveVisit(visit);
+			lastVisit = visit;
 		}
 		
 		return patient;
 	}
 	
-	private Patient createBasicDemoPatient(PatientIdentifierType patientIdentifierType, Location location) {
+	private Patient createBasicDemoPatient(PatientIdentifierType patientIdentifierType, Location location, int minAge) {
 		Patient patient = new Patient();
 		
-		populatePerson(patient);
+		populatePerson(patient, minAge);
 		
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier(getIdentifierSourceService().generateIdentifier(patientIdentifierType, "DemoData"));
@@ -221,8 +228,35 @@ public class DemoPatientGenerator {
 		return patient;
 	}
 	
-	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, Location location, boolean shortVisit) {
-		LocalDateTime visitStart = LocalDateTime.now().minusDays(randomBetween(0, (365 * 5) - 1)).minusMinutes(randomBetween(0, 24 * 60));
+	private Visit createDemoVisit(Patient patient, List<VisitType> visitTypes, Location location, boolean shortVisit,
+			Visit lastVisit, int remainingVisits) {
+		int patientAge = Optional.ofNullable(patient.getAge()).orElse(0);
+		
+		LocalDateTime visitStart;
+		if (lastVisit == null || lastVisit.getStopDatetime() == null) {
+			if (patientAge > 5) {
+				visitStart = LocalDateTime.now().minusDays(randomBetween(0, 365 * 5 - 1))
+						.minusMinutes(randomBetween(0, 24 * 60 - 1));
+				
+				if (remainingVisits > 0) {
+					LocalDateTime minimumStartDate = LocalDateTime.now().minusYears(remainingVisits);
+					
+					if (visitStart.isAfter(minimumStartDate)) {
+						visitStart = minimumStartDate.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
+					}
+				}
+			} else {
+				visitStart = LocalDateTime.now();
+			}
+		} else {
+			visitStart = toLocalDateTime(lastVisit.getStopDatetime())
+					.plusDays(randomBetween(0, 365 - 1))
+					.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
+		}
+		
+		if (patientAge <= 5) {
+			shortVisit = true;
+		}
 		
 		// just in case the start is today, back it up a few days.
 		if (!shortVisit && LocalDate.now().minusDays(ADMISSION_DAYS_MAX + 1).isBefore(visitStart.toLocalDate())) {
@@ -316,7 +350,8 @@ public class DemoPatientGenerator {
 		String certainty = flipACoin() ? CONCEPT_CODE_DIAGNOSIS_CONFIRMED : CONCEPT_CODE_DIAGNOSIS_PRESUMED;
 		Obs obs1 = createCodedObs(CONCEPT_CODE_DIAGNOSIS_CERTAINTY, certainty, patient, visitNote, encounterTime, location);
 		
-		Obs obs2 = createCodedObs(CONCEPT_DIAGNOSIS_LIST, randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime, location);
+		Obs obs2 = createCodedObs(CONCEPT_DIAGNOSIS_LIST, randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime,
+				location);
 		
 		String order = primary ? CONCEPT_CODE_DIAGNOSIS_ORDER_PRIMARY : CONCEPT_CODE_DIAGNOSIS_ORDER_SECONDARY;
 		Obs obs3 = createCodedObs(CONCEPT_CODE_DIAGNOSIS_ORDER, order, patient, visitNote, encounterTime, location);
@@ -368,7 +403,8 @@ public class DemoPatientGenerator {
 		}
 	}
 	
-	private void createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter, Location location) {
+	private void createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
+			Location location) {
 		Obs previousObs = null;
 		try {
 			List<Obs> potentialObs = os.getObservations(
@@ -389,11 +425,13 @@ public class DemoPatientGenerator {
 			if (potentialObs.size() > 0) {
 				previousObs = potentialObs.get(0);
 			}
-		} catch (Exception ignored) {
+		}
+		catch (Exception ignored) {
 		
 		}
 		
-		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor, previousObs != null ? previousObs.getValueNumeric() : null);
+		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor,
+				previousObs != null ? previousObs.getValueNumeric() : null);
 		createObs(partialObs, patient, encounter, encounter.getEncounterDatetime(), location);
 	}
 	
@@ -414,7 +452,8 @@ public class DemoPatientGenerator {
 		getObsService().saveObs(obs, null);
 	}
 	
-	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter, Date encounterTime,
+	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter,
+			Date encounterTime,
 			Location location) {
 		return createCodedObs(conceptName, findConcept(codedConceptName), patient, encounter, encounterTime, location);
 	}
@@ -470,7 +509,8 @@ public class DemoPatientGenerator {
 				.map(is -> {
 					try {
 						return Optional.<NumericObsValueDescriptor>of(reader.readValue(is));
-					} catch (IOException e) {
+					}
+					catch (IOException e) {
 						log.warn("Exception caught while attempting to parse file", e);
 						return Optional.<NumericObsValueDescriptor>empty();
 					}

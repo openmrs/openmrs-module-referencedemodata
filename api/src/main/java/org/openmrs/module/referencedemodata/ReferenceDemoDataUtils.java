@@ -16,6 +16,13 @@ import java.util.Date;
 
 public class ReferenceDemoDataUtils {
 	
+	public static LocalDateTime toLocalDateTime(Date date) {
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+	
+	public static LocalDate toLocalDate(Date date) {
+		return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
 	
 	public static Date toDate(LocalDateTime dateTime) {
 		return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
