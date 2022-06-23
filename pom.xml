@@ -37,7 +37,7 @@
 		<openMRSVersion>2.1.5</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<idgen.version>4.4.0</idgen.version>
-		<initializer.version>2.3.0-SNAPSHOT</initializer.version>
+		<initializer.version>2.3.0</initializer.version>
 	</properties>
 
 	<dependencies>
@@ -89,7 +89,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.16</version>
+			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
     </dependencies>
