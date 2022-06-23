@@ -145,8 +145,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			}
 		}
 		finally {
-			Context.addProxyPrivilege(PrivilegeConstants.GET_PROVIDERS);
-			Context.addProxyPrivilege(PrivilegeConstants.GET_PERSONS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_PROVIDERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_PERSONS);
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_PROVIDERS);
 		}
 	}
