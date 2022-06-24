@@ -83,12 +83,12 @@ public class ObsValueGenerator {
 		return valueDescriptor.getTrend() + valueDescriptor.getStandardDeviation() * Randomizer.randomGaussian();
 	}
 	
-	private static long applyLongDelta(NumericObsValueDescriptor.DecayType decayType, long doubleValue, long delta) {
+	private static long applyLongDelta(NumericObsValueDescriptor.DecayType decayType, long longValue, long delta) {
 		switch (decayType) {
 			case LINEAR:
-				return doubleValue + delta;
+				return longValue + delta;
 			case EXPONENTIAL:
-				return doubleValue * delta;
+				return longValue * delta;
 		}
 		
 		throw new IllegalStateException("Unknown DecayType [" + decayType + "]");
