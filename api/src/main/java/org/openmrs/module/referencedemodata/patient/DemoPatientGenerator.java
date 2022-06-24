@@ -126,7 +126,7 @@ public class DemoPatientGenerator {
 			}
 		}
 		
-		if (concept == null && key.length() >= 36) {
+		if (concept == null && key.length() >= 36 && key.length() <= 38) {
 			try {
 				concept = cs.getConceptByUuid(key);
 			}
@@ -497,25 +497,18 @@ public class DemoPatientGenerator {
 		ObjectReader reader = om.readerFor(NumericObsValueDescriptor.class);
 		return Arrays.stream(patternResolver.getResources(resourcePattern))
 				.map(r -> {
-					try {
-						return Optional.of(r.getInputStream());
-					}
-					catch (IOException e) {
-						log.warn("Exception caught while attempting to read [{}]", r.getFilename(), e);
-						return Optional.<InputStream>empty();
-					}
-				}).filter(Optional::isPresent)
-				.map(Optional::get)
-				.map(is -> {
-					try {
+					try (InputStream is = r.getInputStream()) {
+						if (is == null) {
+							return Optional.<NumericObsValueDescriptor>empty();
+						}
+						
 						return Optional.<NumericObsValueDescriptor>of(reader.readValue(is));
 					}
 					catch (IOException e) {
-						log.warn("Exception caught while attempting to parse file", e);
+						log.warn("Exception caught while attempting to read [{}]", r.getFilename(), e);
 						return Optional.<NumericObsValueDescriptor>empty();
 					}
-				})
-				.filter(Optional::isPresent)
+				}).filter(Optional::isPresent)
 				.map(Optional::get)
 				.collect(Collectors.toList());
 	}
@@ -541,10 +534,6 @@ public class DemoPatientGenerator {
 		return cs;
 	}
 	
-	public static void setConceptService(ConceptService cs) {
-		DemoPatientGenerator.cs = cs;
-	}
-	
 	private ObsService getObsService() {
 		if (os == null) {
 			os = Context.getObsService();
@@ -552,9 +541,4 @@ public class DemoPatientGenerator {
 		
 		return os;
 	}
-	
-	public static void setObsService(ObsService os) {
-		DemoPatientGenerator.os = os;
-	}
-	
 }
