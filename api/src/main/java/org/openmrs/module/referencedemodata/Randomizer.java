@@ -22,6 +22,16 @@ public class Randomizer {
 	}
 	
 	public static int randomBetween(int min, int max) {
+		if (min > max) {
+			int tmp = min;
+			min = max;
+			max = tmp;
+		}
+		
+		if (min == max) {
+			return min;
+		}
+		
 		return CONST_RANDOM.nextInt(max - min) + min;
 	}
 	
@@ -30,6 +40,10 @@ public class Randomizer {
 			double tmp = min;
 			min = max;
 			max = tmp;
+		}
+		
+		if (min == max) {
+			return min;
 		}
 		
 		return (CONST_RANDOM.nextDouble() * (max - min)) + min;
@@ -64,7 +78,6 @@ public class Randomizer {
 	}
 	
 	public static String randomSuffix(int digits) {
-		// Last n digits of the current time.
 		return CONST_RANDOM.ints(digits, 0, 10).mapToObj(String::valueOf).collect(Collectors.joining());
 	}
 	
