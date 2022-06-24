@@ -1,8 +1,8 @@
 {
   "concept": "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "initialValue": {
-    "minimum": 62,
-    "maximum": 79
+    "minimum": 48,
+    "maximum": 100
   },
   "precision": "integer",
   "decayType": "linear",

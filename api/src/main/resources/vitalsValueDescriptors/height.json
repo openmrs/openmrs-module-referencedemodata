@@ -2,7 +2,7 @@
   "concept": "5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
   "initialValue": {
     "minimum": 144,
-    "maximum": 184
+    "maximum": 198
   },
   "precision": "integer",
   "decayType": "constant"
