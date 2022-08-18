@@ -30,6 +30,7 @@
 
 	<modules>
 		<module>api</module>
+		<module>api-2.2</module>
 		<module>omod</module>
 	</modules>
 	
@@ -38,6 +39,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<idgen.version>4.4.0</idgen.version>
 		<initializer.version>2.3.0</initializer.version>
+		<appointments.version>1.4.0</appointments.version>
 	</properties>
 
 	<dependencies>
@@ -77,6 +79,12 @@
 			<version>${initializer.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.bahmni.module</groupId>
+			<artifactId>appointments-api</artifactId>
+			<version>${appointments.version}</version>
+			<scope>provided</scope>
+	    </dependency>
 
         <dependency>
             <groupId>org.openmrs.test</groupId>

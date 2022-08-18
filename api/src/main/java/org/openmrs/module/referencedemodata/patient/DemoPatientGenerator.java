@@ -17,9 +17,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,23 +31,42 @@ import lombok.Setter;
 import org.apache.commons.collections4.map.DefaultedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
+import org.openmrs.Program;
+import org.openmrs.ProgramWorkflowState;
+import org.openmrs.TestOrder;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProgramWorkflowService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.appointments.constants.PrivilegeConstants;
+import org.openmrs.module.appointments.model.Appointment;
+import org.openmrs.module.appointments.model.AppointmentKind;
+import org.openmrs.module.appointments.model.AppointmentProvider;
+import org.openmrs.module.appointments.model.AppointmentProviderResponse;
+import org.openmrs.module.appointments.service.AppointmentServiceDefinitionService;
+import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
+import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor;
 import org.openmrs.module.referencedemodata.obs.ObsValueGenerator;
 import org.openmrs.util.OpenmrsConstants;
@@ -58,14 +79,6 @@ import static org.openmrs.module.referencedemodata.Randomizer.flipACoin;
 import static org.openmrs.module.referencedemodata.Randomizer.randomArrayEntry;
 import static org.openmrs.module.referencedemodata.Randomizer.randomBetween;
 import static org.openmrs.module.referencedemodata.Randomizer.randomDoubleBetween;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_CERTAINTY;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_CONFIRMED;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_ORDER;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_PRIMARY;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_ORDER_SECONDARY;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_CODE_DIAGNOSIS_PRESUMED;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_DIAGNOSIS_CONCEPT_SET;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.CONCEPT_DIAGNOSIS_LIST;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OPENMRS_ID_NAME;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toLocalDateTime;
@@ -96,11 +109,23 @@ public class DemoPatientGenerator {
 			"mollit anim id est laborum."
 	};
 	
+	private static DemoDiagnosisGenerator demoDiagnosisGenerator;
+	
 	private static IdentifierSourceService iss;
 	
 	private static ConceptService cs;
 	
 	private static ObsService os;
+	
+	private static AppointmentsService appointmentsService;
+	
+	private static ProviderService providerService;
+	
+	private static ProgramWorkflowService programWorkflowService;
+	
+	private static AppointmentServiceDefinitionService apts;
+	
+	private static OrderService orderService;
 	
 	private List<Concept> allDiagnoses;
 	
@@ -210,6 +235,18 @@ public class DemoPatientGenerator {
 			lastVisit = visit;
 		}
 		
+		if (randomDoubleBetween(0.0, 1.0) < .5) {
+			createDemoAppointment(patient, lastVisit.getStartDatetime());
+		}
+		
+		if (randomDoubleBetween(0.0, 1.0) < .5) {
+			// there are three demo programs configured
+			List<Program> programs = getProgramWorkflowService().getAllPrograms(false);
+			if (programs != null && programs.size() > 0) {
+				createDemoPatientProgram(patient, programs.get(randomBetween(0, 30) % 3), lastVisit.getStartDatetime());	
+			}
+		}
+		
 		return patient;
 	}
 	
@@ -317,6 +354,21 @@ public class DemoPatientGenerator {
 				visit.addEncounter(createDemoLabsEncounter(patient, toDate(lastEncounterTime), admitLocation));
 			}
 			
+			if (randomDoubleBetween(0.0, 1.0) < .75) {
+				Encounter orderEncounter = null;
+				if (randomDoubleBetween(0.0, 1.0) < .5) {
+					orderEncounter = createDemoOrdersEncounter(patient, toDate(lastEncounterTime), location);
+					List<Concept> testConcepts = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test"));
+					if (testConcepts != null && testConcepts.size() > 0) {
+						createDemoOrder(orderEncounter, getOrderService().getOrderTypeByName("Test Order"), testConcepts);	
+					}
+				}
+				// TODO: create drug orders
+				
+				if (orderEncounter != null) {
+					visit.addEncounter(orderEncounter);
+				}
+			}
 			visit.addEncounter(createEncounter("Discharge", patient, toDate(dischargeTime), admitLocation));
 			visit.setStopDatetime(toDate(dischargeTime));
 		}
@@ -332,38 +384,15 @@ public class DemoPatientGenerator {
 		
 		// TODO 5% of diagnoses should be non-coded.
 		if (allDiagnoses.size() > 0) {
-			createDiagnosisObsGroup(true, patient, visitNote, encounterTime, location);
+			getDemoDiagnosisGenerator().createDiagnosis(true, patient, visitNote, location, getAllDiagnoses());
 			
 			if (flipACoin()) {
 				// add a second diagnosis
-				createDiagnosisObsGroup(false, patient, visitNote, encounterTime, location);
+				getDemoDiagnosisGenerator().createDiagnosis(false, patient, visitNote, location, getAllDiagnoses());
 			}
 		}
 		
 		return visitNote;
-	}
-	
-	private void createDiagnosisObsGroup(boolean primary, Patient patient, Encounter visitNote, Date encounterTime,
-			Location location) {
-		Obs obsGroup = createBasicObs(CONCEPT_DIAGNOSIS_CONCEPT_SET, patient, encounterTime, location);
-		visitNote.addObs(obsGroup);
-		
-		Context.getAdministrationService().setGlobalProperty(OpenmrsConstants.GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
-				"true");
-		
-		String certainty = flipACoin() ? CONCEPT_CODE_DIAGNOSIS_CONFIRMED : CONCEPT_CODE_DIAGNOSIS_PRESUMED;
-		Obs obs1 = createCodedObs(CONCEPT_CODE_DIAGNOSIS_CERTAINTY, certainty, patient, visitNote, encounterTime, location);
-		
-		Obs obs2 = createCodedObs(CONCEPT_DIAGNOSIS_LIST, randomArrayEntry(allDiagnoses), patient, visitNote, encounterTime,
-				location);
-		
-		String order = primary ? CONCEPT_CODE_DIAGNOSIS_ORDER_PRIMARY : CONCEPT_CODE_DIAGNOSIS_ORDER_SECONDARY;
-		Obs obs3 = createCodedObs(CONCEPT_CODE_DIAGNOSIS_ORDER, order, patient, visitNote, encounterTime, location);
-		
-		obsGroup.addGroupMember(obs1);
-		obsGroup.addGroupMember(obs2);
-		obsGroup.addGroupMember(obs3);
-		os.saveObs(obsGroup, "Creating Obs Group");
 	}
 	
 	private Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime) {
@@ -407,6 +436,79 @@ public class DemoPatientGenerator {
 		}
 	}
 	
+	private void createDemoAppointment(Patient patient, Date visitTime) {
+		Appointment appointment = new Appointment();
+        appointment.setPatient(patient);
+        Date startDateTime = toDate(toLocalDateTime(visitTime).plusMinutes(randomBetween(0, 60)));
+        Date endDateTime = toDate(toLocalDateTime(visitTime).plusMinutes(randomBetween(60, 90)));
+        appointment.setStartDateTime(startDateTime);
+        appointment.setEndDateTime(endDateTime);
+        appointment.setAppointmentKind(AppointmentKind.Scheduled);
+        
+        appointment.setService(getAppointmentServiceDefinitionService().getAllAppointmentServices(false).get(randomBetween(0, 20) % 2));
+        appointment.setAppointmentAudits(new HashSet<>());
+        Set<AppointmentProvider> appointmentProviders = new HashSet<>();
+        AppointmentProvider appointmentProvider = new AppointmentProvider();
+        appointmentProvider.setAppointment(appointment);
+        appointmentProvider.setProvider(getProviderService().getProviderByIdentifier("admin"));
+        appointmentProvider.setResponse(AppointmentProviderResponse.ACCEPTED);
+
+        appointmentProviders.add(appointmentProvider);
+        appointment.setProviders(appointmentProviders);
+        Context.addProxyPrivilege(PrivilegeConstants.MANAGE_APPOINTMENTS);
+        getAppointmentsService().validateAndSave(appointment);
+        Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_APPOINTMENTS);
+        
+	}
+	
+	private void createDemoPatientProgram(Patient patient, Program program, Date visitTime) {
+		
+		Date startDate = toDate(toLocalDateTime(visitTime).plusHours((randomBetween(0, 72))));
+		ProgramWorkflowState state1 = program.getAllWorkflows().stream().findFirst().get().getStates().stream().findFirst().get();
+
+		PatientProgram patientprogram = new PatientProgram();
+		patientprogram.setProgram(program);
+		patientprogram.setPatient(patient);
+		patientprogram.setDateEnrolled(startDate);
+		patientprogram.setDateCompleted(null);
+
+		PatientState patientstate1 = new PatientState();
+		patientstate1.setStartDate(startDate);
+		patientstate1.setState(state1);
+		
+		patientprogram.getStates().add(patientstate1);
+		patientstate1.setPatientProgram(patientprogram);
+		
+		getProgramWorkflowService().savePatientProgram(patientprogram); 
+	}
+	
+	private Encounter createDemoOrdersEncounter(Patient patient, Date encounterTime, Location location) {
+		Encounter encounter = createEncounter("Consultation", patient, encounterTime, location);
+		return encounter;
+	}
+	
+	private void createDemoOrder(Encounter encounter, OrderType orderType, List<Concept> orderConcepts) {
+		OrderService orderService = getOrderService();
+		List<CareSetting> careSettings = orderService.getCareSettings(false);
+		if ("Test Order".equalsIgnoreCase(orderType.getName())) {
+			TestOrder order = new TestOrder();
+			order.setAction(Order.Action.NEW);
+			order.setUrgency(Order.Urgency.ROUTINE);
+			order.setPatient(encounter.getPatient());
+			order.setOrderType(orderType);
+			order.setConcept(orderConcepts.get(randomBetween(0, orderConcepts.size())));
+			order.setOrderer(getProviderService().getProviderByIdentifier("admin"));
+			order.setCareSetting(careSettings.get(randomBetween(0, careSettings.size())));
+			order.setEncounter(encounter);
+			encounter.addOrder(order);
+			order.setDateActivated(toDate(toLocalDateTime(encounter.getEncounterDatetime())));
+			orderService.saveOrder(order, null);
+		}
+		else if ("Drug Order".equalsIgnoreCase(orderType.getName())) {
+			
+		}
+	}
+
 	private void createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
 			Location location) {
 		Obs previousObs = null;
@@ -439,7 +541,7 @@ public class DemoPatientGenerator {
 		createObs(partialObs, patient, encounter, encounter.getEncounterDatetime(), location);
 	}
 	
-	private void createObs(Obs partialObs, Patient patient, Encounter encounter, Date encounterTime, Location location) {
+	protected void createObs(Obs partialObs, Patient patient, Encounter encounter, Date encounterTime, Location location) {
 		partialObs.setPerson(patient);
 		partialObs.setEncounter(encounter);
 		partialObs.setObsDatetime(encounterTime);
@@ -456,13 +558,13 @@ public class DemoPatientGenerator {
 		getObsService().saveObs(obs, null);
 	}
 	
-	private Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter,
+	protected Obs createCodedObs(String conceptName, String codedConceptName, Patient patient, Encounter encounter,
 			Date encounterTime,
 			Location location) {
 		return createCodedObs(conceptName, findConcept(codedConceptName), patient, encounter, encounterTime, location);
 	}
 	
-	private Obs createCodedObs(String conceptName, Concept concept, Patient patient, Encounter encounter,
+	protected Obs createCodedObs(String conceptName, Concept concept, Patient patient, Encounter encounter,
 			Date encounterTime, Location location) {
 		
 		Obs obs = createBasicObs(conceptName, patient, encounterTime, location);
@@ -472,7 +574,7 @@ public class DemoPatientGenerator {
 		return obs;
 	}
 	
-	private Obs createBasicObs(String conceptName, Patient patient, Date encounterTime, Location location) {
+	protected Obs createBasicObs(String conceptName, Patient patient, Date encounterTime, Location location) {
 		Concept concept = findConcept(conceptName);
 		if (concept == null) {
 			log.warn("incorrect concept identifier? [{}]", conceptName);
@@ -481,7 +583,7 @@ public class DemoPatientGenerator {
 		return new Obs(patient, concept, encounterTime, location);
 	}
 	
-	private Concept findConcept(String conceptDescriptor) {
+	protected Concept findConcept(String conceptDescriptor) {
 		return getConceptCache().get(conceptDescriptor);
 	}
 	
@@ -544,5 +646,52 @@ public class DemoPatientGenerator {
 		}
 		
 		return os;
+	}
+	
+	private ProviderService getProviderService() {
+		if (providerService == null) {
+			providerService = Context.getService(ProviderService.class);
+		}
+		
+		return providerService;
+	}
+	
+	private AppointmentsService getAppointmentsService() {
+		if (appointmentsService == null) {
+			appointmentsService = Context.getService(AppointmentsService.class);
+		}
+		
+		return appointmentsService;
+	}
+	
+	private ProgramWorkflowService getProgramWorkflowService() {
+		if (programWorkflowService == null) {
+			programWorkflowService = Context.getProgramWorkflowService();
+		}
+		
+		return programWorkflowService;
+	}
+	
+	private AppointmentServiceDefinitionService getAppointmentServiceDefinitionService() {
+		if (apts == null) {
+			apts = Context.getService(AppointmentServiceDefinitionService.class);
+		}
+		
+		return apts;
+	}
+	
+	private OrderService getOrderService() {
+		if (orderService == null) {
+			orderService = Context.getOrderService();
+		}
+
+		return orderService;
+	}
+
+	public static DemoDiagnosisGenerator getDemoDiagnosisGenerator() {
+		if (demoDiagnosisGenerator == null) {
+			demoDiagnosisGenerator = Context.getRegisteredComponents(DemoDiagnosisGenerator.class).get(0);
+		}
+		return demoDiagnosisGenerator;
 	}
 }

@@ -113,6 +113,9 @@
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="97c1c4ed-2d68-4795-a827-e1882eb97ee8"/>
     <encounter_type encounter_type_id="24" name="Lab Results" creator="1"
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="b9e487b8-9828-4c74-9edf-5ae6b9646a0c"/>
+	<encounter_type encounter_type_id="25" name="Consultation" creator="1"
+                    date_created="2008-06-11 13:22:00.0" retired="false" uuid="47b88b9e-9288-9edf-4c7e-b95ae660c46a"/>
+                    
     <visit_type visit_type_id="1" name="Initial HIV Clinic Visit" description="Initial HIV Clinic Visit Description"
                 creator="1" date_created="2005-01-01 00:00:00.0" retired="false"
                 uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
@@ -217,4 +220,20 @@
     <concept concept_id="10017" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="1015AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10017" allow_decimal="0"/>
+    
+    <appointment_speciality speciality_id="1" name="Ortho" uuid="c36006e5-9fbb-4f20-866b-0ece245615a1" creator="1"/>
+
+    <appointment_service appointment_service_id="1" name="Consultation" description="Consultation" start_time="09:00:00" end_time="17:00:00" location_id="1"
+                        speciality_id="1" max_appointments_limit="4" duration_mins="30" creator="1" uuid="c36006e5-9fbb-4f20-866b-0ece245615a6" voided="false"/>
+
+    <appointment_service appointment_service_id="2" name="Treatment" description="Treatment" start_time="09:00:00" end_time="17:00:00" location_id="1" uuid="c36006d4-9fbb-4f20-866b-0ece245615b1"
+                         speciality_id="1" max_appointments_limit="4" duration_mins="30" creator="1" voided="true" voided_by="1" void_reason=""/>
+
+    <appointment_service appointment_service_id="3" name="Cardiology" description="Cardiology" start_time="11:00:00" end_time="15:00:00" location_id="1" uuid="c36006d4-9fbb-4f20-866b-0ece245615c1"
+                         speciality_id="1" max_appointments_limit="7" duration_mins="16" creator="1" voided="false"/>
+
+    <appointment_service_type appointment_service_type_id="1" appointment_service_id="1" name="serviceType1" duration_mins="30" uuid="678906e5-9fbb-4f20-866b-0ece24564578" creator="1" date_created="2108-08-10 15:57:09.0"  voided="false"/>
+
+    <appointment_service_type appointment_service_type_id="2" appointment_service_id="3" name="cardioType" duration_mins="45" uuid="672546e5-9fbb-4f20-866b-0ece24564578" creator="1" date_created="2108-08-10 15:57:09.0"  voided="false"/>
+    
 </dataset>
