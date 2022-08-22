@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
-@OpenmrsProfile(openmrsPlatformVersion = "2.1.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.1.0 - 2.1.*")
 public class DemoDiagnosisGeneratorImpl extends DemoPatientGenerator implements DemoDiagnosisGenerator {
 	
 	public DemoDiagnosisGeneratorImpl() throws Exception {

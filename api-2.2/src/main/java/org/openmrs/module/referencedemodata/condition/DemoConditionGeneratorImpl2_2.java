@@ -21,24 +21,30 @@ import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.annotation.OpenmrsProfile;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConditionService;
+import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 2.3.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 2.6.*")
 public class DemoConditionGeneratorImpl2_2 implements DemoConditionGenerator {
 	
 	@Autowired
 	private ConditionService conditionService;
 	
+	@Autowired
+	private ConceptService conceptService;
+	
 	@Override
 	public Condition createCondition(Patient patient, Encounter encounter, List<Concept> allConditions) {
-		Concept codedConcept = randomArrayEntry(allConditions);
+		Concept codedConcept = conceptService.getConcept(randomArrayEntry(allConditions).getConceptId());
 		Condition condition = null;
-		if (randomDoubleBetween(0.0, 1.0) < .50) {
+		if (randomDoubleBetween(0.0, 1.0) < .75) {
 			condition = new Condition();
-			condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getName(), "Some non-coded condition"));
+			condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getFullySpecifiedName(Context.getLocale()), "Some non-coded condition"));
 			condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 			condition.setPatient(patient);
+			condition.setDateCreated(encounter.getEncounterDatetime());
 			conditionService.saveCondition(condition);
 		}
 		return condition;
