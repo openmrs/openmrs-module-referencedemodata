@@ -284,10 +284,10 @@ public class DemoPatientGenerator {
 				}
 			} else {
 				// all new/"non-retrospective" visits should happen 90 minutes before the current time, this is 
-				// because some associated encounters happen anywhere from 0 to 60 minutes after the visit, this
+				// because some associated encounters happen anywhere from 0 to 120 minutes after the visit, this
 				// is done to avoid encounter validation errors
 				// (see https://github.com/openmrs/openmrs-core/blob/b7c03a28c64493023a8211c53bb60d4d944b39b7/api/src/main/java/org/openmrs/validator/EncounterValidator.java#L89)
-				visitStart = LocalDateTime.now().minusMinutes(90);
+				visitStart = LocalDateTime.now().minusDays(randomBetween(0, 365 * 1 - 2)).minusMinutes(360);
 			}
 		} else {
 			visitStart = toLocalDateTime(lastVisit.getStopDatetime())
