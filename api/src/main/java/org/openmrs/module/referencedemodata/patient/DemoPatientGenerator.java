@@ -212,8 +212,9 @@ public class DemoPatientGenerator {
 		
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
-			log.info("created demo patient: {} {} {}", patient.getPatientIdentifier(), patient.getGivenName(),
+			String info = String.format("created demo patient: %s %s %s", patient.getPatientIdentifier().toString(), patient.getGivenName(),
 					patient.getFamilyName());
+			log.info(info);
 			Context.flushSession();
 			Context.clearSession();
 		}

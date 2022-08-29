@@ -28,13 +28,6 @@
 		</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
-	
-	<conditionalResources>
-		<conditionalResource>
-			<path>/lib/referencedemodata-api-2.2-*</path>
-			<openmrsVersion>2.2.* - 9.*</openmrsVersion>
-		</conditionalResource>
-	</conditionalResources>
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ReferenceDemoDataActivator</activator>
     

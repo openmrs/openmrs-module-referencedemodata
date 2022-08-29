@@ -27,7 +27,7 @@ import org.openmrs.api.context.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 2.6.*")
-public class DemoConditionGeneratorImpl2_2 implements DemoConditionGenerator {
+public class DemoConditionGeneratorImpl implements DemoConditionGenerator {
 	
 	@Autowired
 	private ConditionService conditionService;

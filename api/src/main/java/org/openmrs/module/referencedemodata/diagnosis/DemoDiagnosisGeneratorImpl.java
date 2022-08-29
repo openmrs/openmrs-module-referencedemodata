@@ -28,7 +28,7 @@ import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 2.6.*")
-public class DemoDiagnosisGeneratorImpl2_2 implements DemoDiagnosisGenerator {
+public class DemoDiagnosisGeneratorImpl implements DemoDiagnosisGenerator {
 
 	@Autowired
 	private DiagnosisService diagnosisService;
