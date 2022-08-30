@@ -115,6 +115,8 @@ public class DemoPatientGenerator {
 	
 	private static ConceptService cs;
 	
+	private static VisitService vs;
+	
 	private static ObsService os;
 	
 	private static AppointmentsService appointmentsService;
@@ -226,26 +228,12 @@ public class DemoPatientGenerator {
 		Patient patient = createBasicDemoPatient(patientIdentifierType, location, visitCount);
 		patient = ps.savePatient(patient);
 		
-		VisitService vs = Context.getVisitService();
 		Visit lastVisit = null;
 		for (int i = 0; i < visitCount; i++) {
 			boolean shortVisit = randomDoubleBetween(0, 1) < 0.8d;
-			Visit visit = createDemoVisit(patient, vs.getAllVisitTypes(), location, shortVisit, lastVisit,
+			Visit visit = createDemoVisit(patient, getVisitService().getAllVisitTypes(), location, shortVisit, lastVisit,
 					visitCount - (i + 1));
-			vs.saveVisit(visit);
 			lastVisit = visit;
-		}
-		
-		if (randomDoubleBetween(0.0, 1.0) < .5) {
-			createDemoAppointment(patient, lastVisit.getStartDatetime());
-		}
-		
-		if (randomDoubleBetween(0.0, 1.0) < .5) {
-			// there are three demo programs configured
-			List<Program> programs = getProgramWorkflowService().getAllPrograms(false);
-			if (programs != null && programs.size() > 0) {
-				createDemoPatientProgram(patient, programs.get(randomBetween(0, 30) % 3), lastVisit.getStartDatetime());	
-			}
 		}
 		
 		return patient;
@@ -372,6 +360,20 @@ public class DemoPatientGenerator {
 			}
 			visit.addEncounter(createEncounter("Discharge", patient, toDate(dischargeTime), admitLocation));
 			visit.setStopDatetime(toDate(dischargeTime));
+		}
+		
+		visit = getVisitService().saveVisit(visit);
+		
+		if (randomDoubleBetween(0.0, 1.0) < .1) {
+			createDemoAppointment(patient, visit.getStartDatetime());
+		}
+		
+		if (randomDoubleBetween(0.0, 1.0) < .1) {
+			// there are three demo programs configured
+			List<Program> programs = getProgramWorkflowService().getAllPrograms(false);
+			if (programs != null && programs.size() > 0) {
+				createDemoPatientProgram(patient, programs.get(randomBetween(0, 30) % 3), visit.getStartDatetime());	
+			}
 		}
 		return visit;
 	}
@@ -694,5 +696,12 @@ public class DemoPatientGenerator {
 			demoDiagnosisGenerator = Context.getRegisteredComponents(DemoDiagnosisGenerator.class).get(0);
 		}
 		return demoDiagnosisGenerator;
+	}
+	
+	public static VisitService getVisitService() {
+		if (vs == null) {
+			vs = Context.getVisitService();
+		}
+		return vs;
 	}
 }
