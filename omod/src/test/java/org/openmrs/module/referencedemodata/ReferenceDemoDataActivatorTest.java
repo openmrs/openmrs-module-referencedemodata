@@ -41,9 +41,11 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -122,19 +124,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		referenceDemoDataActivator.started();
 
 		List<Patient> allPatients = patientService.getAllPatients();
-		boolean conditionsCreated = false;
-		boolean diganosesCreated = false;
-		boolean ordersCreated = false;
         for (Patient patient : allPatients) {
-        	if (conditionService.getActiveConditions(patient) != null && conditionService.getActiveConditions(patient).size() > 0) {
-        		conditionsCreated = true;
-        	}
-        	if (diagnosisService.getDiagnoses(patient, null) != null && diagnosisService.getDiagnoses(patient, null) .size() > 0) {
-        		diganosesCreated = true;
-        	}
-        	if (orderService.getOrders(new OrderSearchCriteriaBuilder().setPatient(patient).build()) != null && orderService.getOrders(new OrderSearchCriteriaBuilder().setPatient(patient).build()).size() > 0) {
-        		ordersCreated = true;
-        	}
 	        System.out.println(patient + " " + patient.getPatientIdentifier() + " " + patient.getPersonName() + " " + patient.getBirthdate() + " " + patient.getAddresses());
         }
 		
@@ -148,9 +138,12 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		assertThat(allVisits.size(), greaterThan(demoPatientCount));
 		assertThat(appointmentsService.getAllAppointments(null).size(), greaterThan(0));
 		assertThat(programWorkflowService.getPatientPrograms(new Cohort(), programWorkflowService.getPrograms("test")).size(), greaterThan(0));
-		assertTrue(conditionsCreated);
-		assertTrue(diganosesCreated);
-		assertTrue(ordersCreated);
+		assertThat(allPatients.stream().map(patient -> conditionService.getActiveConditions(patient)).flatMap(Collection::stream)
+		         .collect(Collectors.toList()), hasSize(greaterThan(0)));
+		assertThat(allPatients.stream().map(patient -> orderService.getOrders(new OrderSearchCriteriaBuilder().setPatient(patient).build())).flatMap(Collection::stream)
+		         .collect(Collectors.toList()), hasSize(greaterThan(0)));
+		assertThat(allPatients.stream().map(patient -> diagnosisService.getDiagnoses(patient, null)).flatMap(Collection::stream)
+		         .collect(Collectors.toList()), hasSize(greaterThan(0)));
 		
     }
     

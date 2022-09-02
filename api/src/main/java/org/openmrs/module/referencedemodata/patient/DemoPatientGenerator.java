@@ -214,9 +214,7 @@ public class DemoPatientGenerator {
 		
 		for (int i = 0; i < patientCount; i++) {
 			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation);
-			String info = String.format("created demo patient: %s %s %s", patient.getPatientIdentifier().toString(), patient.getGivenName(),
-					patient.getFamilyName());
-			log.info(info);
+			log.info("created demo patient: {} {} {}", new Object[] { patient.getPatientIdentifier(), patient.getGivenName(), patient.getFamilyName() });
 			Context.flushSession();
 			Context.clearSession();
 		}
@@ -385,7 +383,6 @@ public class DemoPatientGenerator {
 		
 		createTextObs("CIEL:162169", randomArrayEntry(NOTE_TEXT), patient, visitNote, encounterTime, location);
 		
-		// TODO 5% of diagnoses should be non-coded.
 		if (allDiagnoses.size() > 0) {
 			getDemoDiagnosisGenerator().createDiagnosis(true, patient, visitNote, location, getAllDiagnoses());
 			
@@ -443,7 +440,7 @@ public class DemoPatientGenerator {
 		Appointment appointment = new Appointment();
         appointment.setPatient(patient);
         Date startDateTime = toDate(toLocalDateTime(visitTime).plusMinutes(randomBetween(0, 60)));
-        Date endDateTime = toDate(toLocalDateTime(visitTime).plusMinutes(randomBetween(60, 90)));
+        Date endDateTime = toDate(toLocalDateTime(startDateTime).plusMinutes(randomBetween(10, 90)));
         appointment.setStartDateTime(startDateTime);
         appointment.setEndDateTime(endDateTime);
         appointment.setAppointmentKind(AppointmentKind.Scheduled);
@@ -467,8 +464,11 @@ public class DemoPatientGenerator {
 	private void createDemoPatientProgram(Patient patient, Program program, Date visitTime) {
 		
 		Date startDate = toDate(toLocalDateTime(visitTime).plusHours((randomBetween(0, 72))));
-		ProgramWorkflowState state1 = program.getAllWorkflows().stream().findFirst().get().getStates().stream().findFirst().get();
-
+		ProgramWorkflowState state = null;
+		if (program.getWorkflows().stream().findFirst().get() != null ) {
+			state = program.getWorkflows().stream().findFirst().get().getStates().stream().findFirst().get();
+		}
+		
 		PatientProgram patientprogram = new PatientProgram();
 		patientprogram.setProgram(program);
 		patientprogram.setPatient(patient);
@@ -477,7 +477,7 @@ public class DemoPatientGenerator {
 
 		PatientState patientstate1 = new PatientState();
 		patientstate1.setStartDate(startDate);
-		patientstate1.setState(state1);
+		patientstate1.setState(state);
 		
 		patientprogram.getStates().add(patientstate1);
 		patientstate1.setPatientProgram(patientprogram);

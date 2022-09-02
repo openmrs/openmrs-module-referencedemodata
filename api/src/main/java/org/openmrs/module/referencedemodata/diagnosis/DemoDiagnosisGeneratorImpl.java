@@ -27,7 +27,7 @@ import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 2.6.*")
+@OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 9.*")
 public class DemoDiagnosisGeneratorImpl implements DemoDiagnosisGenerator {
 
 	@Autowired
@@ -39,6 +39,7 @@ public class DemoDiagnosisGeneratorImpl implements DemoDiagnosisGenerator {
 	@Override
 	public void createDiagnosis(boolean primary, Patient patient, Encounter encounter, Location location, List<Concept> allDiagnoses) {
 		Condition condition = conditionGenerator.createCondition(patient, encounter, allDiagnoses);
+		// TODO 5% of diagnoses should be non-coded.
 		if (condition != null && randomDoubleBetween(0.0, 1.0) < .50) {
 			Diagnosis diagnosis = new Diagnosis();
 			diagnosis.setCondition(condition);
