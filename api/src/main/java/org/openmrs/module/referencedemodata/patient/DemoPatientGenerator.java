@@ -68,6 +68,7 @@ import org.openmrs.module.appointments.model.AppointmentProviderResponse;
 import org.openmrs.module.appointments.service.AppointmentServiceDefinitionService;
 import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
+import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor;
 import org.openmrs.module.referencedemodata.obs.ObsValueGenerator;
@@ -460,7 +461,7 @@ public class DemoPatientGenerator {
         Set<AppointmentProvider> appointmentProviders = new HashSet<>();
         AppointmentProvider appointmentProvider = new AppointmentProvider();
         appointmentProvider.setAppointment(appointment);
-        Provider provider = getProviderService().getProviderByIdentifier("doctor") != null ? getProviderService().getProviderByIdentifier("doctor") : randomArrayEntry(getProviderService().getAllProviders(false));
+        Provider provider = getProviderService().getProviderByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID) != null ? getProviderService().getProviderByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID): randomArrayEntry(getProviderService().getAllProviders(false));
         appointmentProvider.setProvider(provider);
         appointmentProvider.setResponse(AppointmentProviderResponse.ACCEPTED);
 
@@ -512,7 +513,7 @@ public class DemoPatientGenerator {
 			order.setPatient(encounter.getPatient());
 			order.setOrderType(orderType);
 			order.setConcept(orderConcepts.get(randomBetween(0, orderConcepts.size())));
-			Provider provider = getProviderService().getProviderByIdentifier("doctor") != null ? getProviderService().getProviderByIdentifier("doctor") : randomArrayEntry(getProviderService().getAllProviders(false));
+			Provider provider = getProviderService().getProviderByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID) != null ? getProviderService().getProviderByUuid(ReferenceDemoDataConstants.DOCTOR_PERSON_UUID): randomArrayEntry(getProviderService().getAllProviders(false));
 			order.setOrderer(provider);
 			order.setCareSetting(careSettings.get(randomBetween(0, careSettings.size())));
 			order.setEncounter(encounter);
