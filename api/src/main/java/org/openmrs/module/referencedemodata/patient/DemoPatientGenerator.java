@@ -209,7 +209,11 @@ public class DemoPatientGenerator {
 		allDiagnoses = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Diagnosis"));
 		
 		testConcepts = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("LabSet"));
-		testConcepts.addAll(getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test")));
+		if (testConcepts != null) {
+			testConcepts.addAll(getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test")));
+		} else {
+			testConcepts = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test"));
+		}
 		
 		PatientService ps = Context.getPatientService();
 		Location rootLocation = randomArrayEntry(Context.getLocationService().getRootLocations(false));
