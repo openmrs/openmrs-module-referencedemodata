@@ -37,9 +37,9 @@ public class DemoConditionGeneratorImpl implements DemoConditionGenerator {
 	
 	@Override
 	public Condition createCondition(Patient patient, Encounter encounter, List<Concept> allConditions) {
-		Concept codedConcept = conceptService.getConcept(randomArrayEntry(allConditions).getConceptId());
 		Condition condition = null;
 		if (randomDoubleBetween(0.0, 1.0) < .75) {
+			Concept codedConcept = conceptService.getConcept(randomArrayEntry(allConditions).getConceptId());
 			condition = new Condition();
 			condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getFullySpecifiedName(Context.getLocale()), "Some non-coded condition"));
 			condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);

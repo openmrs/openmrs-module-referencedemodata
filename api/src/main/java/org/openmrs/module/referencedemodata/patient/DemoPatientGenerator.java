@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -45,6 +46,7 @@ import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -131,6 +133,8 @@ public class DemoPatientGenerator {
 	
 	private List<Concept> allDiagnoses;
 	
+	private List<Concept> testConcepts;
+	
 	private final ResourcePatternResolver patternResolver;
 	
 	private List<NumericObsValueDescriptor> vitalsDescriptors;
@@ -203,6 +207,9 @@ public class DemoPatientGenerator {
 		OpenmrsUtil.applyLogLevel(DemoPatientGenerator.class.toString(), OpenmrsConstants.LOG_LEVEL_INFO);
 		
 		allDiagnoses = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Diagnosis"));
+		
+		testConcepts = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("LabSet"));
+		testConcepts.addAll(getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test")));
 		
 		PatientService ps = Context.getPatientService();
 		Location rootLocation = randomArrayEntry(Context.getLocationService().getRootLocations(false));
@@ -345,7 +352,6 @@ public class DemoPatientGenerator {
 				Encounter orderEncounter = null;
 				if (randomDoubleBetween(0.0, 1.0) < .5) {
 					orderEncounter = createDemoOrdersEncounter(patient, toDate(lastEncounterTime), location);
-					List<Concept> testConcepts = getConceptService().getConceptsByClass(getConceptService().getConceptClassByName("Test"));
 					if (testConcepts != null && testConcepts.size() > 0) {
 						createDemoOrder(orderEncounter, getOrderService().getOrderTypeByName("Test Order"), testConcepts);	
 					}
@@ -370,7 +376,7 @@ public class DemoPatientGenerator {
 			// there are three demo programs configured
 			List<Program> programs = getProgramWorkflowService().getAllPrograms(false);
 			if (programs != null && programs.size() > 0) {
-				createDemoPatientProgram(patient, programs.get(randomBetween(0, 30) % 3), visit.getStartDatetime());	
+				createDemoPatientProgram(patient, randomArrayEntry(programs), visit.getStartDatetime());	
 			}
 		}
 		return visit;
@@ -450,7 +456,8 @@ public class DemoPatientGenerator {
         Set<AppointmentProvider> appointmentProviders = new HashSet<>();
         AppointmentProvider appointmentProvider = new AppointmentProvider();
         appointmentProvider.setAppointment(appointment);
-        appointmentProvider.setProvider(getProviderService().getProviderByIdentifier("admin"));
+        Provider provider = getProviderService().getProviderByIdentifier("doctor") != null ? getProviderService().getProviderByIdentifier("doctor") : randomArrayEntry(getProviderService().getAllProviders(false));
+        appointmentProvider.setProvider(provider);
         appointmentProvider.setResponse(AppointmentProviderResponse.ACCEPTED);
 
         appointmentProviders.add(appointmentProvider);
@@ -496,11 +503,13 @@ public class DemoPatientGenerator {
 		if ("Test Order".equalsIgnoreCase(orderType.getName())) {
 			TestOrder order = new TestOrder();
 			order.setAction(Order.Action.NEW);
-			order.setUrgency(Order.Urgency.ROUTINE);
+			order.setUrgency(randomArrayEntry(Arrays.asList(Order.Urgency.values())));
+			order.setScheduledDate(order.getUrgency() == Order.Urgency.ON_SCHEDULED_DATE ? toDate(toLocalDateTime(encounter.getEncounterDatetime()).plusMinutes(randomBetween(0, 60))) : null);
 			order.setPatient(encounter.getPatient());
 			order.setOrderType(orderType);
 			order.setConcept(orderConcepts.get(randomBetween(0, orderConcepts.size())));
-			order.setOrderer(getProviderService().getProviderByIdentifier("admin"));
+			Provider provider = getProviderService().getProviderByIdentifier("doctor") != null ? getProviderService().getProviderByIdentifier("doctor") : randomArrayEntry(getProviderService().getAllProviders(false));
+			order.setOrderer(provider);
 			order.setCareSetting(careSettings.get(randomBetween(0, careSettings.size())));
 			order.setEncounter(encounter);
 			encounter.addOrder(order);

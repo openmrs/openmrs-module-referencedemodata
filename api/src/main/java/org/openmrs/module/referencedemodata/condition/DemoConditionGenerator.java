@@ -18,9 +18,6 @@ import org.openmrs.Patient;
 
 public interface DemoConditionGenerator {
 	
-	/**
-	 * 
-	 */
 	public Condition createCondition(Patient patient, Encounter encounter, 
 			List<Concept> allConditions);
 	

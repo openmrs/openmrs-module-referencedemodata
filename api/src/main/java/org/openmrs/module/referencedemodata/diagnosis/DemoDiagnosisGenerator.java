@@ -18,9 +18,6 @@ import org.openmrs.Patient;
 
 public interface DemoDiagnosisGenerator {
 	
-	/**
-	 * 
-	 */
 	void createDiagnosis(boolean primary, Patient patient, Encounter encounter, Location location, 
 			List<Concept> allDiagnoses);
 	
