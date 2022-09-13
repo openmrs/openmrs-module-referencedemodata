@@ -113,6 +113,9 @@
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="97c1c4ed-2d68-4795-a827-e1882eb97ee8"/>
     <encounter_type encounter_type_id="24" name="Lab Results" creator="1"
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="b9e487b8-9828-4c74-9edf-5ae6b9646a0c"/>
+	<encounter_type encounter_type_id="25" name="Consultation" creator="1"
+                    date_created="2008-06-11 13:22:00.0" retired="false" uuid="47b88b9e-9288-9edf-4c7e-b95ae660c46a"/>
+                    
     <visit_type visit_type_id="1" name="Initial HIV Clinic Visit" description="Initial HIV Clinic Visit Description"
                 creator="1" date_created="2005-01-01 00:00:00.0" retired="false"
                 uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
@@ -217,4 +220,92 @@
     <concept concept_id="10017" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="1015AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10017" allow_decimal="0"/>
+    
+    <appointment_speciality speciality_id="1" name="Ortho" uuid="c36006e5-9fbb-4f20-866b-0ece245615a1" creator="1"/>
+
+    <appointment_service appointment_service_id="1" name="Consultation" description="Consultation" start_time="09:00:00" end_time="17:00:00" location_id="1"
+                        speciality_id="1" max_appointments_limit="4" duration_mins="30" creator="1" uuid="c36006e5-9fbb-4f20-866b-0ece245615a6" voided="false"/>
+
+    <appointment_service appointment_service_id="2" name="Treatment" description="Treatment" start_time="09:00:00" end_time="17:00:00" location_id="1" uuid="c36006d4-9fbb-4f20-866b-0ece245615b1"
+                         speciality_id="1" max_appointments_limit="4" duration_mins="30" creator="1" voided="true" voided_by="1" void_reason=""/>
+
+    <appointment_service appointment_service_id="3" name="Cardiology" description="Cardiology" start_time="11:00:00" end_time="15:00:00" location_id="1" uuid="c36006d4-9fbb-4f20-866b-0ece245615c1"
+                         speciality_id="1" max_appointments_limit="7" duration_mins="16" creator="1" voided="false"/>
+
+    <appointment_service_type appointment_service_type_id="1" appointment_service_id="1" name="serviceType1" duration_mins="30" uuid="678906e5-9fbb-4f20-866b-0ece24564578" creator="1" date_created="2108-08-10 15:57:09.0"  voided="false"/>
+
+    <appointment_service_type appointment_service_type_id="2" appointment_service_id="3" name="cardioType" duration_mins="45" uuid="672546e5-9fbb-4f20-866b-0ece24564578" creator="1" date_created="2108-08-10 15:57:09.0"  voided="false"/>
+    
+    <concept concept_id="100111" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:03.0" changed_by="1" date_changed="2022-08-23 12:02:03.0" uuid="40f3ff80-44ff-4fad-b0eb-fa89ff05e1f8"/>
+    <concept concept_id="100117" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:03.0" changed_by="1" date_changed="2022-08-23 12:02:03.0" uuid="88094e41-e2c7-443f-8770-f46c78e03e7e"/>
+    <concept concept_id="100118" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:03.0" changed_by="1" date_changed="2022-08-23 12:02:03.0" uuid="4b81c46d-ca6d-4e76-928e-5c90e76a8df7"/>
+    <concept concept_id="100120" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="94bea8da-9133-4f8f-bdb4-9118838ef6b0"/>
+    <concept concept_id="100121" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="dc960400-3c07-48e2-8a0d-bd62276825b5"/>
+    <concept concept_id="100122" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="8099b02a-6ef7-499c-9a5a-2d8e2604f80a"/>
+    <concept concept_id="100123" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="817e15af-8590-4614-b0f0-cb2672e0e26f"/>
+    <concept concept_id="100124" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="c1102975-fa87-4879-a7f3-acc895876922"/>
+    <concept concept_id="100125" retired="false" datatype_id="3" class_id="1" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="28c4127b-6857-41ae-b435-1b6dd6e646ab"/>
+    <concept concept_id="100130" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc37500-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100131" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc376cc-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100132" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc37906-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100133" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc379f6-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100134" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc37ad2-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100135" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:04.0" changed_by="1" date_changed="2022-08-23 12:02:04.0" uuid="7dc37bb8-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100136" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:05.0" changed_by="1" date_changed="2022-08-23 12:02:05.0" uuid="7dc37c9e-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100137" retired="false" datatype_id="4" class_id="11" is_set="false" creator="1" date_created="2022-08-23 12:02:05.0" changed_by="1" date_changed="2022-08-23 12:02:05.0" uuid="7dc37d7a-1725-11ed-861d-0242ac120002"/>
+    <concept concept_id="100153" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="0016512d-4388-44f0-a4b6-f6ad9e18fdcd"/>
+    <concept concept_id="100154" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="006ab3b2-a0ea-45bf-b495-83e06f26f87a"/>
+    <concept concept_id="100155" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="02db87f6-40d0-4b2a-8c19-927db2c43168"/>
+    <concept concept_id="100156" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="0670f6b9-5456-4bd3-86b1-846abc4fe2ba"/>
+    <concept concept_id="100157" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="06cc08fb-414a-46e6-8c20-136535609812"/>
+    <concept concept_id="100158" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="08e9c0e1-d72f-425d-81ea-dbe88eb90772"/>
+    <concept concept_id="100159" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="105903f4-7b6d-496a-b613-37ab9d0f5450"/>
+    <concept concept_id="100160" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:08.0" changed_by="1" date_changed="2022-08-23 12:02:08.0" uuid="110112AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept concept_id="100161" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:09.0" changed_by="1" date_changed="2022-08-23 12:02:09.0" uuid="110169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept concept_id="100162" retired="false" datatype_id="4" class_id="4" is_set="false" creator="1" date_created="2022-08-23 12:02:09.0" changed_by="1" date_changed="2022-08-23 12:02:09.0" uuid="110516AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="445" concept_id="100111" name="Stool Appearance" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:03.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="aeb6d73a-6852-38e7-9cc4-a2ee207992ed"/>
+    <concept_name concept_name_id="467" concept_id="100117" name="Stool Colour" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:03.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="15baa3b6-08cf-372a-a802-8e1a44490ed2"/>
+    <concept_name concept_name_id="471" concept_id="100118" name="Stool Parasites" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:03.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="38b9a04d-ea8c-3d4d-824d-7400c3f5ed82"/>
+    <concept_name concept_name_id="480" concept_id="100120" name="Serial sputum bacilloscopy" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="4a54ecbd-e9e1-366f-b5d5-d15353d36267"/>
+    <concept_name concept_name_id="484" concept_id="100121" name="Alkaline Phosphatase" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="4d77ecbb-a39f-3c9b-9878-a4ff7797573f"/>
+    <concept_name concept_name_id="487" concept_id="100122" name="Lactic Acid Dehydrogenase" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="1fafb8f9-0a7e-3cc2-88c0-76207b780a9f"/>
+    <concept_name concept_name_id="492" concept_id="100123" name="Total bilirubin" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="666e906e-628f-3aee-a237-5f0c7a2f606f"/>
+    <concept_name concept_name_id="494" concept_id="100124" name="Aspartate Aminotransferase" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="0b36ef6c-b134-353c-a578-8c5f5a1a7e00"/>
+    <concept_name concept_name_id="500" concept_id="100125" name="Alanine Aminotransferase" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="e7353958-1d34-3846-abbc-9592adb582aa"/>
+    <concept_name concept_name_id="515" concept_id="100130" name="Human immunodeficiency virus (HIV) disease" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="030797cc-84da-3f6e-8573-c69c699cb5ac"/>
+    <concept_name concept_name_id="517" concept_id="100131" name="Prevention of Maternal to Child HIV transmissio" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="00352303-4a95-3a87-8f70-83927dbf75c0"/>
+    <concept_name concept_name_id="520" concept_id="100132" name="Pre-exposure prophylaxis (PrEP)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="ab2b31a8-f2c7-359b-a54f-0524d817c4be"/>
+    <concept_name concept_name_id="521" concept_id="100133" name="HIV treatment status" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="2a443b0b-f2c5-3b39-aba2-0bab17027b58"/>
+    <concept_name concept_name_id="523" concept_id="100134" name="Program status" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="d612daea-7da6-3f2b-b476-d05a304e4038"/>
+    <concept_name concept_name_id="525" concept_id="100135" name="On Antiretrovirals Treatment" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:04.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="c90ed5f3-4c4d-303b-b8bd-d6b5d21c0f81"/>
+    <concept_name concept_name_id="528" concept_id="100136" name="Lost to follow-up" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:05.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="446c56a5-9805-3521-a563-ff4f3b400066"/>
+    <concept_name concept_name_id="530" concept_id="100137" name="Never started" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:05.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="fde2f960-976b-3bf5-bac9-9474a8f453e1"/>
+    <concept_name concept_name_id="570" concept_id="100153" name="Mild persistent asthma (J45.9)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="7ddb052f-049a-3c09-83b7-ac97a52c4318"/>
+    <concept_name concept_name_id="573" concept_id="100154" name="Acute rheumatic fever (I00)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="2fbcddae-b2db-3a3e-86c9-7926d248651e"/>
+    <concept_name concept_name_id="576" concept_id="100155" name="Idiopathic cardiomyopathy (I42.8)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="02e94541-1224-3213-badd-865289496b14"/>
+    <concept_name concept_name_id="582" concept_id="100156" name="Heart Failure (I50.9)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="55af4624-2588-331f-8200-976c16bdaf15"/>
+    <concept_name concept_name_id="585" concept_id="100157" name="Rheumatic Fever Without Heart Involvement (I00)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="330812b0-00de-3036-b2ff-530bb5657351"/>
+    <concept_name concept_name_id="589" concept_id="100158" name="Birth Asphyxia (P21.9)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="40d4f1c4-df13-310e-a47d-031307fb18ff"/>
+    <concept_name concept_name_id="594" concept_id="100159" name="Type 1 diabetes (E10)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="e3e480ae-a483-361a-9928-f0c1f0e73784"/>
+    <concept_name concept_name_id="596" concept_id="100160" name="Malignant tumor of lymphatic and hematopoietic tissue (C96.7)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:08.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="590ad24e-d6df-3535-b55c-d8cb64b3bf09"/>
+    <concept_name concept_name_id="599" concept_id="100161" name="Urticaria, Solar (L56.3)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:09.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="90da744f-793e-3600-a2aa-ab5ad4780d30"/>
+    <concept_name concept_name_id="603" concept_id="100162" name="Herpes simplex esophagitis (B00.8)" locale="en" locale_preferred="true" creator="1" date_created="2022-08-23 12:02:09.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="0a4fd7c7-c4a3-37db-9961-3efef48e47e7"/>
+    
+    <program program_id="1" concept_id="100130" creator="1" date_created="2022-08-23 12:02:10.0" changed_by="1" date_changed="2022-08-23 12:02:11.0" retired="false" name="HIV Care and Treatment test" description="HIV Care and Treatment" uuid="64f950e6-1b07-4ac0-8e7e-f3e148f3463f"/>
+    <program program_id="2" concept_id="100131" creator="1" date_created="2022-08-23 12:02:10.0" changed_by="1" date_changed="2022-08-23 12:02:11.0" retired="false" name="PMTCT test" description="Program for prevention of Maternal to Child HIV transmission" uuid="d1b6cd43-8ac7-4cdd-8fb4-fe51635c82b4"/>
+    <program program_id="3" concept_id="100132" creator="1" date_created="2022-08-23 12:02:10.0" changed_by="1" date_changed="2022-08-23 12:02:11.0" retired="false" name="HIV Preventative Services (PEP/PrEP) test" description="Program for prevention of HIV through Pre-Exposure Prophylaxis regimens" uuid="ac1bbc45-8c35-49ff-a574-9553ff789527"/>
+    <program_workflow program_workflow_id="1" program_id="1" concept_id="100133" creator="1" date_created="2022-08-23 12:02:10.0" retired="false" changed_by="1" date_changed="2022-08-23 12:02:11.0" uuid="70921392-4e3e-5465-978d-45b68b7def5f"/>
+    <program_workflow program_workflow_id="2" program_id="2" concept_id="100134" creator="1" date_created="2022-08-23 12:02:10.0" retired="false" changed_by="1" date_changed="2022-08-23 12:02:11.0" uuid="59bce157-3bfa-11e7-abc4-6b50acec278b"/>
+    <program_workflow program_workflow_id="3" program_id="3" concept_id="100134" creator="1" date_created="2022-08-23 12:02:11.0" retired="false" changed_by="1" date_changed="2022-08-23 12:02:11.0" uuid="ee8c4f22-98f8-9740-494a-3f757cb1210c"/>
+    <program_workflow_state program_workflow_state_id="1" program_workflow_id="1" concept_id="100135" initial="true" terminal="false" creator="1" date_created="2022-08-23 12:02:11.0" retired="false" uuid="7c0a5653-313f-4564-b9cf-d59adf1173dc"/>
+    <program_workflow_state program_workflow_state_id="2" program_workflow_id="2" concept_id="100136" initial="true" terminal="false" creator="1" date_created="2022-08-23 12:02:11.0" retired="false" uuid="aa359664-2f8e-4ea1-ab48-fb2d5bc1dced"/>
+    <program_workflow_state program_workflow_state_id="3" program_workflow_id="3" concept_id="100137" initial="true" terminal="false" creator="1" date_created="2022-08-23 12:02:11.0" retired="false" uuid="b02b289f-7f72-402c-9fb5-4762e5cb106a"/>
+    
+    <order_type order_type_id="2" name="Drug Order" description="An order for a medication to be given to the patient" creator="1" date_created="2010-05-12 00:00:00.0" retired="false" uuid="131168f4-15f5-102d-96e4-000c29c2a5d7" java_class_name="org.openmrs.DrugOrder"/>
+    <order_type order_type_id="3" name="Test Order" description="Order type for test orders" creator="1" date_created="2014-03-09 00:00:00.0" retired="false" uuid="52a447d3-a64a-11e3-9aeb-50e549534c5e" java_class_name="org.openmrs.TestOrder"/>
+    
+    <care_setting care_setting_id="1" name="Outpatient" description="Out-patient care setting" care_setting_type="OUTPATIENT" creator="1" date_created="2013-12-27 00:00:00.0" retired="false" uuid="6f0c9a92-6f24-11e3-af88-005056821db0"/>
+    <care_setting care_setting_id="2" name="Inpatient" description="In-patient care setting" care_setting_type="INPATIENT" creator="1" date_created="2013-12-27 00:00:00.0" retired="false" uuid="c365e560-c3ec-11e3-9c1a-0800200c9a66"/>
+    
+    <global_property property="order.nextOrderNumberSeed" property_value="100" description="The next order number available for assignment" uuid="79404db8-7430-4fd1-9917-f45ad9878966"/>
 </dataset>

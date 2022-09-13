@@ -11,13 +11,19 @@
 	<packaging>jar</packaging>
 	<name>Reference Demo Data Module OMOD</name>
 	<description>OMOD project for ReferenceDemoData</description>
-	
+
     <dependencies>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>${project.parent.artifactId}-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>initializer-api-2.2</artifactId>
+			<version>${initializer.version}</version>
+			<scope>provided</scope>
+		</dependency>
     </dependencies>
 
 

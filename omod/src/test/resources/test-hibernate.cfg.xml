@@ -6,5 +6,13 @@
 <hibernate-configuration>
     <session-factory>
       <mapping resource="IdentifierSource.hbm.xml" />
+      <mapping resource="AppointmentServiceDefinition.hbm.xml"/>
+      <mapping resource="Speciality.hbm.xml"/>
+      <mapping resource="ServiceWeeklyAvailability.hbm.xml"/>
+      <mapping resource="Appointment.hbm.xml"/>
+      <mapping resource="AppointmentServiceType.hbm.xml"/>
+      <mapping resource="AppointmentAudit.hbm.xml"/>
+      <mapping resource="AppointmentProvider.hbm.xml"/>
+      <mapping resource="AppointmentRecurringPattern.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

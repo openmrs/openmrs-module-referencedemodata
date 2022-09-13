@@ -23,9 +23,11 @@
 		<require_module version="${idgen.version}">
 			org.openmrs.module.idgen
 		</require_module>
+		<require_module version="${appointments.version}">
+			org.bahmni.module.appointments
+		</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
-	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ReferenceDemoDataActivator</activator>
     
