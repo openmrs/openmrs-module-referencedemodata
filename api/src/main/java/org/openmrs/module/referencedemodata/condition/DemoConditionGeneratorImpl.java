@@ -29,10 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 9.*")
 public class DemoConditionGeneratorImpl implements DemoConditionGenerator {
 	
-	@Autowired
 	private ConditionService conditionService;
 	
-	@Autowired
 	private ConceptService conceptService;
 	
 	@Override
@@ -48,5 +46,13 @@ public class DemoConditionGeneratorImpl implements DemoConditionGenerator {
 			conditionService.saveCondition(condition);
 		}
 		return condition;
+	}
+	
+	public void setConditionService(ConditionService conditionService) {
+		this.conditionService = conditionService;
+	}
+	
+	public void setConceptService(ConceptService conceptService) {
+		this.conceptService = conceptService;
 	}
 }

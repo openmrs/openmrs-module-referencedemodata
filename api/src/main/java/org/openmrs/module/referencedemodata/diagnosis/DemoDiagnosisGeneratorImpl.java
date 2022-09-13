@@ -30,10 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @OpenmrsProfile(openmrsPlatformVersion = "2.2.* - 9.*")
 public class DemoDiagnosisGeneratorImpl implements DemoDiagnosisGenerator {
 
-	@Autowired
 	private DiagnosisService diagnosisService;
 	
-	@Autowired
 	private DemoConditionGenerator conditionGenerator;
 	
 	@Override
@@ -52,5 +50,13 @@ public class DemoDiagnosisGeneratorImpl implements DemoDiagnosisGenerator {
 			
 			diagnosisService.save(diagnosis);	
 		}
+	}
+	
+	public void setDiagnosisService(DiagnosisService diagnosisService) {
+		this.diagnosisService = diagnosisService;
+	}
+	
+	public void setConditionGenerator(DemoConditionGenerator conditionGenerator) {
+		this.conditionGenerator = conditionGenerator;
 	}
 }
