@@ -12,7 +12,6 @@ package org.openmrs.module.referencedemodata.jackson;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -26,7 +25,7 @@ public class RangeDeserializer extends StdDeserializer<Range<Double>> {
 	}
 	
 	@Override
-	public Range<Double> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public Range<Double> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		JsonNode node = p.getCodec().readTree(p);
 		
 		if (!node.has("minimum") || !node.has("maximum")) {

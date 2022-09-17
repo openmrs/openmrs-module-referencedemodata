@@ -10,7 +10,6 @@
 package org.openmrs.module.referencedemodata.obs;
 
 import org.apache.commons.lang3.Range;
-import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
 import org.openmrs.module.referencedemodata.Randomizer;

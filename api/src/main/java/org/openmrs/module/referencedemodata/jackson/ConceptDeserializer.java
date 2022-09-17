@@ -12,7 +12,6 @@ package org.openmrs.module.referencedemodata.jackson;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +26,7 @@ public class ConceptDeserializer extends StdDeserializer<Concept> {
 	}
 	
 	@Override
-	public Concept deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+	public Concept deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		String uuid = p.getText();
 		
 		if (StringUtils.isBlank(uuid)) {

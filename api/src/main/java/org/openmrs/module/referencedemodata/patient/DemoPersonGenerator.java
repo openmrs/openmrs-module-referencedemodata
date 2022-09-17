@@ -44,11 +44,7 @@ public class DemoPersonGenerator {
 			"Pérez", "Hall", "Young", "Allen", "Sánchez", "Wright", "King", "Scott", "Green", "Baker", "Adams", "Nelson",
 			"Hill", "Ramírez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "Evans", "Turner", "Torres", "Odinga" };
 	
-	public static Person createDemoPerson(int minAge) {
-		return populatePerson(new Person(), minAge);
-	}
-	
-	public static Person populatePerson(Person person, int minAge) {
+	public static Person populatePerson(Person person) {
 		PersonName personName = new PersonName();
 		String gender = randomArrayEntry(GENDERS);
 		boolean male = gender.equals("M");
@@ -65,17 +61,17 @@ public class DemoPersonGenerator {
 		patientAddress.setPostalCode(randomSuffix(5));
 		person.addAddress(patientAddress);
 		
-		person.setBirthdate(randomBirthdate(minAge));
+		person.setBirthdate(randomBirthdate());
 		person.setBirthdateEstimated(false);
 		person.setGender(gender);
 		
 		return person;
 	}
 	
-	private static Date randomBirthdate(int minAge) {
+	private static Date randomBirthdate() {
 		LocalDate now = LocalDate.now();
 		
-		int year = randomBetween(now.getYear() - MAX_AGE, now.getYear() - Math.max(MIN_AGE, minAge));
+		int year = randomBetween(now.getYear() - MAX_AGE, now.getYear() - MIN_AGE);
 		int month = randomBetween(1, 12);
 		int day = randomBetween(1, YearMonth.of(year, month).lengthOfMonth());
 		

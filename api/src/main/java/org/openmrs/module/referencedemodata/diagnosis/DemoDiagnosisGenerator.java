@@ -9,16 +9,53 @@
  */
 package org.openmrs.module.referencedemodata.diagnosis;
 
-import java.util.List;
-
-import org.openmrs.Concept;
+import org.openmrs.Condition;
+import org.openmrs.ConditionVerificationStatus;
+import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
-import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.api.DiagnosisService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.referencedemodata.DemoDataConceptCache;
+import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 
-public interface DemoDiagnosisGenerator {
+import static org.openmrs.module.referencedemodata.Randomizer.randomBetween;
+
+
+public class DemoDiagnosisGenerator {
 	
-	void createDiagnosis(boolean primary, Patient patient, Encounter encounter, Location location, 
-			List<Concept> allDiagnoses);
+	private DiagnosisService diagnosisService;
 	
+	private final DemoConditionGenerator conditionGenerator;
+	
+	private final DemoDataConceptCache conceptCache;
+	
+	public DemoDiagnosisGenerator(DemoDataConceptCache conceptCache, DemoConditionGenerator conditionGenerator) {
+		this.conceptCache = conceptCache;
+		this.conditionGenerator = conditionGenerator;
+	}
+	
+	public void createDiagnosis(boolean primary, Patient patient, Encounter encounter) {
+		Condition condition = conditionGenerator.createCondition(patient, encounter,
+				conceptCache.getConceptsByClass("Diagnosis"));
+		
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setCondition(condition);
+		diagnosis.setDiagnosis(condition.getCondition());
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCertainty(primary ? ConditionVerificationStatus.PROVISIONAL : ConditionVerificationStatus.CONFIRMED);
+		diagnosis.setPatient(patient);
+		diagnosis.setRank(randomBetween(1, 2));
+		diagnosis.setDateCreated(encounter.getEncounterDatetime());
+		
+		getDiagnosisService().save(diagnosis);
+	}
+	
+	protected DiagnosisService getDiagnosisService() {
+		if (diagnosisService == null) {
+			diagnosisService = Context.getDiagnosisService();
+		}
+		
+		return diagnosisService;
+	}
 }
