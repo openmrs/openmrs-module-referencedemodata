@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openmrs.Encounter;
@@ -26,6 +26,7 @@ import org.openmrs.Provider;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.ProviderService;
@@ -127,6 +128,9 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					DemoAppointmentsGenerator appointmentsGenerator = new DemoAppointmentsGenerator(providerGenerator);
 					DemoProgramGenerator programGenerator = new DemoProgramGenerator();
 					
+					List<VisitType> visitTypes = getVisitService().getAllVisitTypes().stream()
+							.filter(vt -> "Offline Visit".equals(vt.getName())).collect(Collectors.toList());
+					
 					for (Integer patientId : createdPatientIds) {
 						boolean isInProgram = false;
 						
@@ -138,9 +142,8 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						Visit lastVisit = null;
 						for (int i = 0; i < visitCount; i++) {
 							boolean shortVisit = shouldRandomEventOccur(0.8);
-							lastVisit = visitGenerator.createDemoVisit(patient, getVisitService().getAllVisitTypes(),
-									visitLocation, shortVisit, lastVisit,
-									visitCount - (i + 1));
+							lastVisit = visitGenerator.createDemoVisit(patient, visitTypes, visitLocation, shortVisit,
+									lastVisit, visitCount - (i + 1));
 							
 							Provider encounterProvider = null;
 							if (lastVisit.getNonVoidedEncounters().size() > 0) {
@@ -177,8 +180,9 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 										LocalDateTime visitStartDate = now.plusDays(randomBetween(1, 365 - 1))
 												.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
 										LocalDateTime visitEndDate = visitStartDate.plusMinutes(randomBetween(10, 30));
-										Appointment futureAppointment = appointmentsGenerator.createDemoAppointment(patient, toDate(visitStartDate),
-												toDate(visitEndDate), providerGenerator.getRandomClinician());
+										Appointment futureAppointment = appointmentsGenerator.createDemoAppointment(patient,
+												toDate(visitStartDate), toDate(visitEndDate),
+												providerGenerator.getRandomClinician());
 										
 										if (log.isInfoEnabled()) {
 											log.info("created a future appointment for patient {} at {}",
