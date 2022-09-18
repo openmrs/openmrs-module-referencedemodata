@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -37,6 +38,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataActivator.MODULE_ID;
+import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.distinctByKey;
 
 @Slf4j
 public class DemoObsGenerator {
@@ -207,6 +209,9 @@ public class DemoObsGenerator {
 		ObjectMapper om = new ObjectMapper();
 		ObjectReader reader = om.readerFor(NumericObsValueDescriptor.class);
 		return Arrays.stream(patternResolver.getResources(resourcePattern))
+				// not sure why, but each resource seems to be loaded twice
+				// so we use the file basename as a unique key
+				.filter(distinctByKey(r -> FilenameUtils.getBaseName(r.getFilename())))
 				.map(r -> {
 					try (InputStream is = r.getInputStream()) {
 						if (is == null) {

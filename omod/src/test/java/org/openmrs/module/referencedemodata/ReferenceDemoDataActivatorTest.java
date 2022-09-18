@@ -18,15 +18,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Visit;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProgramWorkflowService;
@@ -42,10 +46,13 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -78,10 +85,16 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 	VisitService visitService;
 	
 	@Autowired
-	private ConditionService conditionService;
+	ConditionService conditionService;
 	
 	@Autowired
-	private DiagnosisService diagnosisService;
+	DiagnosisService diagnosisService;
+	
+	@Autowired
+	ObsService obsService;
+	
+	@Autowired
+	ConceptService conceptService;
 	
 	@Autowired
 	OrderService orderService;
@@ -154,7 +167,8 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		int patientErrorFactor = (int) (allPatients.size() * 0.15);
 		int visitErrorFactor = (int) (allVisits.size() * 0.15);
 		
-		assertThat("Expected at least three visits per patient on average", allVisits.size(), greaterThan(3 * demoPatientCount));
+		assertThat("Expected at least three visits per patient on average", allVisits.size(),
+				greaterThan(3 * demoPatientCount));
 		assertThat("Expected at least one appointment per visit", appointmentsService.getAllAppointments(null).size(),
 				greaterThanOrEqualTo(allVisits.size()));
 		assertThat("Expected approximately one condition per visit",
@@ -166,6 +180,58 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		assertThat("Expected more than 3 encounters per visit on average",
 				allVisits.stream().map(visit -> visit.getEncounters().size()).reduce(0, Integer::sum),
 				greaterThan(3 * allVisits.size()));
+		
+		List<Encounter> labEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+				.filter(e -> "Lab Results".equals(e.getEncounterType().getName())).collect(Collectors.toList());
+		assertThat("Expected at least 2/3rds of visits to include lab results",
+				labEncounters, hasSize(greaterThanOrEqualTo(Math.floorDiv(2 * allVisits.size(), 3))));
+		
+		List<Concept> labConcepts = Arrays.stream(new String[] {
+						"21AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1015AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+						"1133AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" })
+				.map(conceptService::getConceptByUuid).collect(Collectors.toList());
+		
+		assertThat("Expected each lab concept to have a result per lab encounter",
+				obsService.getObservations(null, null, labConcepts, null, null, null, null, null, null, null, null, false),
+				hasSize(labConcepts.size() * labEncounters.size()));
+		
+		List<Encounter> vitalsEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+				.filter(e -> "Vitals".equals(e.getEncounterType().getName())).collect(Collectors.toList());
+		assertThat("Expected at least one vitals encounter per visit",
+				vitalsEncounters, hasSize(greaterThanOrEqualTo(vitalsEncounters.size())));
+		
+		List<Concept> vitalsConcepts = Arrays.stream(new String[] {
+						"5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+						"5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+						"5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+						"5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" })
+				.map(conceptService::getConceptByUuid).collect(Collectors.toList());
+		
+		assertThat("Expected each vitals concept to have a result per vitals encounter",
+				obsService.getObservations(null, null, vitalsConcepts, null, null, null, null, null, null, null, null,
+						false),
+				hasSize(vitalsConcepts.size() * vitalsEncounters.size()));
+		
+		List<Encounter> covidEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+				.filter(e -> "Consultation".equals(e.getEncounterType().getName()) && e.getForm() != null && "Covid 19".equals(
+						e.getForm().getName())).collect(Collectors.toList());
+		assertThat("Expected at least 1/3rd of visits to include covid results",
+				covidEncounters, hasSize(greaterThanOrEqualTo(Math.floorDiv(allVisits.size(), 3))));
+		
+		Concept covidSymptomsConcept = conceptService.getConceptByUuid("0eaa21e0-5f69-41a9-9dea-942796590bbb");
+		List<Obs> covidSymptoms = covidEncounters.stream().flatMap(e -> e.getAllObs().stream())
+				.filter(o -> covidSymptomsConcept.equals(o.getConcept())).collect(Collectors.toList());
+		assertThat("Expect every covid encounter to have recorded symptoms",
+				covidSymptoms, hasSize(greaterThanOrEqualTo(covidEncounters.size())));
+		assertThat("Every covid symptom list should have at least one symptom",
+				covidSymptoms.stream().map(Obs::getValueCoded).filter(Objects::nonNull).collect(Collectors.toList()),
+				hasSize(covidSymptoms.size()));
+		
+		Concept covidTestConcept = conceptService.getConceptByUuid("89c5bc03-8ce2-40d8-a77d-20b5a62a1ca1");
+		List<Obs> covidTests = covidEncounters.stream().flatMap(e -> e.getAllObs().stream())
+				.filter(o -> covidTestConcept.equals(o.getConcept())).collect(Collectors.toList());
+		assertThat("Expect every covid encounter to record whether or not a test was done",
+				covidTests, hasSize(covidEncounters.size()));
 		
 		List<Encounter> orderEncounters = encounterService.getEncounters(
 				new EncounterSearchCriteria(null, null, null, null, null, null,

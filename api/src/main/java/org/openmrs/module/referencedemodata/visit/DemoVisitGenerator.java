@@ -285,7 +285,14 @@ public class DemoVisitGenerator {
 		getEncounterService().saveEncounter(covidFormEncounter);
 		
 		// symptoms
-		int numberOfCovidSymptoms = randomBetween(1, COVID_SYMPTOM_CODES.length);
+		// idea is at least one, probably two, lower chances of fewer
+		// TODO This can probably be reduced to a simple calculation without the loop
+		int numberOfCovidSymptoms = 1;
+		for (int i = 0; i < randomBetween(1, COVID_SYMPTOM_CODES.length + 1); i++) {
+			if (shouldRandomEventOccur(Math.pow(.8, Math.pow(i + 1, 1d / (i + 1))))) {
+				numberOfCovidSymptoms++;
+			}
+		}
 		String[] covidSymptoms = randomSubArray(COVID_SYMPTOM_CODES, numberOfCovidSymptoms);
 		if (covidSymptoms != null && covidSymptoms.length > 0) {
 			List<Obs> symptomObs = new ArrayList<>(covidSymptoms.length);

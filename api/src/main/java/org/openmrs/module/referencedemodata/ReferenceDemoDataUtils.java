@@ -13,6 +13,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ReferenceDemoDataUtils {
 	
@@ -30,6 +36,11 @@ public class ReferenceDemoDataUtils {
 	
 	public static Date toDate(LocalDate localDate) {
 		return toDate(localDate.atTime(0, 0, 0, 0));
+	}
+	
+	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+		final Set<Object> map = new HashSet<>();
+		return t -> map.add(keyExtractor.apply(t));
 	}
 	
 }
