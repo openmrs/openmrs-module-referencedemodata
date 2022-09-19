@@ -129,7 +129,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					DemoProgramGenerator programGenerator = new DemoProgramGenerator();
 					
 					List<VisitType> visitTypes = getVisitService().getAllVisitTypes().stream()
-							.filter(vt -> "Offline Visit".equals(vt.getName())).collect(Collectors.toList());
+							.filter(vt -> !"Offline Visit".equals(vt.getName())).collect(Collectors.toList());
 					
 					for (Integer patientId : createdPatientIds) {
 						boolean isInProgram = false;
