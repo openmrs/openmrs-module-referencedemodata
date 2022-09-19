@@ -229,10 +229,10 @@ public class DemoVisitGenerator {
 				visit.addEncounter(
 						createDemoVitalsEncounter(patient, toDate(lastEncounterTime), admitLocation, visitProvider));
 				
-				lastEncounterTime = lastEncounterTime.plusMinutes(randomBetween(0, 120));
+				lastEncounterTime = lastEncounterTime.plusMinutes(randomBetween(0, 60));
 				visit.addEncounter(createVisitNote(patient, toDate(lastEncounterTime), admitLocation, visitProvider));
 				
-				int labStartMinutes = randomBetween(0, 120);
+				int labStartMinutes = randomBetween(0, 60);
 				lastEncounterTime = lastEncounterTime.plusMinutes(labStartMinutes);
 				
 				Encounter labEncounter = createDemoLabsEncounter(patient, toDate(lastEncounterTime), location);
@@ -240,6 +240,14 @@ public class DemoVisitGenerator {
 				visit.addEncounter(
 						createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
 								visitProvider));
+				
+				if (shouldRandomEventOccur(.33)) {
+					int formStartMinutes = randomBetween(0, Math.min(labStartMinutes, 20));
+					
+					visit.addEncounter(
+							createCovidForm(patient, toDate(lastEncounterTime.minusMinutes(labStartMinutes).plusMinutes(formStartMinutes)), location,
+									visitProvider));
+				}
 			}
 			
 			{
