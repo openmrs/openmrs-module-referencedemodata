@@ -31,7 +31,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.referencedemodata.Randomizer;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
@@ -39,6 +38,7 @@ import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 
 import static org.openmrs.module.referencedemodata.Randomizer.randomArrayEntry;
 import static org.openmrs.module.referencedemodata.Randomizer.randomBetween;
+import static org.openmrs.module.referencedemodata.Randomizer.randomListEntry;
 import static org.openmrs.module.referencedemodata.Randomizer.randomSubArray;
 import static org.openmrs.module.referencedemodata.Randomizer.shouldRandomEventOccur;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
@@ -159,7 +159,7 @@ public class DemoVisitGenerator {
 			visitStart = visitStart.minusDays(ADMISSION_DAYS_MAX + 1);
 		}
 		
-		Visit visit = new Visit(patient, Randomizer.randomListEntry(visitTypes), toDate(visitStart));
+		Visit visit = new Visit(patient, randomListEntry(visitTypes), toDate(visitStart));
 		visit.setLocation(location);
 		
 		Provider visitProvider = providerGenerator.getRandomClinician();
