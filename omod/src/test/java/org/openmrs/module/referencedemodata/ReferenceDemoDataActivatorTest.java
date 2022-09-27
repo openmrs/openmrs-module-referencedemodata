@@ -169,8 +169,8 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		
 		assertThat("Expected at least three visits per patient on average", allVisits.size(),
 				greaterThan(3 * demoPatientCount));
-		assertThat("Expected at least one appointment per visit", appointmentsService.getAllAppointments(null).size(),
-				greaterThanOrEqualTo(allVisits.size()));
+		assertThat("Expected about appointment for every 2 visits", appointmentsService.getAllAppointments(null).size(),
+				greaterThanOrEqualTo((allVisits.size() / 2) - visitErrorFactor));
 		assertThat("Expected approximately one condition per visit",
 				allPatients.stream().map(patient -> conditionService.getActiveConditions(patient).size())
 						.reduce(0, Integer::sum), greaterThan(allVisits.size() - visitErrorFactor));
