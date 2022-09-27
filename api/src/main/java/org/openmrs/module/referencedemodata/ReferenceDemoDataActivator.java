@@ -135,7 +135,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						boolean isInProgram = false;
 						
 						Patient patient = Context.getPatientService().getPatient(patientId);
-						int visitCount = randomBetween(1, Math.min(Math.round(patient.getAge() / 1.5f), 15));
+						int visitCount = randomBetween(1, Math.min(Math.round(patient.getAge() / 1.5f), 10));
 						
 						Location visitLocation = patient.getPatientIdentifier().getLocation();
 						
@@ -155,8 +155,10 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 								}
 							}
 							
-							appointmentsGenerator.createDemoAppointment(patient, lastVisit.getStartDatetime(),
-									lastVisit.getStopDatetime(), encounterProvider);
+							if (shouldRandomEventOccur(.5)) {
+								appointmentsGenerator.createDemoAppointment(patient, lastVisit.getStartDatetime(),
+										lastVisit.getStopDatetime(), encounterProvider);
+							}
 							
 							// about 1/3 patients in their first 2 visits will be registered as part of a program
 							if (!isInProgram && i < 2) {

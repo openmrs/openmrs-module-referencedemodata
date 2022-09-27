@@ -183,9 +183,12 @@ public class DemoVisitGenerator {
 				Encounter labEncounter = createDemoLabsEncounter(patient,
 						toDate(lastEncounterTime.plusMinutes(labStartMinutes)), location);
 				visit.addEncounter(labEncounter);
-				visit.addEncounter(
-						createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
-								visitProvider));
+				
+				if (shouldRandomEventOccur(.33)) {
+					visit.addEncounter(
+							createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
+									visitProvider));
+				}
 			}
 			
 			// roughly 2/3rds of "short" visits will also have a COVID form
@@ -237,9 +240,11 @@ public class DemoVisitGenerator {
 				
 				Encounter labEncounter = createDemoLabsEncounter(patient, toDate(lastEncounterTime), location);
 				visit.addEncounter(labEncounter);
-				visit.addEncounter(
-						createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
-								visitProvider));
+				if (shouldRandomEventOccur(.2)) {
+					visit.addEncounter(
+							createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
+									visitProvider));
+				}
 				
 				if (shouldRandomEventOccur(.33)) {
 					int formStartMinutes = randomBetween(0, Math.min(labStartMinutes, 20));
