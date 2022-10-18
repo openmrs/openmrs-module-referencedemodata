@@ -68,7 +68,7 @@ public class DemoVisitGenerator {
 	
 	private static final String[] COVID_SYMPTOM_CODES = {
 			"30e2da8f-34ca-4c93-94c8-d429f22d381c",
-			"1e2918fb-4e15-11e4-8a57-0800271c1b75",
+			"143264AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 			"2395de62-f5a6-49b6-ab0f-57a21a9029c1",
 			"140238AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
 			"2c75944e-5fc5-4d9d-b389-fe878fde38e3",
