@@ -188,12 +188,12 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		
 		List<Concept> labConcepts = Arrays.stream(new String[] {
 						"21AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "1015AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
-						"1133AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" })
+						"1133AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","1019AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" })
 				.map(conceptService::getConceptByUuid).collect(Collectors.toList());
 		
-		assertThat("Expected each lab concept to have a result per lab encounter",
+		assertThat("Expected each lab encounter to have one or more lab orders",
 				obsService.getObservations(null, null, labConcepts, null, null, null, null, null, null, null, null, false),
-				hasSize(labConcepts.size() * labEncounters.size()));
+				hasSize(greaterThanOrEqualTo(labEncounters.size())));
 		
 		List<Encounter> vitalsEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
 				.filter(e -> "Vitals".equals(e.getEncounterType().getName())).collect(Collectors.toList());

@@ -214,15 +214,23 @@
     <concept concept_id="10014" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="21AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10014" allow_decimal="1"/>
+    <concept_name concept_name_id="10014" concept_id="10014" name="Haemoglobin" locale="en" locale_preferred="true" creator="1" date_created="2022-10-19 06:12:44.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="23BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" date_changed="2022-10-19 06:12:46.0" changed_by="1"/>
     <concept concept_id="10015" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10015" allow_decimal="0"/>
     <concept concept_id="10016" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="1133AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10016" allow_decimal="1"/>
+    <concept_name concept_name_id="10016" concept_id="10016" name="Serum potassium" locale="en" locale_preferred="true" creator="1" date_created="2022-10-19 06:13:12.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="1208BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" date_changed="2022-10-19 06:13:12.0" changed_by="1"/>
     <concept concept_id="10017" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2008-06-11 13:22:00.0" retired="false" uuid="1015AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
     <concept_numeric concept_id="10017" allow_decimal="0"/>
+    <concept_name concept_name_id="10017" concept_id="10017" name="Hematocrit" locale="en" locale_preferred="true" creator="1" date_created="2022-10-19 06:12:43.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="1066BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" date_changed="2022-10-19 06:12:47.0" changed_by="1"/>
+    <concept concept_id="10070" datatype_id="4" class_id="8" creator="1" is_set="1"
+             date_created="2008-06-11 13:22:00.0" retired="false" uuid="1019AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10070" concept_id="10070" name="Complete blood count" locale="en" locale_preferred="true" creator="1" date_created="2022-10-19 06:12:43.0" concept_name_type="FULLY_SPECIFIED" voided="false" uuid="1072BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB" date_changed="2022-10-19 06:12:47.0" changed_by="1"/> 
+    <concept_set concept_set_id="1001" concept_id="10014" concept_set="10070" sort_weight="0.0" creator="1" date_created="2022-10-19 06:12:44.0" uuid="116AEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+    <concept_set concept_set_id="1002" concept_id="10017" concept_set="10070" sort_weight="1.0" creator="1" date_created="2022-10-19 06:12:44.0" uuid="1AEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
     <concept concept_id="10018" retired="false" datatype_id="2" class_id="1" is_set="false" creator="1"
              date_created="2022-08-23 12:02:03.0" changed_by="1" date_changed="2022-08-23 12:02:03.0"
              uuid="40f3ff80-44ff-4fad-b0eb-fa89ff05e1f8"/>
