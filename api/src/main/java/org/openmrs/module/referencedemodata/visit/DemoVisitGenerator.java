@@ -370,7 +370,9 @@ public class DemoVisitGenerator {
 				providerGenerator.getRandomLabTech());
 		getEncounterService().saveEncounter(encounter);
 		// Generate 1 - 3 order results, this in turn affects the orders created for these results ahead
-		for (int i = randomBetween(1,3); i > 0; i--) obsGenerator.createDemoLabObs(patient, encounter, location);
+		for (int i = randomBetween(1,3); i > 0; i--) {
+			obsGenerator.createDemoLabObs(patient, encounter, location);
+		}
 		return encounter;
 	}
 	

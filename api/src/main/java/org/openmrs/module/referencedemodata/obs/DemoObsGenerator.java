@@ -44,6 +44,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
 import static org.openmrs.module.referencedemodata.Randomizer.randomArrayEntry;
+import static org.openmrs.module.referencedemodata.Randomizer.randomListEntry;
+import static org.openmrs.module.referencedemodata.Randomizer.shouldRandomEventOccur;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataActivator.MODULE_ID;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.distinctByKey;
 
@@ -91,14 +93,12 @@ public class DemoObsGenerator {
 	}
 	
 	public void createDemoLabObs(Patient patient, Encounter encounter, Location location) {
-		List<Concept> labConcepts = new ArrayList<>();
-		// Add panels thrice to increase chance of being picked
-		labConcepts.addAll(conceptCache.getConceptsByClass("LabSet"));
-		labConcepts.addAll(conceptCache.getConceptsByClass("LabSet"));
-		labConcepts.addAll(conceptCache.getConceptsByClass("LabSet"));
-		labConcepts.addAll(conceptCache.getConceptsByClass("Test"));
-		
-		Concept c = (Concept) randomArrayEntry(labConcepts.toArray());
+		Concept c = null;
+		if (shouldRandomEventOccur(.6666)) {
+			c = randomListEntry(conceptCache.getConceptsByClass("LabSet"));
+		} else {
+			c = randomListEntry(conceptCache.getConceptsByClass("Test"));
+		}
 		if (c.getConceptClass() != null && "LabSet".equalsIgnoreCase(c.getConceptClass().getName()) && c.getSet()) {
 			List<Obs> obsPanel = new ArrayList<>(c.getSetMembers().size());
 			for (Concept member : c.getSetMembers()) {
@@ -286,13 +286,13 @@ public class DemoObsGenerator {
 		// Coded values
 		else if (concept.getDatatype().isCoded()) {
 			if (!concept.getAnswers().isEmpty()) {
-				obs = createCodedObs(concept.getUuid(), ((ConceptAnswer)randomArrayEntry(concept.getAnswers().toArray())).getConcept(), patient, encounter, encounterDateTime, location);
+				obs = createCodedObs(concept.getUuid(), (randomListEntry(concept.getAnswers().stream().collect(Collectors.toList()))).getConcept(), patient, encounter, encounterDateTime, location);
 				
 			} 
 			else {
 				List<Concept> findingConcepts = conceptCache.getConceptsByClass("Finding");
 				if (findingConcepts != null) {
-					obs = createCodedObs(concept.getUuid(), ((Concept)randomArrayEntry(findingConcepts.toArray())).getUuid(), patient, encounter, encounterDateTime, location);
+					obs = createCodedObs(concept.getUuid(), ((Concept)randomListEntry(findingConcepts)).getUuid(), patient, encounter, encounterDateTime, location);
 
 				}
 			}
