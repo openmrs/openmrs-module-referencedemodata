@@ -206,7 +206,6 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					
 					try {
 						Context.flushSession();
-						Context.clearSession();
 					}
 					catch (Exception ignored) {
 					}

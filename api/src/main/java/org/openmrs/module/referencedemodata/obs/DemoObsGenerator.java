@@ -94,7 +94,7 @@ public class DemoObsGenerator {
 	
 	public void createDemoLabObs(Patient patient, Encounter encounter, Location location) {
 		Concept c = null;
-		if (shouldRandomEventOccur(.6666)) {
+		if (shouldRandomEventOccur(.4)) {
 			c = randomListEntry(conceptCache.getConceptsByClass("LabSet"));
 		} else {
 			c = randomListEntry(conceptCache.getConceptsByClass("Test"));
@@ -303,7 +303,7 @@ public class DemoObsGenerator {
 			if (labDescriptor.isEmpty()) {
 				// use default NumericObsValueDescriptor if none is defined
 				NumericObsValueDescriptor novd = new NumericObsValueDescriptor();
-				novd.setConcept(Context.getConceptService().getConceptNumeric(concept.getId()));
+				novd.setConcept(concept);
 				novd.setDecayType(DecayType.LINEAR);
 				novd.setInitialValue(Range.between(0.0, 150.0));
 				novd.setPrecision(Precision.INTEGER);
