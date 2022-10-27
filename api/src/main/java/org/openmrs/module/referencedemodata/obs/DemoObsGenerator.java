@@ -303,7 +303,7 @@ public class DemoObsGenerator {
 			if (labDescriptor.isEmpty()) {
 				// use default NumericObsValueDescriptor if none is defined
 				NumericObsValueDescriptor novd = new NumericObsValueDescriptor();
-				novd.setConcept((ConceptNumeric)concept);
+				novd.setConcept(Context.getConceptService().getConceptNumeric(concept.getId()));
 				novd.setDecayType(DecayType.LINEAR);
 				novd.setInitialValue(Range.between(0.0, 150.0));
 				novd.setPrecision(Precision.INTEGER);
