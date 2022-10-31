@@ -326,7 +326,7 @@ public class DemoObsGenerator {
 				descriptor.setConcept(concept);
 				descriptor.setDecayType(DecayType.LINEAR);
 				
-				ConceptNumeric conceptNumeric = (ConceptNumeric) concept;
+				ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(concept.getConceptId());
 				double max = 150.0;
 				if (conceptNumeric.getHiNormal() != null) {
 					max = conceptNumeric.getHiNormal();
