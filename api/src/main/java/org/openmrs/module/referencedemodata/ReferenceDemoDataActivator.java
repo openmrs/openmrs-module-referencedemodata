@@ -135,7 +135,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						boolean isInProgram = false;
 						
 						Patient patient = Context.getPatientService().getPatient(patientId);
-						int visitCount = randomBetween(1, Math.min(Math.round(patient.getAge() / 1.5f), 10));
+						int visitCount = randomBetween(1, Math.max(Math.round(patient.getAge() / 10.5f), 1));
 						
 						Location visitLocation = patient.getPatientIdentifier().getLocation();
 						

@@ -34,7 +34,7 @@ public class ConceptDeserializer extends StdDeserializer<Concept> {
 		}
 		
 		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConceptByUuid(uuid);
+		Concept concept = cs.getConceptNumericByUuid(uuid);
 		
 		if (concept == null) {
 			throw new IOException("Concept [" + uuid + "] does not exist. Please create it.");

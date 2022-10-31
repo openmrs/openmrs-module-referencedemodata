@@ -240,7 +240,7 @@ public class DemoVisitGenerator {
 				
 				Encounter labEncounter = createDemoLabsEncounter(patient, toDate(lastEncounterTime), location);
 				visit.addEncounter(labEncounter);
-				if (shouldRandomEventOccur(.2)) {
+				if (shouldRandomEventOccur(.05)) {
 					visit.addEncounter(
 							createDemoLabOrdersEncounter(labEncounter, Duration.ofMinutes(Math.floorDiv(labStartMinutes, 2)),
 									visitProvider));
@@ -369,7 +369,10 @@ public class DemoVisitGenerator {
 		Encounter encounter = createEncounter("Lab Results", patient, encounterTime, location,
 				providerGenerator.getRandomLabTech());
 		getEncounterService().saveEncounter(encounter);
-		obsGenerator.createDemoLabObs(patient, encounter, location);
+		// Generate 1 - 3 order results, this in turn affects the orders created for these results ahead
+		for (int i = randomBetween(1,3); i > 0; i--) {
+			obsGenerator.createDemoLabObs(patient, encounter, location);
+		}
 		return encounter;
 	}
 	
@@ -381,7 +384,8 @@ public class DemoVisitGenerator {
 		getEncounterService().saveEncounter(encounter);
 		
 		for (Obs obs : demoLabsEncounter.getAllObs()) {
-			if (obs.getConcept() != null && obs.getConcept().getConceptClass().getName().equalsIgnoreCase("Test")) {
+			if (obs.getConcept() != null && obs.getConcept().getConceptClass().getName().equalsIgnoreCase("Test")
+				|| obs.getConcept().getConceptClass().getName().equalsIgnoreCase("LabSet")) {
 				orderGenerator.createDemoTestOrder(encounter, obs.getConcept());
 			}
 		}

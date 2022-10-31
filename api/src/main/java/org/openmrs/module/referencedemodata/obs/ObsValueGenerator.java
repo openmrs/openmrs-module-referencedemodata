@@ -12,6 +12,7 @@ package org.openmrs.module.referencedemodata.obs;
 import org.apache.commons.lang3.Range;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.Randomizer;
 
 public class ObsValueGenerator {
@@ -32,7 +33,7 @@ public class ObsValueGenerator {
 			newValue = generateNextValue(valueDescriptor, previousValue);
 		}
 		
-		ConceptNumeric concept = valueDescriptor.getConcept();
+		ConceptNumeric concept = Context.getConceptService().getConceptNumeric(valueDescriptor.getConcept().getConceptId());
 		
 		if (concept.getHiAbsolute() != null && newValue.doubleValue() > concept.getHiAbsolute()) {
 			newValue = concept.getHiAbsolute();

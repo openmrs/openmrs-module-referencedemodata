@@ -11,7 +11,9 @@ package org.openmrs.module.referencedemodata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -118,6 +120,29 @@ public class Randomizer {
 		}
 		
 		return list.get(randomArrayIndex(list.size()));
+	}
+	
+	public static <T> T randomCollectionMember(Collection<T> collection) {
+		if (collection.size() == 0) {
+			return null;
+		}
+		
+		if (collection instanceof List) {
+			return randomListEntry((List<T>) collection);
+		}
+		
+		int index = randomArrayIndex(collection.size());
+		
+		Iterator<T> iterator = collection.iterator();
+		for (int i = 0; i < index - 1; i++) {
+			if (!iterator.hasNext()) {
+				throw new IllegalStateException(
+						"Could not find element " + i + " in collection " + collection + " with size " + collection.size());
+			}
+			iterator.next();
+		}
+		
+		return iterator.next();
 	}
 	
 	/**
