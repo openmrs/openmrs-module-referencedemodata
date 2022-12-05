@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>referencedemodata</artifactId>
-		<version>1.4.8-SNAPSHOT</version>
+		<version>1.4.8</version>
 	</parent>
 
 	<artifactId>referencedemodata-api-2.0</artifactId>
