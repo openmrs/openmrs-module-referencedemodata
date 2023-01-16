@@ -18,6 +18,10 @@ import org.openmrs.Provider;
 import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.fhir2.FhirConstants;
+import org.openmrs.module.fhir2.api.FhirTaskService;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.Task;
 
 import static org.openmrs.module.referencedemodata.Randomizer.shouldRandomEventOccur;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
@@ -30,6 +34,8 @@ public class DemoOrderGenerator {
 	private OrderType testOrderType = null;
 	
 	private CareSetting careSetting = null;
+	
+	private FhirTaskService fhirTaskService = null;
 	
 	public void createDemoTestOrder(Encounter encounter, Concept orderConcept) {
 		OrderType orderType = getTestOrderType();
@@ -49,6 +55,17 @@ public class DemoOrderGenerator {
 
 		encounter.addOrder(order);
 		getOrderService().saveOrder(order, null);
+		
+		Reference reference = new Reference();
+		reference.setReference(order.getUuid());
+		reference.setType(FhirConstants.SERVICE_REQUEST);
+		
+		Task orderTask = new Task();
+		orderTask.setIntent(Task.TaskIntent.ORDER);
+		orderTask.setStatus(Task.TaskStatus.COMPLETED);
+		orderTask.addBasedOn(reference);
+		
+		getTaskTranslator().create(orderTask);
 	}
 	
 	protected CareSetting getCareSetting() {
@@ -75,4 +92,11 @@ public class DemoOrderGenerator {
 		return os;
 	}
 	
+	protected FhirTaskService getTaskTranslator() {
+		if (fhirTaskService == null) {
+			fhirTaskService = Context.getRegisteredComponents(FhirTaskService.class).get(0);
+		}
+		
+		return fhirTaskService;
+	}
 }

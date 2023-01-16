@@ -14,6 +14,7 @@
 package org.openmrs.module.referencedemodata;
 
 import org.hibernate.cfg.Environment;
+import org.hl7.fhir.r4.model.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
@@ -38,6 +39,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.module.appointments.service.AppointmentsService;
+import org.openmrs.module.fhir2.api.FhirTaskService;
 import org.openmrs.module.idgen.SequentialIdentifierGenerator;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.idgen.validator.LuhnMod30IdentifierValidator;
@@ -45,6 +47,10 @@ import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import ca.uhn.fhir.rest.param.TokenAndListParam;
+import ca.uhn.fhir.rest.param.TokenOrListParam;
+import ca.uhn.fhir.rest.param.TokenParam;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,6 +61,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -104,6 +111,9 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 	
 	@Autowired
 	ProgramWorkflowService programWorkflowService;
+	
+	@Autowired
+	FhirTaskService fhirTaskService;
 	
 	int demoPatientCount;
 	
@@ -243,6 +253,10 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
 		assertThat("Expected at least 1/3 of patients to be registered in a program",
 				programWorkflowService.getPatientPrograms(new Cohort(), programWorkflowService.getPrograms("test")).size(),
 				greaterThanOrEqualTo((allPatients.size() / 3) - patientErrorFactor));
+		
+		assertThat("Expected a COMPLETED FHIR Task per order",
+				allPatients.stream().map(patient -> orderService.getAllOrdersByPatient(patient).size())
+						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(null,null,new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString()))),null,null,null,null).size()));
 		
 	}
 	
