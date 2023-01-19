@@ -39,6 +39,7 @@
 		<idgen.version>4.4.0</idgen.version>
 		<initializer.version>2.3.0</initializer.version>
 		<appointments.version>1.4.0</appointments.version>
+		<fhir2.version>1.7.0</fhir2.version>
 	</properties>
 
 	<dependencies>
@@ -62,6 +63,27 @@
 			<artifactId>openmrs-web</artifactId>
             <version>${openMRSVersion}</version>
 			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>fhir2-api</artifactId>
+			<version>${fhir2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>fhir2-api-2.1</artifactId>
+			<version>${fhir2.version}</version>
+			<scope>provided</scope>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>fhir2-api-2.2</artifactId>
+			<version>${fhir2.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -99,6 +121,14 @@
 			<version>1.18.24</version>
 			<scope>compile</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+			<scope>test</scope>
+		</dependency>
+				
     </dependencies>
 
 	<build>
