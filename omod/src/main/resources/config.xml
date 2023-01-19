@@ -26,6 +26,9 @@
 		<require_module version="${appointments.version}">
 			org.bahmni.module.appointments
 		</require_module>
+		<require_module version="${fhir2.version}">
+			org.bahmni.module.fhir2
+		</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
 	<!-- Module Activator -->
