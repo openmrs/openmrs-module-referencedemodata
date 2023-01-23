@@ -185,6 +185,14 @@
 			<name>OpenMRS Nexus Repository</name>
 			<url>https://mavenrepo.openmrs.org/public</url>
 		</repository>
+		<!-- mks-nexus repo to be removed once the issue with JFrog and the proxying of Maven repos (such as the one of Mekom)
+		     is resolved, see https://openmrs.slack.com/archives/CPC20CBFH/p1674017381537159
+		 -->
+		<repository>
+			<id>mks-nexus</id>
+			<name>MKS Nexus Repository</name>
+			<url>https://nexus.mekomsolutions.net/repository/maven-public/</url>
+		</repository>
 	</repositories>
 
 	<pluginRepositories>
