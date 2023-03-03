@@ -98,7 +98,9 @@ public class DemoObsGenerator {
 	public void createDemoLabObs(Patient patient, Encounter encounter, Location location) {
 		Concept c;
 		if (shouldRandomEventOccur(.5)) {
-			c = randomListEntry(conceptCache.getConceptsByClass("LabSet"));
+			do {
+				c = randomListEntry(conceptCache.getConceptsByClass("LabSet"));
+			} while (c == null || c.getSetMembers().isEmpty());
 		} else {
 			c = randomListEntry(conceptCache.getConceptsByClass("Test"));
 		}
@@ -110,7 +112,15 @@ public class DemoObsGenerator {
 		if (c.getConceptClass() != null && "LabSet".equalsIgnoreCase(c.getConceptClass().getName()) && c.getSet()) {
 			List<Obs> obsPanel = new ArrayList<>(c.getSetMembers().size());
 			for (Concept member : c.getSetMembers()) {
-				obsPanel.add(createDemoLabObs(patient, null, encounter.getEncounterDatetime(), location, member));
+				Obs value = createDemoLabObs(patient, null, encounter.getEncounterDatetime(), location, member);
+				if (value != null) {
+					obsPanel.add(value);
+				}
+			}
+			
+			// do not try to create an empty obs panel
+			if (obsPanel.isEmpty()) {
+				return;
 			}
 			
 			createObsGroup(c.getUuid(), patient, encounter, encounter.getEncounterDatetime(), location, obsPanel);
@@ -360,11 +370,7 @@ public class DemoObsGenerator {
 			
 			obs = createNumericObsFromDescriptor(labDescriptor.get(0), patient, encounter, encounterDateTime, location);
 		}
-		// Any other datatype, may never happen.
-		else {
-			obs = createCodedObs(concept.getUuid(), concept, patient, encounter, encounterDateTime, location);
-		}
-		
+
 		return obs;
 	}
 }
