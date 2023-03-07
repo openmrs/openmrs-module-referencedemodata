@@ -36,11 +36,17 @@ public class DemoProgramGenerator {
 	public void createDemoPatientProgram(Patient patient, Date startDate) {
 		Program program = getRandomProgram();
 		
-		ProgramWorkflowState initialState = null;
-		ProgramWorkflow workflow = program.getWorkflows().iterator().next();
-		if (workflow != null) {
-			initialState = workflow.getStates().iterator().next();
+		if (program == null || program.getWorkflows() == null || program.getWorkflows().isEmpty()) {
+			return;
 		}
+		
+		ProgramWorkflowState initialState;
+		ProgramWorkflow workflow = program.getWorkflows().iterator().next();
+		if (workflow == null || workflow.getStates() == null || workflow.getStates().isEmpty()) {
+			return;
+		}
+		
+		initialState = workflow.getStates().iterator().next();
 		
 		PatientProgram patientProgram = new PatientProgram();
 		patientProgram.setProgram(program);
