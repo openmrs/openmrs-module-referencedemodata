@@ -15,35 +15,31 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.Concept;
-import org.openmrs.api.ConceptService;
+import org.openmrs.OrderFrequency;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 
-public class ConceptDeserializer extends StdDeserializer<Concept> {
+public class OrderFrequencyDeserializer extends StdDeserializer<OrderFrequency> {
 	
-	public ConceptDeserializer() {
-		super(Concept.class);
+	public OrderFrequencyDeserializer() {
+		super(OrderFrequency.class);
 	}
 	
 	@Override
-	public Concept deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+	public OrderFrequency deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		String uuid = p.getText();
 		
 		if (StringUtils.isBlank(uuid)) {
 			throw new IOException(p.getCurrentName() + " cannot be blank");
 		}
 		
-		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConceptNumericByUuid(uuid);
+		OrderService os = Context.getOrderService();
+		OrderFrequency orderFrequency = os.getOrderFrequencyByUuid(uuid);
 		
-		if (concept == null) {
-			concept = cs.getConceptByUuid(uuid);
+		if (orderFrequency == null) {
+			throw new IOException("Order frequency [" + uuid + "] does not exist. Please create it.");
 		}
 		
-		if (concept == null) {
-			throw new IOException("Concept [" + uuid + "] does not exist. Please create it.");
-		}
-		
-		return concept;
+		return orderFrequency;
 	}
 }

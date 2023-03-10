@@ -11,21 +11,42 @@ package org.openmrs.module.referencedemodata.orders;
 
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Provider;
+import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.fhir2.FhirConstants;
 import org.openmrs.module.fhir2.api.FhirTaskService;
+import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
+import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor;
+import org.springframework.core.io.support.ResourcePatternResolver;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.io.FilenameUtils;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Task;
 
 import static org.openmrs.module.referencedemodata.Randomizer.shouldRandomEventOccur;
+import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.distinctByKey;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toLocalDateTime;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DemoOrderGenerator {
 	
@@ -68,6 +89,20 @@ public class DemoOrderGenerator {
 		getTaskTranslator().create(orderTask);
 	}
 	
+	public void createDemoDrugOrder(Encounter encounter, DrugOrderDescriptor drugOrderDescriptor) {
+		DrugOrder order = DrugOrderGenerator.generateDrugOrder(drugOrderDescriptor);
+		order.setAction(Order.Action.NEW);
+		order.setUrgency(Order.Urgency.ROUTINE);
+		order.setPatient(encounter.getPatient());
+		order.setCareSetting(getCareSetting());
+		order.setDateActivated(toDate(toLocalDateTime(encounter.getEncounterDatetime())));
+		
+		Provider provider = encounter.getActiveEncounterProviders().iterator().next().getProvider();
+		order.setOrderer(provider);
+		order.setEncounter(encounter);
+		getOrderService().saveOrder(order, null);
+	}
+	
 	protected CareSetting getCareSetting() {
 		if (careSetting == null) {
 			careSetting = getOrderService().getCareSettingByName("Outpatient");
@@ -83,6 +118,7 @@ public class DemoOrderGenerator {
 		
 		return testOrderType;
 	}
+	
 	
 	protected OrderService getOrderService() {
 		if (os == null) {

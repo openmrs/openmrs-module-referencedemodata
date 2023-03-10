@@ -58,7 +58,7 @@ public class DemoObsGenerator {
 	private final DemoDataConceptCache conceptCache;
 	
 	private final ResourcePatternResolver patternResolver;
-	
+
 	private List<NumericObsValueDescriptor> vitalsDescriptors = null;
 	
 	private List<NumericObsValueDescriptor> labDescriptors = null;
@@ -152,7 +152,7 @@ public class DemoObsGenerator {
 		return getObsService().saveObs(obs, null);
 	}
 	
-	protected Obs createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
+	public Obs createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
 			Date encounterDateTime, Location location) {
 		Obs previousObs = null;
 		try {
@@ -186,7 +186,7 @@ public class DemoObsGenerator {
 		return obs;
 	}
 	
-	protected Obs createBasicObs(String conceptDescriptor, Patient patient, Date encounterTime, Location location) {
+	public Obs createBasicObs(String conceptDescriptor, Patient patient, Date encounterTime, Location location) {
 		Concept concept = conceptCache.findConcept(conceptDescriptor);
 		if (concept == null) {
 			log.warn("incorrect concept identifier? [{}]", conceptDescriptor);
@@ -242,7 +242,7 @@ public class DemoObsGenerator {
 		return loadObsValueDescriptorsFor(patternResolver, "classpath*:labValueDescriptors/*.json");
 	}
 	
-	private List<NumericObsValueDescriptor> loadObsValueDescriptorsFor(ResourcePatternResolver patternResolver,
+	public List<NumericObsValueDescriptor> loadObsValueDescriptorsFor(ResourcePatternResolver patternResolver,
 			String resourcePattern) throws IOException {
 		ObjectMapper om = new ObjectMapper();
 		ObjectReader reader = om.readerFor(NumericObsValueDescriptor.class);
@@ -372,5 +372,9 @@ public class DemoObsGenerator {
 		}
 
 		return obs;
+	}
+	
+	public ResourcePatternResolver getPatternResolver() {
+		return patternResolver;
 	}
 }
