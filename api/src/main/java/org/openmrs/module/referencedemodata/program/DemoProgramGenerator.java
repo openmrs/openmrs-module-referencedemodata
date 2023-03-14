@@ -33,9 +33,12 @@ public class DemoProgramGenerator {
 	
 	private ProgramWorkflowService pws = null;
 	
-	public void createDemoPatientProgram(Patient patient, Date startDate) {
+	public void createRandomDemoPatientProgram(Patient patient, Date startDate) {
 		Program program = getRandomProgram();
-		
+		createDemoPatientProgram(patient, startDate, program);
+	}
+	
+	public void createDemoPatientProgram(Patient patient, Date startDate, Program program) {
 		if (program == null || program.getWorkflows() == null || program.getWorkflows().isEmpty()) {
 			return;
 		}

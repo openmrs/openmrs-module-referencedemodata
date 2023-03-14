@@ -164,7 +164,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 							if (!isInProgram && i < 2) {
 								if (shouldRandomEventOccur(.33)) {
 									isInProgram = true;
-									programGenerator.createDemoPatientProgram(patient, lastVisit.getStartDatetime());
+									programGenerator.createRandomDemoPatientProgram(patient, lastVisit.getStartDatetime());
 								}
 							}
 							
