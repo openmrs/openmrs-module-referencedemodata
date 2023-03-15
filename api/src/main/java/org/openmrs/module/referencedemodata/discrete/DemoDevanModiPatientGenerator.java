@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.Range;
 import org.openmrs.Condition;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -30,6 +32,8 @@ import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor;
+import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor.DecayType;
+import org.openmrs.module.referencedemodata.obs.NumericObsValueDescriptor.Precision;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
 import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
 import org.openmrs.module.referencedemodata.orders.DrugOrderGenerator;
@@ -61,6 +65,19 @@ public class DemoDevanModiPatientGenerator {
 	
 	private final Date today;
 	
+	// diastolicBP, height, oxygenSaturation, pulse, respiratoryRate, systolicBP , temperature, weight
+	
+	private final String[] vitalsConcepts = {"5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"};
+	
+	// values
+	private final Double[] vitalsValues5YearsAgo = {68.0, 177.0,99.0,82.0,14.0,130.0,37.8,81.0};
+	
+	private final Double[] vitalsValues3YearsAgo = {92.0,177.0,98.0,80.0,16.0,168.0,38.2,81.5};
+	
+	private final Double[] vitalsValues2YearsAnd11MonthsAgo = {78.0,177.0,98.0,82.0,13.0,138.0,38.2,81.5};
+	
+	private final Double[] vitalsValues1MonthAgo = {76.0,177.0,99.0,90.0,14.0,140.0,37.2,83.0,83.0};
+	
 	private EncounterService es = null;
 	
 	private VisitService vs = null;
@@ -79,7 +96,7 @@ public class DemoDevanModiPatientGenerator {
 		this.diagnosisGenerator = diagnosisGenerator;
 		this.demoPatientGenerator = demoPatientGenerator;
 		this.conditionGenerator = conditionGenerator;
-		this.today = new Date();
+		this.today = toDate(toLocalDate(new Date()));
 	}
 	
 	/**
@@ -116,7 +133,7 @@ public class DemoDevanModiPatientGenerator {
 		
 		Provider visitProvider = providerGenerator.getRandomClinician();
 		Encounter vitalsEncounter = visitGenerator.createDemoVitalsEncounter(patient, visitDate, location, visitProvider);
-		createDemoVitalsObs(patient, vitalsEncounter, location, "vitalsPath");
+		createDemoVitalsObs(patient, vitalsEncounter, location, vitalsValues5YearsAgo);
 		// save encounter before adding it to visit
 		es.saveEncounter(vitalsEncounter);
 		// add vitals
@@ -185,7 +202,7 @@ public class DemoDevanModiPatientGenerator {
 		
 		Provider visitProvider = providerGenerator.getRandomClinician();
 		Encounter vitalsEncounter = visitGenerator.createDemoVitalsEncounter(patient, toDate(toLocalDate(visit3YearsAgo.getStartDatetime())), location, visitProvider);
-		createDemoVitalsObs(patient, vitalsEncounter, location, "vitalsPath");
+		createDemoVitalsObs(patient, vitalsEncounter, location, vitalsValues3YearsAgo);
 		// save encounter before adding it to visit
 		es.saveEncounter(vitalsEncounter);
 		visit3YearsAgo.addEncounter(vitalsEncounter);
@@ -246,7 +263,7 @@ public class DemoDevanModiPatientGenerator {
 		
 		Provider visitProvider = providerGenerator.getRandomClinician();
 		Encounter vitalsEncounter = visitGenerator.createDemoVitalsEncounter(patient, toDate(toLocalDate(visit2YearsAnd11monthsAgo.getStartDatetime())), location, visitProvider);
-		createDemoVitalsObs(patient, vitalsEncounter, location, "vitalsPath");
+		createDemoVitalsObs(patient, vitalsEncounter, location, vitalsValues2YearsAnd11MonthsAgo);
 		// save encounter before adding it to visit
 		es.saveEncounter(vitalsEncounter);
 		visit2YearsAnd11monthsAgo.addEncounter(vitalsEncounter);
@@ -292,7 +309,7 @@ public class DemoDevanModiPatientGenerator {
 		
 		Provider visitProvider = providerGenerator.getRandomClinician();
 		Encounter vitalsEncounter = visitGenerator.createDemoVitalsEncounter(patient, toDate(toLocalDate(visit1MonthAgo.getStartDatetime())), location, visitProvider);
-		createDemoVitalsObs(patient, vitalsEncounter, location, "vitalsPath");
+		createDemoVitalsObs(patient, vitalsEncounter, location, vitalsValues1MonthAgo);
 		// save encounter before adding it to visit
 		es.saveEncounter(vitalsEncounter);
 		visit1MonthAgo.addEncounter(vitalsEncounter);
@@ -370,10 +387,10 @@ public class DemoDevanModiPatientGenerator {
 		visitNoteEncounter.setForm(visitGenerator.getVisitNoteForm());
 		es.saveEncounter(visitNoteEncounter);
 		String visitNotes = "Patient advised to:\n" + 
-				"Take your medications as directed.\n" + 
+				"Take their medications as directed.\n" + 
 				"Avoid alcohol, smoking, and NSAIDS as these can make the ulcer worse.\n" + 
 				"Follow up with their primary care physician and GI within 1-2 weeks.\n" + 
-				"Return to the emergency department or call 911 if you experience severe abdominal pain, shortness of breath, chest pain, dizziness or vomiting.";
+				"Return to the emergency department or call 911 if they experience severe abdominal pain, shortness of breath, chest pain, dizziness or vomiting.";
 		obsGenerator.createTextObs("CIEL:162169", visitNotes, patient, visitNoteEncounter, visit1MonthAgo.getStartDatetime(),
 				location);
 		visit1MonthAgo.addEncounter(visitNoteEncounter);
@@ -382,9 +399,16 @@ public class DemoDevanModiPatientGenerator {
 		vs.saveVisit(visit1MonthAgo);
 	}
 	
-	private void createDemoVitalsObs(Patient patient, Encounter encounter, Location location, String descriptorPath) throws Exception {
-		for (NumericObsValueDescriptor vitalsDescriptor : obsGenerator.loadObsValueDescriptorsFor(obsGenerator.getPatternResolver(), descriptorPath)) {
-			obsGenerator.createNumericObsFromDescriptor(vitalsDescriptor, patient, encounter, encounter.getEncounterDatetime(), location);
+	private void createDemoVitalsObs(Patient patient, Encounter encounter, Location location, Double[] values) throws Exception {
+		for (String uuid : vitalsConcepts) {
+			NumericObsValueDescriptor vitalDescriptor = new NumericObsValueDescriptor();
+			vitalDescriptor.setConcept(Context.getConceptService().getConceptByUuid(uuid));
+			vitalDescriptor.setInitialValue(Range.between(values[ArrayUtils.indexOf(vitalsConcepts, uuid)],values[ArrayUtils.indexOf(vitalsConcepts, uuid)]));
+			vitalDescriptor.setDecayType(DecayType.CONSTANT);
+			vitalDescriptor.setTrend(0);
+			vitalDescriptor.setPrecision(Precision.FLOAT);
+			vitalDescriptor.setStandardDeviation(0);
+			obsGenerator.createNumericObsFromDescriptor(vitalDescriptor, patient, encounter, encounter.getEncounterDatetime(), location);
 		}
 	}
 }

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FilenameUtils;
 import org.openmrs.DrugOrder;
 import org.openmrs.OrderType;
+import org.openmrs.SimpleDosingInstructions;
 import org.openmrs.api.context.Context;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
@@ -41,8 +42,8 @@ public class DrugOrderGenerator {
 	public static DrugOrder generateDrugOrder(DrugOrderDescriptor valueDescriptor) {
 		DrugOrder drugOrder = new DrugOrder();
 		drugOrder.setOrderType(getDrugOrderType());
-		drugOrder.setDrug(Context.getConceptService().getDrugsByConcept(valueDescriptor.getConceptDrug()).get(0));
-		drugOrder.setDosingType(valueDescriptor.getDosingType());
+		drugOrder.setDrug(valueDescriptor.getDrug());
+		drugOrder.setDosingType(SimpleDosingInstructions.class);
 		drugOrder.setDose(valueDescriptor.getDose());
 		drugOrder.setDoseUnits(valueDescriptor.getDoseUnits());
 		drugOrder.setFrequency(valueDescriptor.getFrequency());

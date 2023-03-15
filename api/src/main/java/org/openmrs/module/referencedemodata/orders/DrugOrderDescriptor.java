@@ -14,27 +14,25 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.Range;
 import org.openmrs.Concept;
 import org.openmrs.DosingInstructions;
+import org.openmrs.Drug;
 import org.openmrs.OrderFrequency;
 import org.openmrs.module.referencedemodata.jackson.ConceptDeserializer;
 import org.openmrs.module.referencedemodata.jackson.ConceptSerializer;
+import org.openmrs.module.referencedemodata.jackson.DrugDeserializer;
+import org.openmrs.module.referencedemodata.jackson.DrugSerializer;
 import org.openmrs.module.referencedemodata.jackson.OrderFrequencyDeserializer;
 import org.openmrs.module.referencedemodata.jackson.OrderFrequencySerializer;
-import org.openmrs.module.referencedemodata.jackson.RangeDeserializer;
-import org.openmrs.module.referencedemodata.jackson.RangeSerializer;
 
 @Getter
 @Setter
 public class DrugOrderDescriptor {
 	
 	@JsonProperty(required = true)
-	@JsonSerialize(using = ConceptSerializer.class)
-	@JsonDeserialize(using = ConceptDeserializer.class)
-	private Concept conceptDrug;
-	
-	private Class<? extends DosingInstructions>  dosingType;
+	@JsonSerialize(using = DrugSerializer.class)
+	@JsonDeserialize(using = DrugDeserializer.class)
+	private Drug drug;
 	
 	private double dose;
 	
