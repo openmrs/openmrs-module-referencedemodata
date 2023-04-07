@@ -44,4 +44,8 @@ public class ReferenceDemoDataConstants {
 	public static final String DOCTOR_ROLE = "Organizational: Doctor";
 	
 	public static final String CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP = "referencedemodata.createDemoPatientsOnNextStartup";
+	
+	public static final String GENERATE_DEMO_DATA_URI = "generate";
+	
+	public static final String REFERENCE_DEMO_DATA_URI = "referencedemodata";
 }
