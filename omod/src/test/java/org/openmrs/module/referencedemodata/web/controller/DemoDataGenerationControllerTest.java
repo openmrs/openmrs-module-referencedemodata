@@ -86,4 +86,17 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		assertEquals("There already exists Demo Data for 4 or more Demo Patients", result.get("outcome"));
 	}
 	
+	@Test
+	public void generateDemoData_shouldNotRespondWithErrorGivenNumberOfDemoPatientsParameterIsNonNumeric() throws Exception {
+		// Setup
+		assertFalse(false);
+		
+		// Replay
+		SimpleObject result = deserialize(handle(newGetRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, new Parameter(DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER, "4e"))));
+		
+		// Verify
+		verify(referenceDemoDataActivatorMock, never()).started();
+		assertEquals("Could not parse '4e' as an integer", result.get("error"));
+	}
+	
 }
