@@ -64,9 +64,8 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	public void generateDemoData_shouldCreate6MorePatientsGivenNumberOfDemoPatientsParameterIs10() throws Exception {
 		// Setup
 		assertFalse(false);
-		
 		// Replay
-		SimpleObject result = deserialize(handle(newGetRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, new Parameter(DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER, "10"))));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10}")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock).started();
@@ -79,7 +78,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		assertFalse(false);
 		
 		// Replay
-		SimpleObject result = deserialize(handle(newGetRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, new Parameter(DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER, "4"))));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4}")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock, never()).started();
@@ -92,7 +91,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		assertFalse(false);
 		
 		// Replay
-		SimpleObject result = deserialize(handle(newGetRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, new Parameter(DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER, "4e"))));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\"}")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock, never()).started();

@@ -46,6 +46,7 @@ import org.openmrs.module.idgen.validator.LuhnMod30IdentifierValidator;
 import org.openmrs.parameter.EncounterSearchCriteria;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.param.TokenAndListParam;
@@ -71,7 +72,7 @@ import static org.mockito.Mockito.when;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OPENMRS_ID_NAME;
 
 @SkipBaseSetup
-public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTest {
+public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
 	
 	@Autowired
 	UserService userService;

@@ -29,6 +29,9 @@
 		<require_module version="${fhir2.version}">
 			org.openmrs.module.fhir2
 		</require_module>
+		<require_module version="${webservices.rest.version}">
+			org.openmrs.module.webservices.rest
+		</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
 	<!-- Module Activator -->
