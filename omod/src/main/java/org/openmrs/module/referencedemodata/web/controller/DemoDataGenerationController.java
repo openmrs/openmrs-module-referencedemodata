@@ -45,19 +45,15 @@ public class DemoDataGenerationController extends BaseRestController {
 		
 		TaskDefinition taskDef = Context.getSchedulerService().getTaskByName(REFERENCE_DEMO_DATA_TASK_NAME);
 		if (taskDef == null) {
-			try {
-				taskDef = new TaskDefinition();
-				taskDef.setTaskClass(GenerateDemoDataTask.class.getName());
-				taskDef.setStartOnStartup(false);
-				taskDef.setStartTime(null); // Executes immediately
-				taskDef.setName(REFERENCE_DEMO_DATA_TASK_NAME);
-				taskDef.setDescription(REFERENCE_DEMO_DATA_TASK_NAME);
-				taskDef.setRepeatInterval(0L); // Executes once
-				taskDef.setProperty("numberOfDemoPatients", numberOfDemoPatients);
-				Context.getSchedulerService().saveTaskDefinition(taskDef);
-			} finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
-			}
+			taskDef = new TaskDefinition();
+			taskDef.setTaskClass(GenerateDemoDataTask.class.getName());
+			taskDef.setStartOnStartup(false);
+			taskDef.setStartTime(null); // Executes immediately
+			taskDef.setName(REFERENCE_DEMO_DATA_TASK_NAME);
+			taskDef.setDescription(REFERENCE_DEMO_DATA_TASK_NAME);
+			taskDef.setRepeatInterval(0L); // Executes once
+			taskDef.setProperty("numberOfDemoPatients", numberOfDemoPatients);
+			Context.getSchedulerService().saveTaskDefinition(taskDef);
 		}
 		int remainingNumberOfPatientsToGenerate = Integer.parseInt(numberOfDemoPatients);
 		if (body.get(CREATE_IF_NOT_EXISTS) != null && Boolean.parseBoolean(body.get(CREATE_IF_NOT_EXISTS).toString())) {
