@@ -40,6 +40,8 @@
 		<initializer.version>2.3.0</initializer.version>
 		<appointments.version>1.4.0</appointments.version>
 		<fhir2.version>1.7.0</fhir2.version>
+		<webservices.rest.version>2.33.0</webservices.rest.version>
+		<javaxVersion>3.0.1</javaxVersion>
 	</properties>
 
 	<dependencies>
