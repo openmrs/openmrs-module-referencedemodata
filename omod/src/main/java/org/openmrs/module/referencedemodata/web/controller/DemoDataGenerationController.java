@@ -2,16 +2,12 @@ package org.openmrs.module.referencedemodata.web.controller;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.openmrs.GlobalProperty;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataActivator;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.BaseRestController;
-import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.util.PrivilegeConstants;
@@ -30,6 +26,8 @@ public class DemoDataGenerationController extends BaseRestController {
 	private static final String REFERENCE_DEMO_DATA_TASK_NAME = "Reference demo data generation task";
 	
 	public static final String NUMBER_OF_DEMO_PATIENTS_PARAMETER = "numberOfDemoPatients";
+	
+	public static final String CREATE_IF_NOT_EXISTS = "createIfNotExists";
 
 	@RequestMapping(value = ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody()
@@ -45,7 +43,6 @@ public class DemoDataGenerationController extends BaseRestController {
 			return String.format("{\"error\": \"%s\"}", errorMsg);
 		}
 		
-		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		TaskDefinition taskDef = Context.getSchedulerService().getTaskByName(REFERENCE_DEMO_DATA_TASK_NAME);
 		if (taskDef == null) {
 			try {
@@ -62,25 +59,20 @@ public class DemoDataGenerationController extends BaseRestController {
 				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			}
 		}
-		if (Context.getPatientService().getAllPatients().size() < Integer.parseInt(numberOfDemoPatients)) {
-			int remainingNumberOfPatientsToGenerate;
-			try {
-				remainingNumberOfPatientsToGenerate = Integer.parseInt(numberOfDemoPatients) - Context.getPatientService().getAllPatients().size();
-				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-				GlobalProperty createDemoPatients = new GlobalProperty(
-						ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "" + Integer.toString(remainingNumberOfPatientsToGenerate));
-				Context.getAdministrationService().saveGlobalProperty(createDemoPatients);
-				synchronized (DemoDataGenerationController.class) {
-					Context.getSchedulerService().scheduleTask(taskDef);
-				}
-			} finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
-				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
+		int remainingNumberOfPatientsToGenerate = Integer.parseInt(numberOfDemoPatients);
+		if (body.get(CREATE_IF_NOT_EXISTS) != null && Boolean.parseBoolean(body.get(CREATE_IF_NOT_EXISTS).toString())) {
+			if (Context.getPatientService().getAllPatients().size() >= Integer.parseInt(numberOfDemoPatients)) {
+				return String.format("{\"outcome\": \"There already exists Demo Data for %s or more Demo Patients\"}", numberOfDemoPatients);
 			}
-			return String.format("{\"outcome\": \"Generating Demo Data for %s more Demo Patients to top-up the count of existing patients\"}", Integer.toString(remainingNumberOfPatientsToGenerate));
-		} else {
-			return String.format("{\"outcome\": \"There already exists Demo Data for %s or more Demo Patients\"}", numberOfDemoPatients);
+			remainingNumberOfPatientsToGenerate = Integer.parseInt(numberOfDemoPatients) - Context.getPatientService().getAllPatients().size();
 		}
+		GlobalProperty createDemoPatients = new GlobalProperty(
+				ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP, "" + Integer.toString(remainingNumberOfPatientsToGenerate));
+		Context.getAdministrationService().saveGlobalProperty(createDemoPatients);
+		synchronized (DemoDataGenerationController.class) {
+			Context.getSchedulerService().scheduleTask(taskDef);
+		}
+		return String.format("{\"outcome\": \"Generating Demo Data for %s more Demo Patients to top-up the count of existing patients\"}", Integer.toString(remainingNumberOfPatientsToGenerate));
 	}
 	
 	public static class GenerateDemoDataTask extends AbstractTask {

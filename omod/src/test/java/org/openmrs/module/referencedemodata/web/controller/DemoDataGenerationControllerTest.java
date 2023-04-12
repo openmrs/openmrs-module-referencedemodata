@@ -65,7 +65,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		// Setup
 		assertFalse(false);
 		// Replay
-		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10}")));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock).started();
@@ -78,7 +78,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		assertFalse(false);
 		
 		// Replay
-		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4}")));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock, never()).started();
@@ -91,11 +91,23 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		assertFalse(false);
 		
 		// Replay
-		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\"}")));
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("Could not parse '4e' as an integer", result.get("error"));
+	}
+	
+	@Test
+	public void generateDemoData_shouldCreateExactNumberOfPatientsFromProvidedNumberOfDemoPatientsParameter() throws Exception {
+		// Setup
+		assertFalse(false);
+		// Replay
+		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : false }")));
+		
+		// Verify
+		verify(referenceDemoDataActivatorMock).started();
+		assertEquals("Generating Demo Data for 10 more Demo Patients to top-up the count of existing patients", result.get("outcome"));
 	}
 	
 }
