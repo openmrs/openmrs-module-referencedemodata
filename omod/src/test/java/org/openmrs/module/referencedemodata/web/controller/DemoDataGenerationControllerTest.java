@@ -61,7 +61,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	}
 	
 	@Test
-	public void generateDemoData_shouldCreate6MorePatientsGivenNumberOfDemoPatientsParameterIs10() throws Exception {
+	public void generateDemoData_shouldCreate6MorePatientsGivenNumberOfDemoPatientsAttributeIs10() throws Exception {
 		// Setup
 		assertFalse(false);
 		// Replay
@@ -73,7 +73,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	}
 	
 	@Test
-	public void generateDemoData_shouldNotCreateAnyMorePatientsGivenNumberOfDemoPatientsParameterIsEqualAlreadyExistingPatients() throws Exception {
+	public void generateDemoData_shouldNotCreateAnyMorePatientsGivenNumberOfDemoPatientsAttributeIsEqualAlreadyExistingPatients() throws Exception {
 		// Setup
 		assertFalse(false);
 		
@@ -86,7 +86,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	}
 	
 	@Test
-	public void generateDemoData_shouldNotRespondWithErrorGivenNumberOfDemoPatientsParameterIsNonNumeric() throws Exception {
+	public void generateDemoData_shouldNotRespondWithErrorGivenNumberOfDemoPatientsAttributeIsNonNumeric() throws Exception {
 		// Setup
 		assertFalse(false);
 		
@@ -99,7 +99,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	}
 	
 	@Test
-	public void generateDemoData_shouldCreateExactNumberOfPatientsFromProvidedNumberOfDemoPatientsParameter() throws Exception {
+	public void generateDemoData_shouldCreateExactNumberOfPatientsFromProvidedNumberOfDemoPatientsAttribute() throws Exception {
 		// Setup
 		assertFalse(false);
 		// Replay
