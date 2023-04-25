@@ -6,6 +6,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataActivator;
@@ -68,6 +71,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
+		TimeUnit.SECONDS.sleep(5);
 		verify(referenceDemoDataActivatorMock).started();
 		assertEquals("Generating Demo Data for 6 more Demo Patients to top-up the count of existing patients", result.get("outcome"));
 	}
@@ -81,6 +85,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
+		TimeUnit.SECONDS.sleep(5);
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("There already exists Demo Data for 4 or more Demo Patients", result.get("outcome"));
 	}
@@ -94,6 +99,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
+		TimeUnit.SECONDS.sleep(5);
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("Could not parse '4e' as an integer", result.get("error"));
 	}
@@ -106,6 +112,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : false }")));
 		
 		// Verify
+		TimeUnit.SECONDS.sleep(5);
 		verify(referenceDemoDataActivatorMock).started();
 		assertEquals("Generating Demo Data for 10 more Demo Patients to top-up the count of existing patients", result.get("outcome"));
 	}
