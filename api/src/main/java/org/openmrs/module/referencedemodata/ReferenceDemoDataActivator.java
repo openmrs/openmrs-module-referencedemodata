@@ -111,7 +111,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         createSchedulerUserAndGPs();
         createAppointmentTypes();
         createDemoPatients();
-        
+
         cachedConcepts.clear();
 	}
 	
@@ -619,7 +619,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		return new Obs(patient, concept, encounterTime, location);
 	}
 	
-	private static final int MIN_AGE = 2;
+	private static final int MIN_AGE = 4;
 	private static final int MAX_AGE = 90;
 	
 	private Date randomBirthdate() {
