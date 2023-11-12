@@ -17,14 +17,8 @@
 	
 	<!-- Required Modules -->
 	<require_modules>
-		<require_module version="${initializer.version}">
-			org.openmrs.module.initializer
-		</require_module>
 		<require_module version="${idgen.version}">
 			org.openmrs.module.idgen
-		</require_module>
-		<require_module version="${appointments.version}">
-			org.bahmni.module.appointments
 		</require_module>
 		<require_module version="${fhir2.version}">
 			org.openmrs.module.fhir2
@@ -34,6 +28,12 @@
 		</require_module>
 	</require_modules>
 	<!-- / Required Modules -->
+	
+	<aware_of_modules>
+	    <aware_of_module>org.bahmni.module.appointments</aware_of_module>
+	    <aware_of_module>org.openmrs.module.initializer</aware_of_module>
+	</aware_of_modules>
+	
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ReferenceDemoDataActivator</activator>
     
