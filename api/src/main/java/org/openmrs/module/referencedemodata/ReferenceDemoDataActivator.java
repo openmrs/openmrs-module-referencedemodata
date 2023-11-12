@@ -156,8 +156,14 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 							}
 							
 							if (shouldRandomEventOccur(.5)) {
-								appointmentsGenerator.createDemoAppointment(patient, lastVisit.getStartDatetime(),
-										lastVisit.getStopDatetime(), encounterProvider);
+								try {
+									appointmentsGenerator.createDemoAppointment(patient, lastVisit.getStartDatetime(),
+											lastVisit.getStopDatetime(), encounterProvider);
+								}
+								catch (NoClassDefFoundError ex) {
+									//appointment module may not be loaded
+									//java.lang.NoClassDefFoundError: org/openmrs/module/appointments/model/Appointment
+								}
 							}
 							
 							// about 1/3 patients in their first 2 visits will be registered as part of a program
@@ -182,14 +188,20 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 										LocalDateTime visitStartDate = now.plusDays(randomBetween(1, 365 - 1))
 												.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
 										LocalDateTime visitEndDate = visitStartDate.plusMinutes(randomBetween(10, 30));
-										Appointment futureAppointment = appointmentsGenerator.createDemoAppointment(patient,
-												toDate(visitStartDate), toDate(visitEndDate),
-												providerGenerator.getRandomClinician());
-										
-										if (log.isInfoEnabled()) {
-											log.info("created a future appointment for patient {} at {}",
-													patient.getPatientIdentifier(),
-													toLocalDateTime(futureAppointment.getStartDateTime()));
+										try {
+											Appointment futureAppointment = appointmentsGenerator.createDemoAppointment(patient,
+													toDate(visitStartDate), toDate(visitEndDate),
+													providerGenerator.getRandomClinician());
+											
+											if (log.isInfoEnabled()) {
+												log.info("created a future appointment for patient {} at {}",
+														patient.getPatientIdentifier(),
+														toLocalDateTime(futureAppointment.getStartDateTime()));
+											}
+										}
+										catch (NoClassDefFoundError ex) {
+											//appointment module may not be loaded
+											//java.lang.NoClassDefFoundError: org/openmrs/module/appointments/model/Appointment
 										}
 									}
 								}
