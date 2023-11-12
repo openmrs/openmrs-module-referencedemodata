@@ -98,9 +98,9 @@ public class DemoObsGenerator {
 	public void createDemoLabObs(Patient patient, Encounter encounter, Location location) {
 		Concept c;
 		if (shouldRandomEventOccur(.5)) {
-			do {
+			//do {
 				c = randomListEntry(conceptCache.getConceptsByClass("LabSet"));
-			} while (c == null || c.getSetMembers().isEmpty());
+			//} while (c == null || c.getSetMembers().isEmpty());
 		} else {
 			c = randomListEntry(conceptCache.getConceptsByClass("Test"));
 		}
