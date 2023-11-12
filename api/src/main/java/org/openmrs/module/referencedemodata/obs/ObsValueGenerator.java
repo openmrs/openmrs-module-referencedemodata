@@ -45,7 +45,7 @@ public class ObsValueGenerator {
 		
 		Obs result = new Obs();
 		result.setConcept(valueDescriptor.getConcept());
-		result.setValueNumeric(newValue.doubleValue());
+		result.setValueNumeric(concept.getAllowDecimal() ? newValue.doubleValue() : newValue.longValue());
 		return result;
 	}
 	
