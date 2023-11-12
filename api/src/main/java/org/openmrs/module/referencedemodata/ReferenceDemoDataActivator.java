@@ -299,7 +299,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 	
 	private void setupProvider(String uuid, Person person, String identifier) {
 		ProviderService providerService = Context.getProviderService();
-		Provider provider = providerService.getProviderByUuid(uuid);
+		Provider provider = providerService.getProviderByIdentifier(identifier);
 		if (provider == null) {
 			provider = new Provider();
 			provider.setUuid(uuid);
