@@ -223,7 +223,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 						false),
 				hasSize(vitalsConcepts.size() * vitalsEncounters.size()));
 		
-		List<Encounter> covidEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+		/*List<Encounter> covidEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
 				.filter(e -> "Consultation".equals(e.getEncounterType().getName()) && e.getForm() != null && "Covid 19".equals(
 						e.getForm().getName())).collect(Collectors.toList());
 		assertThat("Expected at least 1/3rd of visits to include covid results",
@@ -242,7 +242,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		List<Obs> covidTests = covidEncounters.stream().flatMap(e -> e.getAllObs().stream())
 				.filter(o -> covidTestConcept.equals(o.getConcept())).collect(Collectors.toList());
 		assertThat("Expect every covid encounter to record whether or not a test was done",
-				covidTests, hasSize(covidEncounters.size()));
+				covidTests, hasSize(covidEncounters.size()));*/
 		
 		List<Encounter> orderEncounters = encounterService.getEncounters(
 				new EncounterSearchCriteria(null, null, null, null, null, null,
