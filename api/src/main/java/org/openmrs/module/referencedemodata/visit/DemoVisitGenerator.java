@@ -20,6 +20,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -300,7 +301,7 @@ public class DemoVisitGenerator {
 		// symptoms
 		// idea is at least one, probably two, lower chances of fewer
 		// TODO This can probably be reduced to a simple calculation without the loop
-		int numberOfCovidSymptoms = 1;
+		/*int numberOfCovidSymptoms = 1;
 		for (int i = 0; i < randomBetween(1, COVID_SYMPTOM_CODES.length + 1); i++) {
 			if (shouldRandomEventOccur(Math.pow(.8, Math.pow(i + 1, 1d / (i + 1))))) {
 				numberOfCovidSymptoms++;
@@ -347,7 +348,7 @@ public class DemoVisitGenerator {
 		
 		covidFormEncounter.addObs(
 				obsGenerator.createObsGroup("4c2a4b12-becc-4429-a94d-b78e06699d0f", patient, covidFormEncounter,
-						encounterTime, location, covidTestObs));
+						encounterTime, location, covidTestObs));*/
 		
 		return getEncounterService().saveEncounter(covidFormEncounter);
 	}
@@ -397,11 +398,22 @@ public class DemoVisitGenerator {
 			Provider provider) {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(encounterTime);
-		encounter.setEncounterType(getEncounterService().getEncounterType(encounterType));
+		encounter.setEncounterType(getEncounterType(encounterType));
 		encounter.setPatient(patient);
 		encounter.setLocation(location);
 		encounter.addProvider(getClinicianRole(), provider);
 		return encounter;
+	}
+	
+	private EncounterType getEncounterType(String name) {
+		EncounterType encounterType = getEncounterService().getEncounterType(name);
+		if (encounterType == null) {
+			encounterType = new EncounterType(name, "");
+			encounterType.setCreator(Context.getAuthenticatedUser());
+			encounterType.setDateCreated(new Date());
+			getEncounterService().saveEncounterType(encounterType);
+		}
+		return encounterType;
 	}
 	
 	protected EncounterRole getClinicianRole() {
