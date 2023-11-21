@@ -167,6 +167,7 @@
 					<configuration>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
                         <tagNameFormat>@{project.version}</tagNameFormat>
+						<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
 					</configuration>
 				</plugin>
 				<plugin>
