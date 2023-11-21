@@ -83,7 +83,7 @@ public class DemoAppointmentsGenerator {
 		
 		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_APPOINTMENTS);
 		try {
-			return getAppointmentsService().validateAndSave(appointment);
+			return getAppointmentsService().validateAndSave(() -> appointment);
 		} finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_APPOINTMENTS);
 		}
