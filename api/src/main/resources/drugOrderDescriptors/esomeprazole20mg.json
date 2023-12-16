@@ -1,0 +1,11 @@
+{
+  "drug": "ce6b9fe4-6cbc-495e-8744-20a9cb48f1cf",
+  "dose": 1,
+  "doseUnits": "1513AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "frequency": "08c71152-c552-42e7-b094-f510ff44e9cb",
+  "route": "160240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "numRefills": 0,
+  "quantity": 0,
+  "quantityUnits": "1513AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "orderReasonNonCoded": "Peptic ulcers"
+}

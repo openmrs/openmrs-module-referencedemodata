@@ -273,7 +273,7 @@ public class DemoVisitGenerator {
 		return visit;
 	}
 	
-	protected Encounter createVisitNote(Patient patient, Date encounterTime, Location location, Provider provider) {
+	public Encounter createVisitNote(Patient patient, Date encounterTime, Location location, Provider provider) {
 		Encounter visitNoteEncounter = createEncounter("Visit Note", patient, encounterTime, location, provider);
 		visitNoteEncounter.setForm(getVisitNoteForm());
 		getEncounterService().saveEncounter(visitNoteEncounter);
@@ -281,12 +281,12 @@ public class DemoVisitGenerator {
 		obsGenerator.createTextObs("CIEL:162169", randomArrayEntry(NOTE_TEXT), patient, visitNoteEncounter, encounterTime,
 				location);
 		
-		diagnosisGenerator.createDiagnosis(true, patient, visitNoteEncounter);
+		diagnosisGenerator.createRandomDiagnosis(true, patient, visitNoteEncounter);
 		
 		// We generate up to 7 additional diagnosis, with exponentially decreasing likelihood adding another new diagnosis
 		for (int i = 0; i < randomBetween(1, 7); i++) {
 			if (shouldRandomEventOccur(Math.pow(.5, Math.pow(i + 1, 1d / (i + 1))))) {
-				diagnosisGenerator.createDiagnosis(false, patient, visitNoteEncounter);
+				diagnosisGenerator.createRandomDiagnosis(false, patient, visitNoteEncounter);
 			}
 		}
 		
@@ -358,7 +358,7 @@ public class DemoVisitGenerator {
 		return createDemoVitalsEncounter(patient, encounterTime, location, provider);
 	}
 	
-	protected Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location,
+	public Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location,
 			Provider provider) {
 		Encounter encounter = createEncounter("Vitals", patient, encounterTime, location, provider);
 		getEncounterService().saveEncounter(encounter);
@@ -394,7 +394,7 @@ public class DemoVisitGenerator {
 		return encounter;
 	}
 	
-	protected Encounter createEncounter(String encounterType, Patient patient, Date encounterTime, Location location,
+	public Encounter createEncounter(String encounterType, Patient patient, Date encounterTime, Location location,
 			Provider provider) {
 		Encounter encounter = new Encounter();
 		encounter.setEncounterDatetime(encounterTime);
@@ -424,7 +424,7 @@ public class DemoVisitGenerator {
 		return clinicianRole;
 	}
 	
-	protected Form getVisitNoteForm() {
+	public Form getVisitNoteForm() {
 		if (visitNoteForm == null) {
 			visitNoteForm = getFormService().getForm("Visit Note");
 		}

@@ -30,14 +30,23 @@ public class DemoDiagnosisGenerator {
 	
 	private final DemoDataConceptCache conceptCache;
 	
+	public DemoDataConceptCache getConceptCache() {
+		return conceptCache;
+	}
+
 	public DemoDiagnosisGenerator(DemoDataConceptCache conceptCache, DemoConditionGenerator conditionGenerator) {
 		this.conceptCache = conceptCache;
 		this.conditionGenerator = conditionGenerator;
 	}
 	
-	public void createDiagnosis(boolean primary, Patient patient, Encounter encounter) {
-		Condition condition = conditionGenerator.createCondition(patient, encounter,
+	public void createRandomDiagnosis(boolean primary, Patient patient, Encounter encounter) {
+		Condition condition = conditionGenerator.createRandomCondition(patient, encounter,
 				conceptCache.getConceptsByClass("Diagnosis"));
+		
+		createDiagnosis(primary, patient, encounter, condition);
+	}
+	
+	public Diagnosis createDiagnosis(boolean primary, Patient patient, Encounter encounter, Condition condition) {
 		
 		Diagnosis diagnosis = new Diagnosis();
 		diagnosis.setCondition(condition);
@@ -48,7 +57,7 @@ public class DemoDiagnosisGenerator {
 		diagnosis.setRank(randomBetween(1, 2));
 		diagnosis.setDateCreated(encounter.getEncounterDatetime());
 		
-		getDiagnosisService().save(diagnosis);
+		return getDiagnosisService().save(diagnosis);
 	}
 	
 	protected DiagnosisService getDiagnosisService() {
