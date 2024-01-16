@@ -554,7 +554,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
         createNumericObs("Respiratory rate", 5, 100, patient, encounter, encounterTime, location, os, cs);
 		createNumericObs("Systolic blood pressure", 0, 250, patient, encounter, encounterTime, location, os, cs);
 		createNumericObs("Diastolic blood pressure", 0, 150, patient, encounter, encounterTime, location, os, cs);
-        createNumericObs("Blood oxygen saturation", 0, 100, patient, encounter, encounterTime, location, os, cs);
+        createNumericObs("Arterial blood oxygen saturation (pulse oximeter)", 0, 100, patient, encounter, encounterTime, location, os, cs);
 	}
 
 	private void createNumericObs(String conceptName, int min, int max, Patient patient, Encounter encounter, Date encounterTime, Location location,
