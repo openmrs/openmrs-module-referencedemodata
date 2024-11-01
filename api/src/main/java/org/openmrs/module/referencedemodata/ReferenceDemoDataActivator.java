@@ -263,18 +263,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 			ProviderService ps = Context.getProviderService();
 			Person adminPerson = Context.getPersonService().getPerson(1);
 			
-			Collection<Provider> possibleProvider = ps.getProvidersByPerson(adminPerson);
-			if (possibleProvider.size() == 0) {
-				List<Provider> providers = ps.getAllProviders(false);
-				
+			Collection<Provider> providersAssociatedWithAdmin = ps.getProvidersByPerson(adminPerson);
+			if (providersAssociatedWithAdmin.size() == 0) {
 				Provider provider;
-				if (providers.size() == 0) {
-					provider = new Provider();
-					provider.setIdentifier("admin");
-				} else {
-					provider = providers.get(0);
-				}
-				
+				provider = new Provider();
+				provider.setIdentifier("admin");
 				provider.setPerson(adminPerson);
 				ps.saveProvider(provider);
 			}
