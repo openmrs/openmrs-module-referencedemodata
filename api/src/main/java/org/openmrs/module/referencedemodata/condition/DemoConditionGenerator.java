@@ -26,12 +26,16 @@ public class DemoConditionGenerator {
 	
 	private ConditionService conditionService = null;
 	
-	public Condition createCondition(Patient patient, Encounter encounter, List<Concept> allConditions) {
+	public Condition createRandomCondition(Patient patient, Encounter encounter, List<Concept> allConditions) {
 		Concept codedConcept = randomListEntry(allConditions);
 		
 		if (codedConcept == null) {
 			return null;
 		}
+		return createCondition(patient, encounter, codedConcept);
+	}
+	
+	public Condition createCondition(Patient patient, Encounter encounter, Concept codedConcept) {
 		
 		Condition condition = new Condition();
 		condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getName(Context.getLocale()), "Some non-coded condition"));

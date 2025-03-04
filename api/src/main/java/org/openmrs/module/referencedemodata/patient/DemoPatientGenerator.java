@@ -65,7 +65,7 @@ public class DemoPatientGenerator {
 		return patientIds;
 	}
 	
-	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
+	public Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location) {
 		Patient patient = new Patient();
 		
 		populatePerson(patient);

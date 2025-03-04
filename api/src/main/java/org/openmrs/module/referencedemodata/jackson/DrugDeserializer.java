@@ -15,18 +15,18 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.commons.lang3.StringUtils;
-import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
-public class ConceptDeserializer extends StdDeserializer<Concept> {
+public class DrugDeserializer extends StdDeserializer<Drug> {
 	
-	public ConceptDeserializer() {
-		super(Concept.class);
+	public DrugDeserializer() {
+		super(Drug.class);
 	}
 	
 	@Override
-	public Concept deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+	public Drug deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		String uuid = p.getText();
 		
 		if (StringUtils.isBlank(uuid)) {
@@ -34,16 +34,12 @@ public class ConceptDeserializer extends StdDeserializer<Concept> {
 		}
 		
 		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConceptNumericByUuid(uuid);
+		Drug drug = cs.getDrugByUuid(uuid);
 		
-		if (concept == null) {
-			concept = cs.getConceptByUuid(uuid);
+		if (drug == null) {
+			throw new IOException("Order frequency [" + uuid + "] does not exist. Please create it.");
 		}
 		
-		if (concept == null) {
-			throw new IOException("Concept [" + uuid + "] does not exist. Please create it.");
-		}
-		
-		return concept;
+		return drug;
 	}
 }
