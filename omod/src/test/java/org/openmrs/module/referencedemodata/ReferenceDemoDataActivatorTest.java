@@ -64,11 +64,14 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.DEMO_PATIENT_ATTR;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OPENMRS_ID_NAME;
 
 @SkipBaseSetup
@@ -258,7 +261,12 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		assertThat("Expected a COMPLETED FHIR Task per order",
 				allPatients.stream().map(patient -> orderService.getAllOrdersByPatient(patient).size())
 						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(null,null,new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString()))),null,null,null,null).size()));
-		
+
+	   	assertThat("Expected every patient to have demo_patient=true",
+				allPatients.stream()
+						.map(patient -> patient.getAttribute(DEMO_PATIENT_ATTR))
+						.allMatch(attr -> attr != null && "true".equalsIgnoreCase(attr.getValue())),
+				is(true));			
 	}
 	
 	long seed = 0;
