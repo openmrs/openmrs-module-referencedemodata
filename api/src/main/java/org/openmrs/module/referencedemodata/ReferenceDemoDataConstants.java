@@ -48,4 +48,6 @@ public class ReferenceDemoDataConstants {
 	public static final String GENERATE_DEMO_DATA_URI = "generate";
 	
 	public static final String REFERENCE_DEMO_DATA_URI = "referencedemodata";
+
+	public static final String DEMO_PATIENT_ATTR = "demo_patient";
 }
