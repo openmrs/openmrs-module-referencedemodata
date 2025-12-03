@@ -78,6 +78,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 		// if there aren't any, we exit. Otherwise, we ensure some users and providers are set up and then start generating data
 		try {
 			AdministrationService as = Context.getAdministrationService();
+
+			if ("false".equalsIgnoreCase(Context.getRuntimeProperties()
+					.getProperty(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS, "true"))) {
+				return;
+			}
+
 			GlobalProperty gp = as.getGlobalPropertyObject(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
 			if (gp == null || (gp.getPropertyValue().equals("0"))) {
 				return;
