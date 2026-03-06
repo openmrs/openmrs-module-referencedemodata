@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +108,12 @@ public class DemoVisitGenerator {
 	private Form visitNoteForm = null;
 	
 	private Form covidForm = null;
+	
+	private final Map<String, EncounterType> encounterTypeCache = new HashMap<>();
+	
+	private Location outpatientClinicLocation = null;
+	
+	private Location inpatientWardLocation = null;
 	
 	public DemoVisitGenerator(DemoProviderGenerator providerGenerator, DemoObsGenerator obsGenerator,
 			DemoOrderGenerator orderGenerator, DemoDiagnosisGenerator diagnosisGenerator) {
@@ -210,7 +218,11 @@ public class DemoVisitGenerator {
 			visit.setStopDatetime(toDate(visitEndTime));
 		} else {
 			// admit now and discharge a few days later
-			Location admitLocation = Context.getLocationService().getLocation("Inpatient Ward");
+			Location admitLocation;
+			if (inpatientWardLocation == null) {
+				inpatientWardLocation = Context.getLocationService().getLocation("Inpatient Ward");
+			}
+			admitLocation = inpatientWardLocation;
 			LocalDateTime admitTime = lastEncounterTime;
 			{
 				Encounter encounter = createEncounter("Admission", patient, toDate(admitTime), admitLocation, visitProvider);
@@ -354,8 +366,10 @@ public class DemoVisitGenerator {
 	}
 	
 	protected Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Provider provider) {
-		Location location = Context.getLocationService().getLocation("Outpatient Clinic");
-		return createDemoVitalsEncounter(patient, encounterTime, location, provider);
+		if (outpatientClinicLocation == null) {
+			outpatientClinicLocation = Context.getLocationService().getLocation("Outpatient Clinic");
+		}
+		return createDemoVitalsEncounter(patient, encounterTime, outpatientClinicLocation, provider);
 	}
 	
 	protected Encounter createDemoVitalsEncounter(Patient patient, Date encounterTime, Location location,
@@ -406,14 +420,16 @@ public class DemoVisitGenerator {
 	}
 	
 	private EncounterType getEncounterType(String name) {
-		EncounterType encounterType = getEncounterService().getEncounterType(name);
-		if (encounterType == null) {
-			encounterType = new EncounterType(name, "");
-			encounterType.setCreator(Context.getAuthenticatedUser());
-			encounterType.setDateCreated(new Date());
-			getEncounterService().saveEncounterType(encounterType);
-		}
-		return encounterType;
+		return encounterTypeCache.computeIfAbsent(name, n -> {
+			EncounterType encounterType = getEncounterService().getEncounterType(n);
+			if (encounterType == null) {
+				encounterType = new EncounterType(n, "");
+				encounterType.setCreator(Context.getAuthenticatedUser());
+				encounterType.setDateCreated(new Date());
+				getEncounterService().saveEncounterType(encounterType);
+			}
+			return encounterType;
+		});
 	}
 	
 	protected EncounterRole getClinicianRole() {

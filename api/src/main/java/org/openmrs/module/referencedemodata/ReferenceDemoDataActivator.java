@@ -217,6 +217,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						log.info("created {} visits for patient {}", visitCount, patient.getPatientIdentifier());
 						try {
 							Context.flushSession();
+							Context.clearSession();
 						}
 						catch (Exception ignored) {
 						}
