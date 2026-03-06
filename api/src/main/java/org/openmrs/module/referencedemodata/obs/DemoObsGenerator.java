@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +63,8 @@ public class DemoObsGenerator {
 	private List<NumericObsValueDescriptor> vitalsDescriptors = null;
 	
 	private List<NumericObsValueDescriptor> labDescriptors = null;
+	
+	private final Map<Integer, Double> lastNumericValues = new HashMap<>();
 	
 	private ObsService os = null;
 	
@@ -154,18 +157,17 @@ public class DemoObsGenerator {
 	
 	protected Obs createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
 			Date encounterDateTime, Location location) {
-		Obs previousObs = null;
-		try {
-			previousObs = getMostRecentObs(patient, encounter, descriptor.getConcept()).orElse(null);
+		Integer conceptId = descriptor.getConcept().getConceptId();
+		Double previousValue = lastNumericValues.get(conceptId);
+		
+		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor, previousValue);
+		
+		Obs savedObs = createObs(partialObs, patient, encounter, encounterDateTime, location);
+		if (savedObs.getValueNumeric() != null) {
+			lastNumericValues.put(conceptId, savedObs.getValueNumeric());
 		}
-		catch (Exception ignored) {
 		
-		}
-		
-		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor,
-				previousObs != null ? previousObs.getValueNumeric() : null);
-		
-		return createObs(partialObs, patient, encounter, encounterDateTime, location);
+		return savedObs;
 	}
 	
 	public Obs createCodedObs(String conceptDescriptor, String conceptAnswerDescriptor, Patient patient, Encounter encounter,
@@ -274,31 +276,6 @@ public class DemoObsGenerator {
 		
 		return os;
 	}
-	
-	private Optional<Obs> getMostRecentObs(Patient patient, Encounter encounter, Concept questionConcept) {
-		List<Obs> potentialObs = getObsService().getObservations(
-				Collections.singletonList(patient),
-				encounter != null ? Collections.singletonList(encounter) : null,
-				Collections.singletonList(questionConcept),
-				null,
-				null,
-				null,
-				null,
-				1,
-				null,
-				null,
-				null,
-				false
-		);
-		
-		if (potentialObs == null || potentialObs.isEmpty() || potentialObs.get(0) == null) {
-			return Optional.empty();
-		}
-		
-		return Optional.of(potentialObs.get(0));
-	}
-	
-	;
 	
 	private Obs createDemoLabObs(Patient patient, Encounter encounter, Date encounterDateTime, Location location,
 			Concept concept) {
