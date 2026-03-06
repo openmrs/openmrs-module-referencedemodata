@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -277,31 +276,6 @@ public class DemoObsGenerator {
 		
 		return os;
 	}
-	
-	private Optional<Obs> getMostRecentObs(Patient patient, Encounter encounter, Concept questionConcept) {
-		List<Obs> potentialObs = getObsService().getObservations(
-				Collections.singletonList(patient),
-				encounter != null ? Collections.singletonList(encounter) : null,
-				Collections.singletonList(questionConcept),
-				null,
-				null,
-				null,
-				null,
-				1,
-				null,
-				null,
-				null,
-				false
-		);
-		
-		if (potentialObs == null || potentialObs.isEmpty() || potentialObs.get(0) == null) {
-			return Optional.empty();
-		}
-		
-		return Optional.of(potentialObs.get(0));
-	}
-	
-	;
 	
 	private Obs createDemoLabObs(Patient patient, Encounter encounter, Date encounterDateTime, Location location,
 			Concept concept) {

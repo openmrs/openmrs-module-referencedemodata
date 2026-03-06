@@ -308,7 +308,6 @@ public class DemoVisitGenerator {
 	protected Encounter createCovidForm(Patient patient, Date encounterTime, Location location, Provider provider) {
 		Encounter covidFormEncounter = createEncounter("Consultation", patient, encounterTime, location, provider);
 		covidFormEncounter.setForm(getCovidForm());
-		getEncounterService().saveEncounter(covidFormEncounter);
 		
 		// symptoms
 		// idea is at least one, probably two, lower chances of fewer
