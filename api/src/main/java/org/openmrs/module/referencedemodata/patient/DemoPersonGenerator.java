@@ -11,6 +11,7 @@ package org.openmrs.module.referencedemodata.patient;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.openmrs.Person;
@@ -65,6 +66,13 @@ public class DemoPersonGenerator {
 		person.setBirthdateEstimated(false);
 		person.setGender(gender);
 		
+		if (randomBetween(1, 10) == 1) {
+			person.setDead(true);
+			person.setDeathDate(randomDeathDate(person.getBirthdate()));
+			person.setDeathdateEstimated(false);
+			person.setCauseOfDeathNonCoded("Unknown");
+		}
+
 		return person;
 	}
 	
@@ -78,4 +86,14 @@ public class DemoPersonGenerator {
 		return toDate(LocalDate.of(year, month, day));
 	}
 	
+	private static Date randomDeathDate(Date birthdate) {
+		LocalDate now = LocalDate.now();
+		LocalDate birth = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+		int daysBetween = (int) (now.toEpochDay() - birth.toEpochDay());
+		int daysToDeath = randomBetween(1, daysBetween);
+
+		return toDate(birth.plusDays(daysToDeath));
+	}
+
 }
