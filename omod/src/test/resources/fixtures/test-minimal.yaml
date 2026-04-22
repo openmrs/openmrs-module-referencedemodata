@@ -1,0 +1,17 @@
+uuid: 11111111-1111-1111-1111-000000000001
+givenName: Test
+familyName: Patient
+gender: M
+birthdate: "-P30Y"
+conditions:
+  - { uuid: 11111111-1111-1111-1111-000000001000, alias: DX_HTN, onset: "-P5Y", status: active }
+visits:
+  - uuid: 11111111-1111-1111-1111-000000002000
+    date: "-P1M"
+    type: outpatient
+    encounters:
+      - uuid: 11111111-1111-1111-1111-000000003000
+        type: VITALS
+        obs:
+          - { uuid: 11111111-1111-1111-1111-000000004000, concept: SYSTOLIC_BP,  value: 140 }
+          - { uuid: 11111111-1111-1111-1111-000000004001, concept: DIASTOLIC_BP, value: 76 }

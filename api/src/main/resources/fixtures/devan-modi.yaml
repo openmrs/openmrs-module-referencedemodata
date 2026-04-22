@@ -1,0 +1,228 @@
+# Source: docs/fixtures/devan-modi-source.pdf
+uuid: 22222222-2222-2222-2222-000000000001
+givenName: Devan
+familyName: Modi
+gender: M
+birthdate: "-P65Y"
+address: { city: Boston, state: MA, country: US, postalCode: "02115" }
+
+conditions:
+  - { uuid: 22222222-2222-2222-2222-000000001001, alias: DX_DM2, onset: "-P5Y",  status: active }
+  - { uuid: 22222222-2222-2222-2222-000000001002, alias: DX_HTN, onset: "-P25Y", status: active }
+  - { uuid: 22222222-2222-2222-2222-000000001003, alias: DX_PUD, onset: "-P1M",  status: active }
+
+visits:
+  # Hospitalization 1 month ago for PUD / H. pylori
+  - uuid: 22222222-2222-2222-2222-000000002001
+    date: "-P1M"
+    type: inpatient
+    encounters:
+      - uuid: 22222222-2222-2222-2222-000000003001
+        type: VITALS
+        obs:
+          - { uuid: 22222222-2222-2222-2222-000000004001, concept: SYSTOLIC_BP,  value: 140 }
+          - { uuid: 22222222-2222-2222-2222-000000004002, concept: DIASTOLIC_BP, value: 76 }
+          - { uuid: 22222222-2222-2222-2222-000000004003, concept: PULSE,        value: 90 }
+          - { uuid: 22222222-2222-2222-2222-000000004004, concept: RESP_RATE,    value: 14 }
+          - { uuid: 22222222-2222-2222-2222-000000004005, concept: SPO2,         value: 99 }
+          - { uuid: 22222222-2222-2222-2222-000000004006, concept: TEMP_C,       value: 37.2 }
+          - { uuid: 22222222-2222-2222-2222-000000004007, concept: WEIGHT_KG,    value: 83 }
+          - { uuid: 22222222-2222-2222-2222-000000004008, concept: HEIGHT_CM,    value: 177 }
+      - uuid: 22222222-2222-2222-2222-000000003002
+        type: DISCHARGE
+        noteText: |
+          Hospital: Memorial Hospital
+          Patient: Devan Modi, DOB (age 65)
+          Admission Date: 30 days ago
+          Discharge Date: 28 days ago
+          Admission Diagnosis: Upper GI bleed
+          Discharge Diagnosis: Bleeding peptic ulcer disease 2/2 H. pylori
+          Attending physician: Dr. Jina Hsu
+          Consultations: Gastroenterology
+          Procedures: Upper endoscopy
+          H&P: Mr. Modi is a 65-year-old man who presented to the emergency department for
+          epigastric pain of 3 days duration and one episode of coffee ground emesis on the
+          morning of presentation. His past medical history is significant for hypertension
+          and type 2 diabetes. His medications prior to admission were HCTZ, amlodipine, and
+          metformin. His vital signs were stable. Abdominal exam revealed epigastric tenderness
+          without rebound or guarding. A rectal exam showed heme+ stool. His hemoglobin was
+          9.6, down from his baseline of 13.1.
+          Hospital Course: The patient was admitted for a presumed upper GI bleed. Two large
+          bore IVs were placed and the patient was given iv fluids and started on a PPI drip.
+          His HCTZ, amlodipine and metformin were held. GI was consulted and the patient
+          underwent an EGD which showed a non-bleeding gastric ulcer. Biopsies were taken and
+          were positive for H. pylori. Post-EGD Hgb was stable at 9.3. The patient was started
+          on bismuth quadruple therapy. The patient's pain improved and his diet was advanced.
+          He experienced no additional bleeding during his hospitalization. His hemoglobin
+          remained stable and was 9.5 on discharge.
+          Discharge Diagnosis: Bleeding peptic ulcer disease 2/2 H. pylori
+          Discharge Condition: Stable
+          Signed by Jina Hsu, MD
+      - uuid: 22222222-2222-2222-2222-000000003003
+        type: CONSULTATION
+        noteText: |
+          Procedure Note, 29 days ago.
+          Study: Esophagogastroduodenoscopy (EGD)
+          PATIENT: Devan Modi
+          PHYSICIAN: Dr. Joshua Schull
+          INDICATION: Upper GI Bleed
+          FINDINGS: Esophagus: normal. GE junction at 39 CM. No hiatal hernia.
+          Stomach: Coffee ground material present. Non-bleeding gastric ulcer in the fundus,
+          erythematous surrounding mucosa. Biopsies taken.
+          Duodenum: No mucosal abnormality.
+          IMPRESSION: Non-bleeding gastric ulcer.
+          Signed: Dr. Joshua Schull
+
+  # Follow-up with NP 4 weeks after the 3-year-ago visit = ~2y11mo ago
+  - uuid: 22222222-2222-2222-2222-000000002002
+    date: "-P2Y11M"
+    type: outpatient
+    encounters:
+      - uuid: 22222222-2222-2222-2222-000000003004
+        type: VITALS
+        obs:
+          - { uuid: 22222222-2222-2222-2222-000000004020, concept: SYSTOLIC_BP,  value: 138 }
+          - { uuid: 22222222-2222-2222-2222-000000004021, concept: DIASTOLIC_BP, value: 78 }
+          - { uuid: 22222222-2222-2222-2222-000000004022, concept: PULSE,        value: 82 }
+          - { uuid: 22222222-2222-2222-2222-000000004023, concept: RESP_RATE,    value: 13 }
+          - { uuid: 22222222-2222-2222-2222-000000004024, concept: TEMP_C,       value: 38.2 }
+      - uuid: 22222222-2222-2222-2222-000000003005
+        type: VISIT_NOTE
+        noteText: |
+          NP Visit, blood pressure check.
+          Pt: Devan Modi. Nurse Practitioner: Sara Renault.
+          Subjective: Follow-up for BP check after amlodipine 5mg was added 4 weeks ago.
+          Home readings 120s-130s / 70s-80s. Tolerating amlodipine well. No SOB, CP, LE swelling.
+          Objective: BP 138/78, HR 82, RR 13, Temp 38.2.
+          Assessment: 62 y/o with HTN and T2DM, BP now acceptable.
+          Plan: Continue amlodipine and HCTZ. Monitor at home.
+          Signed: Sara Renault
+
+  # Initial amlodipine-addition visit, 3 years ago
+  - uuid: 22222222-2222-2222-2222-000000002003
+    date: "-P3Y"
+    type: outpatient
+    encounters:
+      - uuid: 22222222-2222-2222-2222-000000003006
+        type: VITALS
+        obs:
+          - { uuid: 22222222-2222-2222-2222-000000004040, concept: SYSTOLIC_BP,  value: 168 }
+          - { uuid: 22222222-2222-2222-2222-000000004041, concept: DIASTOLIC_BP, value: 92 }
+          - { uuid: 22222222-2222-2222-2222-000000004042, concept: PULSE,        value: 80 }
+          - { uuid: 22222222-2222-2222-2222-000000004043, concept: RESP_RATE,    value: 16 }
+          - { uuid: 22222222-2222-2222-2222-000000004044, concept: SPO2,         value: 98 }
+          - { uuid: 22222222-2222-2222-2222-000000004045, concept: TEMP_C,       value: 38.2 }
+          - { uuid: 22222222-2222-2222-2222-000000004046, concept: WEIGHT_KG,    value: 81.5 }
+          - { uuid: 22222222-2222-2222-2222-000000004047, concept: HEIGHT_CM,    value: 177 }
+      - uuid: 22222222-2222-2222-2222-000000003007
+        type: VISIT_NOTE
+        noteText: |
+          Visit Note, 3 years ago.
+          Pt: Devan Modi. PCP: Luis Perez.
+          Subjective: 62 y/o man, home BP log 150-165/85-90. Taking HCTZ 50mg daily, metformin
+          1000 mg twice daily. Denies headache, vision changes, chest pain, SOB.
+          Objective: BP 168/92, HR 80, RR 16, Temp 98.6F.
+          Labs: Fasting glucose 110, HbA1c 6.2, BMP WNL.
+          Assessment: HTN + T2DM with elevated BP despite HCTZ.
+          Plan: Start amlodipine 5 mg daily. Continue HCTZ 50mg daily. Re-evaluate in 4 weeks.
+          Continue metformin 1000 mg BID.
+          Signed: Luis Perez
+
+  # DM diagnosis visit, 5 years ago
+  - uuid: 22222222-2222-2222-2222-000000002004
+    date: "-P5Y"
+    type: outpatient
+    encounters:
+      - uuid: 22222222-2222-2222-2222-000000003008
+        type: VITALS
+        obs:
+          - { uuid: 22222222-2222-2222-2222-000000004060, concept: SYSTOLIC_BP,  value: 130 }
+          - { uuid: 22222222-2222-2222-2222-000000004061, concept: DIASTOLIC_BP, value: 68 }
+          - { uuid: 22222222-2222-2222-2222-000000004062, concept: PULSE,        value: 82 }
+          - { uuid: 22222222-2222-2222-2222-000000004063, concept: RESP_RATE,    value: 14 }
+          - { uuid: 22222222-2222-2222-2222-000000004064, concept: SPO2,         value: 99 }
+          - { uuid: 22222222-2222-2222-2222-000000004065, concept: TEMP_C,       value: 37.8 }
+          - { uuid: 22222222-2222-2222-2222-000000004066, concept: WEIGHT_KG,    value: 81 }
+          - { uuid: 22222222-2222-2222-2222-000000004067, concept: HEIGHT_CM,    value: 177 }
+      - uuid: 22222222-2222-2222-2222-000000003009
+        type: VISIT_NOTE
+        noteText: |
+          Visit Note, 5 years ago.
+          Pt: Devan Modi. PCP: Luis Perez.
+          Subjective: 60 y/o for routine physical. Elevated screening glucose; follow-up A1c
+          elevated. History of HTN on HCTZ.
+          Objective: BP 140/85, HR 70, RR 16, Temp 98.6F.
+          Labs: Fasting glucose 154, HbA1c 7.1.
+          Assessment: New T2DM.
+          Plan: Start metformin 500mg daily, titrate to 1000 mg BID. Diabetes education.
+          Dietary counseling. Follow up 4-6 weeks. Continue HCTZ.
+          Signed: Luis Perez
+
+# Labs attach to the visits above by date
+labs:
+  - { concept: HGB,     date: "-P28D", value: 9.5 }
+  - { concept: HGB,     date: "-P29D", value: 9.3 }
+  - { concept: HGB,     date: "-P30D", value: 9.6 }
+  - { concept: HGB,     date: "-P3Y",  value: 13.1 }
+  - { concept: WBC,     date: "-P28D", value: 8.2 }
+  - { concept: WBC,     date: "-P29D", value: 8.0 }
+  - { concept: WBC,     date: "-P30D", value: 8.1 }
+  - { concept: WBC,     date: "-P3Y",  value: 7.2 }
+  - { concept: PLT,     date: "-P28D", value: 226 }
+  - { concept: PLT,     date: "-P29D", value: 237 }
+  - { concept: PLT,     date: "-P30D", value: 232 }
+  - { concept: PLT,     date: "-P3Y",  value: 273 }
+  - { concept: NA,      date: "-P28D", value: 140 }
+  - { concept: NA,      date: "-P29D", value: 141 }
+  - { concept: NA,      date: "-P30D", value: 140 }
+  - { concept: NA,      date: "-P3Y",  value: 140 }
+  - { concept: NA,      date: "-P5Y",  value: 142 }
+  - { concept: BUN,     date: "-P28D", value: 13 }
+  - { concept: BUN,     date: "-P29D", value: 12 }
+  - { concept: BUN,     date: "-P30D", value: 20 }
+  - { concept: BUN,     date: "-P3Y",  value: 14 }
+  - { concept: BUN,     date: "-P5Y",  value: 14 }
+  - { concept: CR,      date: "-P28D", value: 0.8 }
+  - { concept: CR,      date: "-P29D", value: 0.8 }
+  - { concept: CR,      date: "-P30D", value: 1.0 }
+  - { concept: CR,      date: "-P3Y",  value: 0.9 }
+  - { concept: CR,      date: "-P5Y",  value: 0.9 }
+  - { concept: K,       date: "-P28D", value: 4.0 }
+  - { concept: K,       date: "-P29D", value: 4.2 }
+  - { concept: K,       date: "-P30D", value: 4.0 }
+  - { concept: K,       date: "-P3Y",  value: 4.1 }
+  - { concept: K,       date: "-P5Y",  value: 4.2 }
+  - { concept: GLUCOSE, date: "-P28D", value: 118 }
+  - { concept: GLUCOSE, date: "-P29D", value: 123 }
+  - { concept: GLUCOSE, date: "-P30D", value: 108 }
+  - { concept: GLUCOSE, date: "-P3Y",  value: 110 }
+  - { concept: GLUCOSE, date: "-P5Y",  value: 154 }
+  - { concept: HBA1C,   date: "-P30D", value: 6.4 }
+  - { concept: HBA1C,   date: "-P3Y",  value: 6.2 }
+  - { concept: HBA1C,   date: "-P5Y",  value: 7.1 }
+
+# Drug orders
+orders:
+  - { uuid: 22222222-2222-2222-2222-000000005001, drug: DRUG_HCTZ,
+      dose: 50,   doseUnits: mg, route: PO, frequency: daily,
+      indication: DX_HTN, startDate: "-P25Y", status: active }
+  - { uuid: 22222222-2222-2222-2222-000000005002, drug: DRUG_AMLODIPINE,
+      dose: 5,    doseUnits: mg, route: PO, frequency: daily,
+      indication: DX_HTN, startDate: "-P3Y", status: active }
+  - { uuid: 22222222-2222-2222-2222-000000005003, drug: DRUG_METFORMIN,
+      dose: 1000, doseUnits: mg, route: PO, frequency: "twice daily",
+      indication: DX_DM2, startDate: "-P5Y", status: active }
+  - { uuid: 22222222-2222-2222-2222-000000005004, drug: DRUG_ESOMEPRAZOLE,
+      dose: 20,   doseUnits: mg, route: PO, frequency: "twice daily",
+      indication: DX_PUD, startDate: "-P28D", status: active }
+  - { uuid: 22222222-2222-2222-2222-000000005005, drug: DRUG_BISMUTH_SUBSALICYLATE,
+      dose: 300,  doseUnits: mg, route: PO, frequency: "four times daily",
+      indication: DX_H_PYLORI, startDate: "-P29D", durationDays: 14, status: inactive }
+  - { uuid: 22222222-2222-2222-2222-000000005006, drug: DRUG_TETRACYCLINE,
+      dose: 500,  doseUnits: mg, route: PO, frequency: "four times daily",
+      indication: DX_H_PYLORI, startDate: "-P29D", durationDays: 14, status: inactive }
+  - { uuid: 22222222-2222-2222-2222-000000005007, drug: DRUG_METRONIDAZOLE,
+      dose: 250,  doseUnits: mg, route: PO, frequency: "four times daily",
+      indication: DX_H_PYLORI, startDate: "-P29D", durationDays: 14, status: inactive }
+
+allergies: []

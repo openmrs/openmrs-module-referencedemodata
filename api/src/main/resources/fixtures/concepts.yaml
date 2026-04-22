@@ -1,0 +1,44 @@
+# Alias -> concept reference. Two forms accepted:
+#   uuid: <OpenMRS UUID>
+#   ciel: <CIEL numeric code>   # resolves via ConceptService.getConceptByMapping("CIEL", code)
+# Fixtures reference these aliases instead of inlining raw UUIDs.
+
+# --- Vitals (UUIDs from module CSVs) ---
+SYSTOLIC_BP: { uuid: 5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DIASTOLIC_BP: { uuid: 5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+PULSE:       { uuid: 5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+RESP_RATE:   { uuid: 5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+SPO2:        { uuid: 5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+TEMP_C:      { uuid: 5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+WEIGHT_KG:   { uuid: 5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+HEIGHT_CM:   { uuid: 5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+
+# --- Encounter text obs ---
+TEXT_OF_ENCOUNTER: { uuid: 162169AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+
+# --- Labs (CIEL mappings; resolve on first load, fail loudly if missing) ---
+HGB:      { ciel: "21" }
+WBC:      { ciel: "678" }
+PLT:      { ciel: "729" }
+NA:       { ciel: "654" }
+BUN:      { ciel: "857" }
+CR:       { ciel: "790" }
+K:        { uuid: 1133AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+GLUCOSE:  { ciel: "887" }
+HBA1C:    { ciel: "159644" }
+
+# --- Diagnosis concepts ---
+PROBLEM_ADDED: { ciel: "1284" }
+DX_DM2:       { ciel: "142474" }
+DX_HTN:       { ciel: "117399" }
+DX_PUD:       { ciel: "143957" }
+DX_H_PYLORI:  { ciel: "136443" }
+
+# --- Drug concepts ---
+DRUG_HCTZ:                 { uuid: 77696AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_AMLODIPINE:           { uuid: 71137AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_METFORMIN:            { uuid: 79651AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_ESOMEPRAZOLE:         { uuid: 75875AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_BISMUTH_SUBSALICYLATE: { uuid: 72241AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_TETRACYCLINE:         { uuid: 84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }
+DRUG_METRONIDAZOLE:        { uuid: 79782AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA }

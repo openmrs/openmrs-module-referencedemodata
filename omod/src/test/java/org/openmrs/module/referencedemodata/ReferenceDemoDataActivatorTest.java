@@ -14,6 +14,7 @@
 package org.openmrs.module.referencedemodata;
 
 import org.hibernate.cfg.Environment;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -146,49 +147,45 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleContextSensitiveTe
         adminService.saveGlobalProperty(createDemoPatients);
         
         new ReferenceMetadataActivator().started();
-        
-		ReferenceDemoDataActivator referenceDemoDataActivator = new ReferenceDemoDataActivator();
-        initMockGenerator(referenceDemoDataActivator);
-		referenceDemoDataActivator.started();
+
+        installMockIdentifierSource();
+		new ReferenceDemoDataActivator().started();
 
 		List<Patient> allPatients = patientService.getAllPatients();
-        for (Patient patient : allPatients) {
-	        System.out.println(patient + " " + patient.getPatientIdentifier() + " " + patient.getPersonName() + " " + patient.getBirthdate() + " " + patient.getAddresses());
-        }
 		assertEquals(demoPatientCount, allPatients.size());
         List<Visit> allVisits = visitService.getAllVisits();
-        for (Visit visit : allVisits) {
-	        System.out.println(visit + " " + visit.getStartDatetime() + " - " + visit.getStopDatetime() + " " + visit.getEncounters());
-        }
 		assertTrue(allVisits.size() > demoPatientCount);
     }
-    
-    long seed = 0;
-    SequentialIdentifierGenerator mockIdGenerator;
 
-    private void initMockGenerator(ReferenceDemoDataActivator referenceDemoDataActivator) {
-		PatientIdentifierType openmrsIdType = patientService.getPatientIdentifierTypeByName(ReferenceMetadataConstants.OPENMRS_ID_NAME);
-    	mockIdGenerator = new SequentialIdentifierGenerator();
-    	mockIdGenerator.setIdentifierType(openmrsIdType);
-    	mockIdGenerator.setName(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_NAME);
-    	mockIdGenerator.setUuid(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_UUID);
-    	mockIdGenerator.setBaseCharacterSet(new LuhnMod30IdentifierValidator().getBaseCharacters());
-    	mockIdGenerator.setMinLength(6);
-    	mockIdGenerator.setFirstIdentifierBase("10000");
+    @After
+    public void clearMockIdentifierSource() {
+        DemoIdentifiers.setIdentifierSourceService(null);
+    }
+
+    private long seed = 0;
+    private SequentialIdentifierGenerator mockIdGenerator;
+
+    private void installMockIdentifierSource() {
+        PatientIdentifierType openmrsIdType = patientService
+                .getPatientIdentifierTypeByName(ReferenceMetadataConstants.OPENMRS_ID_NAME);
+        mockIdGenerator = new SequentialIdentifierGenerator();
+        mockIdGenerator.setIdentifierType(openmrsIdType);
+        mockIdGenerator.setName(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_NAME);
+        mockIdGenerator.setUuid(ReferenceMetadataConstants.OPENMRS_ID_GENERATOR_UUID);
+        mockIdGenerator.setBaseCharacterSet(new LuhnMod30IdentifierValidator().getBaseCharacters());
+        mockIdGenerator.setMinLength(6);
+        mockIdGenerator.setFirstIdentifierBase("10000");
 
         IdentifierSourceService mockIss = Mockito.mock(IdentifierSourceService.class);
-        Mockito.when(mockIss.generateIdentifier(Mockito.eq(openmrsIdType), Mockito.eq("DemoData"))).thenAnswer(new Answer<String>() {
-        	@Override
-        	public String answer(InvocationOnMock invocation) throws Throwable {
-        	    return generateIdentifier();
-        	}
-        });
-        referenceDemoDataActivator.setIdentifierSourceService(mockIss);
+        Mockito.when(mockIss.generateIdentifier(Mockito.eq(openmrsIdType),
+                Mockito.eq(ReferenceDemoDataConstants.DEMO_IDGEN_SOURCE_NAME)))
+                .thenAnswer(new Answer<String>() {
+                    @Override
+                    public String answer(InvocationOnMock invocation) throws Throwable {
+                        seed++;
+                        return mockIdGenerator.getIdentifierForSeed(seed);
+                    }
+                });
+        DemoIdentifiers.setIdentifierSourceService(mockIss);
     }
-    
-    private String generateIdentifier() {
-    	seed++;
-	    return mockIdGenerator.getIdentifierForSeed(seed);
-    }
-    
 }

@@ -60,6 +60,21 @@
         </conditionalResource>
     </conditionalResources>
     <!-- / Conditional Resources -->
-    
+
+    <globalProperty>
+        <property>referencedemodata.seed</property>
+        <defaultValue>0</defaultValue>
+        <description>Seed for deterministic demo patient generation (long).</description>
+    </globalProperty>
+    <globalProperty>
+        <property>referencedemodata.clockAnchor</property>
+        <defaultValue>2025-01-01T00:00:00Z</defaultValue>
+        <description>
+            ISO-8601 instant used as "today" by the demo data generator. Hard-coded so two
+            fresh installs produce identical patients. Set explicitly to shift the dataset
+            forward in time.
+        </description>
+    </globalProperty>
+
 </module>
 

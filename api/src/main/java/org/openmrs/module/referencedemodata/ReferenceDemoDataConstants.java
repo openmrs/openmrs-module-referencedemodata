@@ -42,4 +42,12 @@ public class ReferenceDemoDataConstants {
 	public static final String VITALS_FORM_UUID = "a000cb34-9ec1-4344-a1c8-f692232f6edd";
 	public static final String VITALS_FORM_ENCOUNTERTYPE_UUID = "67a71486-1a54-468f-ac3e-7091a9a79584";
 	public static final String VITALS_FORM_NAME = "Vitals";
+
+	public static final String DEMO_IDGEN_SOURCE_NAME = "DemoData";
+	public static final String DEMO_PROVIDER_UUID = "c4a8f07f-4de0-4e77-9d79-5d6c0b8d3a02";
+	public static final String CONSULTATION_ENCOUNTER_TYPE_UUID = "dd528487-82a5-4082-9c72-ed246bd49591";
+	public static final String DEMO_PROVIDER_PERSON_UUID = "c4a8f07f-4de0-4e77-9d79-5d6c0b8d3a03";
+
+	public static final String CARE_SETTING_OUTPATIENT_UUID = "6f0c9a92-6f24-11e3-af88-005056821db0";
+	public static final String CARE_SETTING_INPATIENT_UUID = "c365e560-c3ec-11e3-9c1a-0800200c9a66";
 }
