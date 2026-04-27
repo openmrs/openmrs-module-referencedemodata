@@ -148,7 +148,24 @@ public class DemoObsGenerator {
 		if (encounter != null) {
 			encounter.addObs(obs);
 		}
-		
+
+		return getObsService().saveObs(obs, null);
+	}
+
+	public Obs createNumericObs(String conceptDescriptor, Number value, Patient patient, Encounter encounter,
+			Date encounterTime, Location location) {
+		Obs obs = createBasicObs(conceptDescriptor, patient, encounterTime, location);
+		Concept concept = obs.getConcept();
+		ConceptNumeric conceptNumeric = concept == null ? null
+				: Context.getConceptService().getConceptNumeric(concept.getConceptId());
+		if (conceptNumeric != null && Boolean.FALSE.equals(conceptNumeric.getAllowDecimal())) {
+			obs.setValueNumeric((double) value.longValue());
+		} else {
+			obs.setValueNumeric(value.doubleValue());
+		}
+		if (encounter != null) {
+			encounter.addObs(obs);
+		}
 		return getObsService().saveObs(obs, null);
 	}
 	

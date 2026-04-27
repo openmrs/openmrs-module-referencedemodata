@@ -20,7 +20,16 @@ import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
+import org.openmrs.ConceptName;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptReferenceTerm;
+import org.openmrs.ConceptSource;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterRole;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -28,6 +37,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Visit;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.ConditionService;
 import org.openmrs.api.DiagnosisService;
 import org.openmrs.api.EncounterService;
@@ -56,6 +66,7 @@ import ca.uhn.fhir.rest.param.TokenParam;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
@@ -76,7 +87,9 @@ import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OP
 
 @SkipBaseSetup
 public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	private static final String DEVAN_PATIENT_UUID = "a1b2c3d4-e5f6-4789-a012-34567890abcd";
+
 	@Autowired
 	UserService userService;
 	
@@ -137,8 +150,14 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 		executeDataSet("requiredDataTestDataset.xml");
 		getConnection().commit();
+		bumpH2IdentityCounters();
+		getConnection().commit();
 		updateSearchIndex();
 		authenticate();
+
+		seedCielConcepts();
+		seedDrugOrderValidationConceptSets();
+		seedClinicianEncounterRole();
 	}
 	
 	@Before
@@ -222,7 +241,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				.map(conceptService::getConceptByUuid).collect(Collectors.toList());
 		
 		assertThat("Expected each vitals concept to have a result per vitals encounter",
-				obsService.getObservations(null, null, vitalsConcepts, null, null, null, null, null, null, null, null,
+				obsService.getObservations(null, vitalsEncounters, vitalsConcepts, null, null, null, null, null, null, null, null,
 						false),
 				hasSize(vitalsConcepts.size() * vitalsEncounters.size()));
 		
@@ -259,7 +278,9 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				greaterThanOrEqualTo((allPatients.size() / 3) - patientErrorFactor));
 		
 		assertThat("Expected a COMPLETED FHIR Task per order",
-				allPatients.stream().map(patient -> orderService.getAllOrdersByPatient(patient).size())
+				allPatients.stream()
+						.filter(p -> !DEVAN_PATIENT_UUID.equals(p.getUuid()))
+						.map(patient -> orderService.getAllOrdersByPatient(patient).size())
 						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(null,null,new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString()))),null,null,null,null).size()));
 
 	   	assertThat("Expected every patient to have demo_patient=true",
@@ -294,5 +315,170 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		seed++;
 		return mockIdGenerator.getIdentifierForSeed(seed);
 	}
-	
+
+	// ------------------------------------------------------------------------
+	// Devan Modi fixture seeding — duplicated from FixturePatientLoaderTest
+	// (api/src/test) because there is no test-jar dependency between modules.
+	// ------------------------------------------------------------------------
+
+	private void bumpH2IdentityCounters() throws java.sql.SQLException {
+		String[][] tableAndIdColumn = {
+				{ "concept", "concept_id" },
+				{ "concept_name", "concept_name_id" },
+				{ "concept_reference_term", "concept_reference_term_id" },
+				{ "concept_reference_map", "concept_map_id" },
+				{ "concept_set", "concept_set_id" },
+				{ "encounter", "encounter_id" },
+				{ "encounter_type", "encounter_type_id" },
+				{ "encounter_role", "encounter_role_id" },
+				{ "obs", "obs_id" },
+				{ "orders", "order_id" },
+				{ "drug_order", "order_id" },
+				{ "patient_identifier", "patient_identifier_id" },
+				{ "person", "person_id" },
+				{ "person_name", "person_name_id" },
+				{ "person_attribute", "person_attribute_id" },
+				{ "person_attribute_type", "person_attribute_type_id" },
+				{ "provider", "provider_id" },
+				{ "location", "location_id" },
+				{ "visit", "visit_id" },
+				{ "conditions", "condition_id" },
+				{ "diagnosis", "diagnosis_id" },
+				{ "order_frequency", "order_frequency_id" },
+				{ "notification_alert", "alert_id" },
+				{ "users", "user_id" }
+		};
+		try (java.sql.Statement exec = getConnection().createStatement()) {
+			for (String[] pair : tableAndIdColumn) {
+				try {
+					exec.execute("ALTER TABLE " + pair[0] + " ALTER COLUMN " + pair[1]
+							+ " INT NOT NULL AUTO_INCREMENT");
+					exec.execute("ALTER TABLE " + pair[0] + " ALTER COLUMN " + pair[1]
+							+ " RESTART WITH 200000");
+				}
+				catch (java.sql.SQLException ignored) {
+					// Table may not exist or already be auto-increment; skip.
+				}
+			}
+		}
+	}
+
+	private void seedCielConcepts() {
+		ensureCielConcept("142474", "Type 2 Diabetes Mellitus", "Diagnosis", "N/A");
+		ensureCielConcept("117399", "Hypertension", "Diagnosis", "N/A");
+		ensureCielConcept("114262", "Peptic Ulcer Disease", "Diagnosis", "N/A");
+		ensureCielConcept("123529", "Non-bleeding gastric ulcer", "Diagnosis", "N/A");
+		ensureCielConcept("123569", "Upper GI Bleed", "Diagnosis", "N/A");
+		ensureCielConcept("117152", "H. pylori infection", "Diagnosis", "N/A");
+
+		ensureCielConcept("75875", "Esomeprazole", "Drug", "N/A");
+		ensureCielConcept("77696", "Hydrochlorothiazide", "Drug", "N/A");
+		ensureCielConcept("71137", "Amlodipine", "Drug", "N/A");
+		ensureCielConcept("79651", "Metformin", "Drug", "N/A");
+		ensureCielConcept("70116", "Bismuth subsalicylate", "Drug", "N/A");
+		ensureCielConcept("84893", "Tetracycline", "Drug", "N/A");
+		ensureCielConcept("79782", "Metronidazole", "Drug", "N/A");
+
+		ensureCielConcept("1513", "mg", "Units of Measure", "N/A");
+		ensureCielConcept("160240", "Oral", "Procedure", "N/A");
+
+		ensureCielConcept("160858", "Twice daily", "Frequency", "N/A");
+		ensureCielConcept("160862", "Once daily", "Frequency", "N/A");
+		ensureCielConcept("160870", "Four times daily", "Frequency", "N/A");
+
+		ensureCielConcept("21", "Haemoglobin-CIEL", "Test", "Numeric");
+		ensureCielConcept("678", "WBC", "Test", "Numeric");
+		ensureCielConcept("729", "Platelets", "Test", "Numeric");
+		ensureCielConcept("1006", "Sodium", "Test", "Numeric");
+		ensureCielConcept("857", "BUN", "Test", "Numeric");
+		ensureCielConcept("790", "Creatinine", "Test", "Numeric");
+		ensureCielConcept("1133", "Potassium-CIEL", "Test", "Numeric");
+		ensureCielConcept("887", "Glucose", "Test", "Numeric");
+		ensureCielConcept("159644", "HbA1c", "Test", "Numeric");
+	}
+
+	private void ensureCielConcept(String code, String name, String className, String datatypeName) {
+		ConceptService cs = Context.getConceptService();
+		if (cs.getConceptByMapping(code, "CIEL") != null) {
+			return;
+		}
+
+		ConceptSource cielSource = cs.getConceptSourceByName("CIEL");
+		ConceptClass conceptClass = cs.getConceptClassByName(className);
+		ConceptDatatype datatype = cs.getConceptDatatypeByName(datatypeName);
+		ConceptMapType sameAs = cs.getConceptMapTypeByName("same-as");
+
+		ConceptReferenceTerm term = new ConceptReferenceTerm(cielSource, code, null);
+		term = cs.saveConceptReferenceTerm(term);
+
+		Concept concept;
+		if ("Numeric".equals(datatypeName)) {
+			ConceptNumeric numeric = new ConceptNumeric();
+			numeric.setAllowDecimal(true);
+			concept = numeric;
+		} else {
+			concept = new Concept();
+		}
+		concept.setConceptClass(conceptClass);
+		concept.setDatatype(datatype);
+		concept.setFullySpecifiedName(new ConceptName(name + " [" + code + "]", Locale.ENGLISH));
+		concept.addConceptMapping(new ConceptMap(term, sameAs));
+
+		cs.saveConcept(concept);
+	}
+
+	private void seedDrugOrderValidationConceptSets() {
+		ConceptService cs = Context.getConceptService();
+		Concept mg = cs.getConceptByMapping("1513", "CIEL");
+		Concept oral = cs.getConceptByMapping("160240", "CIEL");
+
+		ConceptClass convSet = cs.getConceptClassByName("ConvSet");
+		ConceptDatatype naDatatype = cs.getConceptDatatypeByName("N/A");
+
+		Concept doseUnitsSet = createConceptSet(cs, convSet, naDatatype, "Drug Dosing Units Test Set",
+				Collections.singletonList(mg));
+		Concept routesSet = createConceptSet(cs, convSet, naDatatype, "Drug Routes Test Set",
+				Collections.singletonList(oral));
+		Concept dispensingUnitsSet = createConceptSet(cs, convSet, naDatatype,
+				"Drug Dispensing Units Test Set", Collections.singletonList(mg));
+
+		AdministrationService as = Context.getAdministrationService();
+		saveGpUuid(as, "order.drugDosingUnitsConceptUuid", doseUnitsSet.getUuid());
+		saveGpUuid(as, "order.drugRoutesConceptUuid", routesSet.getUuid());
+		saveGpUuid(as, "order.drugDispensingUnitsConceptUuid", dispensingUnitsSet.getUuid());
+	}
+
+	private Concept createConceptSet(ConceptService cs, ConceptClass clazz, ConceptDatatype datatype,
+			String name, List<Concept> members) {
+		Concept setConcept = new Concept();
+		setConcept.setConceptClass(clazz);
+		setConcept.setDatatype(datatype);
+		setConcept.setSet(true);
+		setConcept.setFullySpecifiedName(new ConceptName(name, Locale.ENGLISH));
+		for (Concept member : members) {
+			setConcept.addSetMember(member);
+		}
+		return cs.saveConcept(setConcept);
+	}
+
+	private void saveGpUuid(AdministrationService as, String property, String value) {
+		GlobalProperty gp = as.getGlobalPropertyObject(property);
+		if (gp == null) {
+			gp = new GlobalProperty(property, value);
+		} else {
+			gp.setPropertyValue(value);
+		}
+		as.saveGlobalProperty(gp);
+	}
+
+	private void seedClinicianEncounterRole() {
+		EncounterService es = Context.getEncounterService();
+		if (es.getEncounterRoleByName("Clinician") == null) {
+			EncounterRole role = new EncounterRole();
+			role.setName("Clinician");
+			role.setDescription("Provider responsible for care during an encounter");
+			es.saveEncounterRole(role);
+		}
+	}
+
 }
