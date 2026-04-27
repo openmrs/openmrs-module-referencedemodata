@@ -32,8 +32,16 @@ public class DemoProviderGenerator {
 			clinicians.add(getProviderService().getProviderByIdentifier("doctor"));
 			clinicians.add(getProviderService().getProviderByIdentifier("nurse"));
 		}
-		
+
 		return shouldRandomEventOccur(.3) ? clinicians.get(0) : clinicians.get(1);
+	}
+
+	public Provider getDoctor() {
+		return getProviderService().getProviderByIdentifier("doctor");
+	}
+
+	public Provider getNurse() {
+		return getProviderService().getProviderByIdentifier("nurse");
 	}
 	
 	public Provider getRandomLabTech() {

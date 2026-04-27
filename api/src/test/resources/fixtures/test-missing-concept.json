@@ -1,0 +1,7 @@
+{
+  "patientUuid": "00000000-1111-2222-3333-444444444444",
+  "demographics": { "givenName": "Test", "familyName": "Patient", "gender": "M", "ageYearsAgo": 30 },
+  "conditions": [
+    { "concept": "CIEL:99999999", "onset": { "yearsAgo": 1 }, "status": "ACTIVE" }
+  ]
+}

@@ -10,6 +10,7 @@
 package org.openmrs.module.referencedemodata;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.referencedemodata.appointments.DemoAppointmentsGenerator;
 import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
+import org.openmrs.module.referencedemodata.fixtures.FixturePatientLoader;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
 import org.openmrs.module.referencedemodata.patient.DemoPatientGenerator;
@@ -117,11 +119,19 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 							OpenmrsConstants.LOG_LEVEL_INFO);
 					
 					DemoDataConceptCache conceptCache = new DemoDataConceptCache();
-					
-					List<Integer> createdPatientIds = new DemoPatientGenerator(
-							getIdentifierSourceService()).createDemoPatients(patientCount);
+
+					List<Integer> createdPatientIds = new ArrayList<>();
+					FixturePatientLoader fixtureLoader = new FixturePatientLoader(conceptCache,
+							getIdentifierSourceService());
+					Patient fixturePatient = fixtureLoader.loadFixture("fixtures/devan-modi.json");
+					createdPatientIds.add(fixturePatient.getPatientId());
+
+					int remaining = Math.max(0, patientCount - createdPatientIds.size());
+					List<Integer> randomPatientIds = new DemoPatientGenerator(
+							getIdentifierSourceService()).createDemoPatients(remaining);
+					createdPatientIds.addAll(randomPatientIds);
 					Context.flushSession();
-					
+
 					log.info("Created {} patients", createdPatientIds.size());
 					
 					DemoProviderGenerator providerGenerator = new DemoProviderGenerator();
@@ -137,7 +147,9 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					List<VisitType> visitTypes = getVisitService().getAllVisitTypes().stream()
 							.filter(vt -> !"Offline Visit".equals(vt.getName())).collect(Collectors.toList());
 					
-					for (Integer patientId : createdPatientIds) {
+					// randomPatientIds only — the fixture patient already has visits/appointments/programs
+					// materialized by FixturePatientLoader.
+					for (Integer patientId : randomPatientIds) {
 						boolean isInProgram = false;
 						
 						Patient patient = Context.getPatientService().getPatient(patientId);

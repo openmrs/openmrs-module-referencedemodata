@@ -12,4 +12,20 @@
 	<name>Reference Demo Data Module API</name>
 	<description>API project for ReferenceDemoData</description>
 
+	<dependencies>
+		<!--
+			initializer-api-2.2 provides AttributeTypesProxyServiceImpl2_2, which the initializer-api
+			Spring context requires when autowiring AttributeTypesCsvParser. Needed only for tests
+			that bootstrap a full OpenMRS application context (e.g. FixturePatientLoaderTest). The
+			parent POM already pulls in initializer-api at provided scope; adding the 2.2 impl at
+			test scope keeps the Spring context satisfiable without changing production deps.
+		-->
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>initializer-api-2.2</artifactId>
+			<version>${initializer.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 </project>

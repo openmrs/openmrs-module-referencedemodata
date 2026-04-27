@@ -1,0 +1,319 @@
+{
+  "patientUuid": "a1b2c3d4-e5f6-4789-a012-34567890abcd",
+
+  "demographics": {
+    "givenName": "Devan",
+    "familyName": "Modi",
+    "gender": "M",
+    "ageYearsAgo": 65
+  },
+
+  "conditions": [
+    {
+      "concept": "CIEL:142474",
+      "name": "Type 2 Diabetes Mellitus",
+      "onset": { "yearsAgo": 5 },
+      "status": "ACTIVE"
+    },
+    {
+      "concept": "CIEL:117399",
+      "name": "Hypertension",
+      "onset": { "yearsAgo": 25 },
+      "status": "ACTIVE"
+    },
+    {
+      "concept": "CIEL:114262",
+      "name": "Peptic Ulcer Disease",
+      "onset": { "monthsAgo": 1 },
+      "status": "ACTIVE"
+    }
+  ],
+
+  "vitals": [
+    {
+      "date": { "monthsAgo": 1 },
+      "systolicBp": 140,
+      "diastolicBp": 76,
+      "respiratoryRate": 14,
+      "heartRate": 90,
+      "temperatureC": 37.2,
+      "oxygenSaturation": 99
+    },
+    {
+      "date": { "yearsAgo": 2, "monthsAgo": 11 },
+      "systolicBp": 138,
+      "diastolicBp": 78,
+      "respiratoryRate": 13,
+      "heartRate": 82,
+      "temperatureC": 38.2
+    },
+    {
+      "date": { "yearsAgo": 3 },
+      "systolicBp": 168,
+      "diastolicBp": 92,
+      "respiratoryRate": 16,
+      "heartRate": 80,
+      "temperatureC": 38.2,
+      "oxygenSaturation": 98
+    },
+    {
+      "date": { "yearsAgo": 5 },
+      "systolicBp": 130,
+      "diastolicBp": 68,
+      "respiratoryRate": 14,
+      "heartRate": 82,
+      "temperatureC": 37.8,
+      "oxygenSaturation": 99
+    }
+  ],
+
+  "bmi": [
+    { "date": { "daysAgo": 0 }, "weightKg": 83.0, "heightCm": 177 },
+    { "date": { "yearsAgo": 3 }, "weightKg": 81.5, "heightCm": 177 },
+    { "date": { "yearsAgo": 5 }, "weightKg": 81.0, "heightCm": 177 }
+  ],
+
+  "drugOrders": {
+    "active": [
+      {
+        "drug": "CIEL:75875",
+        "drugName": "Esomeprazole",
+        "doseValue": 20,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160858",
+        "frequencyName": "Twice daily",
+        "indication": "CIEL:114262",
+        "indicationName": "Peptic Ulcer Disease",
+        "start": { "daysAgo": 28 }
+      },
+      {
+        "drug": "CIEL:77696",
+        "drugName": "Hydrochlorothiazide",
+        "doseValue": 50,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160862",
+        "frequencyName": "Once daily",
+        "indication": "CIEL:117399",
+        "indicationName": "Hypertension",
+        "start": { "yearsAgo": 25 }
+      },
+      {
+        "drug": "CIEL:71137",
+        "drugName": "Amlodipine",
+        "doseValue": 5,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160862",
+        "frequencyName": "Once daily",
+        "indication": "CIEL:117399",
+        "indicationName": "Hypertension",
+        "start": { "yearsAgo": 3 }
+      },
+      {
+        "drug": "CIEL:79651",
+        "drugName": "Metformin",
+        "doseValue": 1000,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160858",
+        "frequencyName": "Twice daily",
+        "indication": "CIEL:142474",
+        "indicationName": "Type 2 Diabetes Mellitus",
+        "start": { "yearsAgo": 5 }
+      }
+    ],
+    "inactive": [
+      {
+        "drug": "CIEL:70116",
+        "drugName": "Bismuth subsalicylate",
+        "doseValue": 300,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160870",
+        "frequencyName": "Four times daily",
+        "indication": "CIEL:117152",
+        "indicationName": "Helicobacter pylori infection",
+        "start": { "daysAgo": 29 },
+        "durationDays": 14,
+        "autoExpire": { "daysAgo": 15 }
+      },
+      {
+        "drug": "CIEL:84893",
+        "drugName": "Tetracycline",
+        "doseValue": 500,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160870",
+        "frequencyName": "Four times daily",
+        "indication": "CIEL:117152",
+        "indicationName": "Helicobacter pylori infection",
+        "start": { "daysAgo": 29 },
+        "durationDays": 14,
+        "autoExpire": { "daysAgo": 15 }
+      },
+      {
+        "drug": "CIEL:79782",
+        "drugName": "Metronidazole",
+        "doseValue": 250,
+        "doseUnits": "CIEL:1513",
+        "doseUnitsName": "mg",
+        "route": "CIEL:160240",
+        "routeName": "Oral",
+        "frequency": "CIEL:160870",
+        "frequencyName": "Four times daily",
+        "indication": "CIEL:117152",
+        "indicationName": "Helicobacter pylori infection",
+        "start": { "daysAgo": 29 },
+        "durationDays": 14,
+        "autoExpire": { "daysAgo": 15 }
+      }
+    ]
+  },
+
+  "labs": [
+    {
+      "date": { "daysAgo": 28 },
+      "values": {
+        "hgb": 9.5,
+        "wbc": 8.2,
+        "plt": 226,
+        "na": 140,
+        "bun": 13,
+        "cr": 0.8,
+        "k": 4.0,
+        "glucose": 118
+      }
+    },
+    {
+      "date": { "daysAgo": 29 },
+      "values": {
+        "hgb": 9.3,
+        "wbc": 8.0,
+        "plt": 237,
+        "na": 141,
+        "bun": 12,
+        "cr": 0.8,
+        "k": 4.2,
+        "glucose": 123
+      }
+    },
+    {
+      "date": { "daysAgo": 30 },
+      "values": {
+        "hgb": 9.6,
+        "wbc": 8.1,
+        "plt": 232,
+        "na": 140,
+        "bun": 20,
+        "cr": 1.0,
+        "k": 4.0,
+        "glucose": 108,
+        "hgbA1c": 6.4
+      }
+    },
+    {
+      "date": { "yearsAgo": 3 },
+      "values": {
+        "hgb": 13.1,
+        "wbc": 7.2,
+        "plt": 273,
+        "na": 140,
+        "bun": 14,
+        "cr": 0.9,
+        "k": 4.1,
+        "glucose": 110,
+        "hgbA1c": 6.2
+      }
+    },
+    {
+      "date": { "yearsAgo": 5 },
+      "values": {
+        "na": 142,
+        "bun": 14,
+        "cr": 0.9,
+        "k": 4.2,
+        "glucose": 154,
+        "hgbA1c": 7.1
+      }
+    }
+  ],
+
+  "labConcepts": {
+    "hgb": "CIEL:21",
+    "wbc": "CIEL:678",
+    "plt": "CIEL:729",
+    "na": "CIEL:1006",
+    "bun": "CIEL:857",
+    "cr": "CIEL:790",
+    "k": "CIEL:1133",
+    "glucose": "CIEL:887",
+    "hgbA1c": "CIEL:159644"
+  },
+
+  "visits": [
+    {
+      "date": { "yearsAgo": 5 },
+      "providerRole": "doctor",
+      "providerName": "Luis Perez",
+      "diagnosisConcept": "CIEL:142474",
+      "diagnosisName": "Type 2 Diabetes Mellitus",
+      "note": "Pt: Devan Modi DOB 65 years ago\nPrimary Care Physician: Luis Perez\nSubjective: Mr. Modi is a 60-year-old man presenting for a routine physical examination. He was found to have elevated blood sugar on a screening glucose test. Follow-up Hgb A1c was also elevated, leading to a new diagnosis of diabetes. The patient has a history of well-controlled hypertension and is currently taking HCTZ.\n\nObjective: Vital signs: Blood Pressure: 140/85 mmHg, Heart rate: 70 beats per minute, Respiratory rate: 16 breaths per minute, Body temperature: 98.6°F. Physical Exam: The patient appeared in stable condition. Cardiovascular examination revealed regular rate and rhythm with no murmurs, rubs, or gallops. No edema was noted in the lower extremities. Lung exam revealed clear to auscultation bilaterally with good air exchange.\nLabs: Fasting glucose 154, Hgb A1c 7.1\n\nAssessment: 60-year-old man with a history of HTN now with an elevated fasting blood glucose and elevated Hgb A1c consistent with a new diagnosis of Type 2 Diabetes Mellitus.\n\nPlan:\n    Start the patient on metformin 500mg daily with plans to increase this to 1000 mg twice daily over the next few weeks if he tolerates it well.\n    Refer the patient for a follow-up appointment in 4-6 weeks for glucose control monitoring and dose adjustment if needed.\n    Refer the patient for participation in the outpatient diabetes education program\n    Advise the patient to maintain a healthy diet and engage in regular exercise to improve glycemic control.\n    Continue the patient on HCTZ for hypertension control.\n    Recommend regular monitoring of Hgb A1c\n    Refer the patient to a nutritionist or dietitian for dietary counseling.\n\nSigned: Luis Perez"
+    },
+    {
+      "date": { "yearsAgo": 3 },
+      "providerRole": "doctor",
+      "providerName": "Luis Perez",
+      "diagnosisConcept": "CIEL:117399",
+      "diagnosisName": "Hypertension",
+      "note": "Pt: Devan Modi DOB 65 years ago\nPrimary Care Physician: Luis Perez\nSubjective: Mr. Modi is a 62-year-old man with a history of hypertension and diabetes who comes in for a check-up for elevated blood pressure readings at home. He brings in his home BP log which shows multiple readings ranging from 150-165/85-90 mmHg. He denies headache, vision changes, chest pain, shortness of breath, change in the amount or appearance of his urine. He reports that he has been taking his HCTZ 50mg daily as prescribed. Mr. Modi also has a history of well-controlled diabetes and is currently taking metformin 1000 mg twice daily. He is tolerating the metformin well, without any GI side effects. He checks his sugars one to two times a day and they tend to run in the low 100’s.\nObjective:\nVital signs: Blood Pressure: 168/92 mmHg, Heart rate: 80 beats per minute, Respiratory rate: 16 breaths per minute, Body temperature: 98.6°F\nPhysical Exam: The patient is in no apparent distress. Funduscopic exam is without evidence of hypertensive or diabetic retinopathy. Cardiovascular examination revealed regular rate and rhythm with no murmurs, rubs, or gallops. Lung exam revealed clear to auscultation bilaterally with good air exchange. Abdominal exam was nontender and nondistended with normal bowel sounds. No edema was noted in the lower extremities.\nLabs: Fasting blood sugar 110, Hemoglobin A1c 6.2%, basic metabolic panel is within normal limits\n\nAssessment: Mr. Modi is a 62-year-old man with a history of HTN and type 2 DM who presents with elevated blood pressure readings despite taking his medications.\n\nPlan:\n    Start the patient on amlodipine 5 mg oral tablet once daily. Advised patient regarding potential side effects.\n    Continue him on his HCTZ 50mg oral tablet daily\n    Re-evaluate the patient's blood pressure in 4 weeks and adjust the dose as needed\n    Mr. Modi should continue lifestyle modifications such as maintaining a healthy diet, regular exercise, and limiting sodium intake\n   Mr. Modi was advised to contact the office if he experiences any adverse effects or if his blood pressure remains uncontrolled.\n    Continue the patient on metformin 1000 mg twice daily for glycemic control\n    Refer the patient for a follow-up appointment in 4 weeks\nSigned: Luis Perez"
+    },
+    {
+      "date": { "yearsAgo": 3, "weeksAgoOffset": -4 },
+      "providerRole": "nurse",
+      "providerName": "Sara Renault",
+      "note": "Pt: Devan Modi DOB 65 years ago\nNurse Practitioner: Sara Renault\nSubjective: Mr. Modi is presenting for a follow-up visit for a blood pressure check. He was seen four weeks ago by Dr. Perez for elevated BP readings and amlodipine 5mg po daily was added to his HCTZ. The patient reports that his blood pressure readings at home have been 120’s-130’s/70’s-80’s. He has been tolerating the amlodipine well. He has no SOB, CP or LE swelling.\nObjective: BP 138/78, HR 82, RR 13, Temp 38.2. On physical examination, heart was RRR no MGR, lungs were clear to auscultation bilaterally, abdomen was soft, nontender and nondistended, lower extremities were without edema.\nAssessment: 62 y/o with hypertension and type 2 diabetes mellitus here for a blood pressure check following the addition of amlodipine 4 weeks ago for elevated BPs now with acceptable blood pressure readings.\nPlan: Continue the amlodipine and HCTZ at the present doses. Pt will continue to monitor his BP at home as well and contact the office should his BPs worsen.\nSigned: Sara Renault"
+    },
+    {
+      "date": { "monthsAgo": 1 },
+      "providerRole": "doctor",
+      "providerName": "Jina Hsu",
+      "note": "Discharge visit note: see dischargeSummary for full text."
+    }
+  ],
+
+  "procedureNote": {
+    "date": { "daysAgo": 29 },
+    "providerRole": "doctor",
+    "providerName": "Joshua Schull",
+    "diagnosisConcept": "CIEL:123529",
+    "diagnosisName": "Non-bleeding gastric ulcer",
+    "note": "Study: Esophagogastroduodenoscopy (EGD)\nPATIENT: Devan Modi\nPHYSICIAN: Dr. Joshua Schull\nINDICATION: Upper GI Bleed\nFINDINGS:\nEsophagus: The esophageal mucosa was normal in appearance without any visible ulcers or lesions. No varices seen. GE junction seen at 39 CM. No hiatal hernia.\n\nStomach: The antrum and pylorus demonstrated normal motor activity. There is coffee ground material present in the stomach. A gastric ulcer was seen in the gastric fundus. No active bleed or visible vessel noted. Surrounding mucosa is erythematous. Biopsies were taken.\nDuodenum: No mucosal abnormality seen in the first and second part of the duodenum.\nIMPRESSION: Non-bleeding gastric ulcer\n\nSigned: Dr. Joshua Schull"
+  },
+
+  "dischargeSummary": {
+    "admissionDate": { "daysAgo": 30 },
+    "dischargeDate": { "daysAgo": 28 },
+    "encounterDate": { "monthsAgo": 1 },
+    "providerRole": "doctor",
+    "providerName": "Jina Hsu",
+    "primaryDiagnosisConcept": "CIEL:114262",
+    "primaryDiagnosisName": "Peptic Ulcer Disease",
+    "secondaryDiagnosisConcept": "CIEL:123569",
+    "secondaryDiagnosisName": "Upper GI Bleed",
+    "note": "Hospital: Memorial Hospital\nPatient: Devan Modi, DOB (a date that makes him 65)\nAdmission Date: 30 days ago\nDischarge Date: 28 days ago\nAdmission Diagnosis: Upper GI bleed\nDischarge Diagnosis: Bleeding peptic ulcer disease 2/2 H. pylori\nAttending physician: Dr. Jina Hsu\nConsultations: Gastroenterology\nProcedures: Upper endoscopy\nH&P: Mr. Modi is a 65-year old-man who presented to the emergency department for epigastric pain of 3 days duration and one episode of coffee ground emesis on the morning of presentation. His past medical history is significant for hypertension and type 2 diabetes. His medications prior to admission were HCTZ, amlodipine, and metformin. His vital signs were stable. Abdominal exam revealed epigastric tenderness without rebound or guarding. A rectal exam showed heme+ stool. His hemoglobin was 9.6, down from his baseline of 13.1.\nHospital Course: The patient was admitted to the hospital for a presumed upper GI bleed. Two large bore IVs were placed and the patient was given iv fluids and started on a PPI drip. His HCTZ, amlodipine and metformin were held. GI was consulted and the patient underwent an EGD which showed a non-bleeding gastric ulcer. Biopsies were taken and were positive for H. pylori. Post-EGD Hgb was stable at 9.3. The patient was started on treatment for H. pylori with bismuth quadruple therapy (bismuth subsalicylate, tetracycline, metronidazole and a PPI). The patient's pain improved, and his diet was advanced. He experienced no additional bleeding during his hospitalization. His hemoglobin remained stable and was 9.5 on discharge.\nDischarge Diagnosis: Bleeding peptic ulcer disease 2/2 H. pylori\nDischarge Condition: Stable\nDischarge Instructions:\n* Take your medications as directed.\n* Avoid alcohol, smoking, and NSAIDS as these can make the ulcer worse.\n* Follow up with your primary care physician and GI within 1-2 weeks.\n* Return to the emergency department or call 911 if you experience severe abdominal pain, shortness of breath, chest pain, dizziness or vomiting.\n\nDischarge Medications:\nEsomeprazole 20 mg po twice daily\nBismuth subsalicylate 300 po four times daily for a total of 14 days\nTetracycline 500 mg po four times daily for a total of 14 days\nMetronidazole 250 mg po four times daily for a total of 14 days\nHCTZ 50mg po daily\nAmlodipine 5mg po daily\nMetformin 1000mg po twice daily\nSigned by Jina Hsu, MD"
+  }
+}
