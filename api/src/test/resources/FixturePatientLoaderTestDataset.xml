@@ -127,6 +127,12 @@
     <visit_type visit_type_id="3" name="Hospitalization" description="Hospitalization Description" creator="1"
                 date_created="2005-01-01 00:00:00.0" retired="true" retire_reason="Some Retire Reason"
                 uuid="759799ab-c9a5-435e-b671-77773ada74e6"/>
+    <visit_type visit_type_id="4" name="Outpatient" description="Outpatient visit" creator="1"
+                date_created="2005-01-01 00:00:00.0" retired="false"
+                uuid="7b0f5697-27e3-40c4-8bae-f4049abfb4ed"/>
+    <visit_type visit_type_id="5" name="Inpatient" description="Inpatient visit" creator="1"
+                date_created="2005-01-01 00:00:00.0" retired="false"
+                uuid="a73edbb9-468f-4a4d-9b9b-1ad34c9fa97d"/>
     <patient_identifier_type patient_identifier_type_id="1" name="OpenMRS ID"
                              description="Unique number used in OpenMRS" format="" creator="1"
                              location_behavior="NOT_USED" date_created="2005-09-22 00:00:00.0" required="false"

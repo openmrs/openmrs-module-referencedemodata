@@ -45,7 +45,8 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160862",
-              "indication": "CIEL:142474"
+              "indication": "CIEL:142474",
+              "autoExpire": { "daysAgo": 30 }
             }
           ]
         }
@@ -92,7 +93,8 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160862",
-              "indication": "CIEL:117399"
+              "indication": "CIEL:117399",
+              "autoExpire": { "daysAgo": 30 }
             }
           ]
         }
