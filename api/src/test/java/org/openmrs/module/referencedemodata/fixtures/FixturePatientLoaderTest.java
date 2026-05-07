@@ -12,6 +12,7 @@ package org.openmrs.module.referencedemodata.fixtures;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
@@ -63,6 +65,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
+import org.openmrs.Visit;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
@@ -290,6 +293,63 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 		// No partial patient should have been saved.
 		assertNull("No patient row should be saved on concept-resolution failure",
 				Context.getPatientService().getPatientByUuid("00000000-1111-2222-3333-444444444444"));
+	}
+
+	@Test
+	public void loadFixture_assignsVisitToEachEncounter() {
+		Patient devan = loader.loadFixture("fixtures/devan-modi.json");
+		List<Visit> visits = Context.getVisitService().getVisitsByPatient(devan);
+		assertThat(visits, hasSize(greaterThan(0)));
+		for (Visit v : visits) {
+			for (Encounter e : v.getEncounters()) {
+				assertNotNull("Encounter " + e.getUuid() + " missing visit", e.getVisit());
+				assertThat(e.getVisit().getUuid(), equalTo(v.getUuid()));
+			}
+		}
+	}
+
+	@Test
+	public void loadFixture_buildsCorrectNumberOfVisits() {
+		Patient devan = loader.loadFixture("fixtures/devan-modi.json");
+		assertThat(Context.getVisitService().getVisitsByPatient(devan), hasSize(5));
+	}
+
+	@Test
+	public void loadFixture_groupsHospitalizationEncountersInOneVisit() {
+		Patient devan = loader.loadFixture("fixtures/devan-modi.json");
+		Visit hospitalization = Context.getVisitService().getVisitsByPatient(devan).stream()
+				.filter(v -> "Inpatient".equalsIgnoreCase(v.getVisitType().getName()))
+				.findFirst().orElseThrow(() -> new AssertionError("No inpatient visit"));
+
+		Set<String> typeNames = hospitalization.getEncounters().stream()
+				.map(e -> e.getEncounterType().getName())
+				.collect(Collectors.toSet());
+		assertThat(typeNames, hasItem("Admission"));
+		assertThat(typeNames, hasItem("Procedure Note"));
+		assertThat(typeNames, hasItem("Discharge Summary"));
+		assertThat(hospitalization.getEncounters(), hasSize(3));
+	}
+
+	@Test
+	public void loadFixture_setsCorrectVisitType() {
+		Patient devan = loader.loadFixture("fixtures/devan-modi.json");
+		Map<String, Long> typeCount = Context.getVisitService().getVisitsByPatient(devan).stream()
+				.map(v -> v.getVisitType().getName())
+				.collect(Collectors.groupingBy(n -> n, Collectors.counting()));
+		assertThat(typeCount.getOrDefault("Inpatient", 0L), equalTo(1L));
+		assertThat(typeCount.getOrDefault("Outpatient", 0L), equalTo(4L));
+	}
+
+	@Test
+	public void loadFixture_failsWhenVisitTypeMissing() {
+		try {
+			loader.loadFixture("fixtures/test-missing-visit-type.json");
+			fail("Expected APIException for unknown visit type");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("DefinitelyNotARealVisitType"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-2222-3333-4444-555555555555"));
 	}
 
 	// ------------------------------------------------------------------------
