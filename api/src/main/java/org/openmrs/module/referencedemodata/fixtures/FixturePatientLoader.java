@@ -53,7 +53,7 @@ import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
-import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator.DrugOrderSpec;
+import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
 import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.DEMO_PATIENT_ATTR;
@@ -170,7 +170,7 @@ public class FixturePatientLoader {
 		List<ResolvedObsGroup> resolvedVitals = resolveNumericObsGroups(root.path("vitals"), VITALS_CONCEPT_UUIDS);
 		List<ResolvedObsGroup> resolvedBmi = resolveNumericObsGroups(root.path("bmi"), BMI_CONCEPT_UUIDS);
 		List<ResolvedObsGroup> resolvedLabs = resolveLabs(root.path("labs"), root.path("labConcepts"));
-		List<DrugOrderSpec> resolvedDrugOrders = resolveDrugOrders(root.path("drugOrders"));
+		List<DrugOrderDescriptor> resolvedDrugOrders = resolveDrugOrders(root.path("drugOrders"));
 		List<ResolvedVisitNote> resolvedVisitNotes = resolveVisitNotes(root.path("visits"));
 		ResolvedNarrativeNote resolvedProcedureNote = resolveNarrativeNote(root.path("procedureNote"), true);
 		ResolvedDischargeSummary resolvedDischargeSummary = resolveDischargeSummary(root.path("dischargeSummary"));
@@ -261,21 +261,6 @@ public class FixturePatientLoader {
 		}
 	}
 
-	private static final class ResolvedCondition {
-
-		final Concept concept;
-
-		final Date onsetDate;
-
-		final ConditionClinicalStatus status;
-
-		ResolvedCondition(Concept concept, Date onsetDate, ConditionClinicalStatus status) {
-			this.concept = concept;
-			this.onsetDate = onsetDate;
-			this.status = status;
-		}
-	}
-
 	private static final class ResolvedObsGroup {
 
 		final Date date;
@@ -285,18 +270,6 @@ public class FixturePatientLoader {
 		ResolvedObsGroup(Date date, List<ResolvedNumericObs> values) {
 			this.date = date;
 			this.values = values;
-		}
-	}
-
-	private static final class ResolvedNumericObs {
-
-		final String conceptUuid;
-
-		final Number value;
-
-		ResolvedNumericObs(String conceptUuid, Number value) {
-			this.conceptUuid = conceptUuid;
-			this.value = value;
 		}
 	}
 
@@ -320,7 +293,7 @@ public class FixturePatientLoader {
 					throw new APIException("Fixture field '" + field.getKey() + "' must be numeric, got: " + valueNode);
 				}
 				resolveConcept(field.getValue());
-				values.add(new ResolvedNumericObs(field.getValue(), valueNode.numberValue()));
+				values.add(new ResolvedNumericObs(field.getValue(), valueNode.asDouble()));
 			}
 			resolved.add(new ResolvedObsGroup(date, values));
 		}
@@ -369,7 +342,7 @@ public class FixturePatientLoader {
 					throw new APIException("Fixture lab value '" + field.getKey() + "' must be numeric, got: " + valueNode);
 				}
 				Concept concept = resolveConcept(field.getValue());
-				values.add(new ResolvedNumericObs(concept.getUuid(), valueNode.numberValue()));
+				values.add(new ResolvedNumericObs(concept.getUuid(), valueNode.asDouble()));
 			}
 			resolved.add(new ResolvedObsGroup(date, values));
 		}
@@ -475,8 +448,8 @@ public class FixturePatientLoader {
 		}
 	}
 
-	private List<DrugOrderSpec> resolveDrugOrders(JsonNode drugOrdersNode) {
-		List<DrugOrderSpec> resolved = new ArrayList<>();
+	private List<DrugOrderDescriptor> resolveDrugOrders(JsonNode drugOrdersNode) {
+		List<DrugOrderDescriptor> resolved = new ArrayList<>();
 		if (drugOrdersNode == null || drugOrdersNode.isMissingNode() || drugOrdersNode.isNull()) {
 			return resolved;
 		}
@@ -488,7 +461,7 @@ public class FixturePatientLoader {
 		return resolved;
 	}
 
-	private void resolveDrugOrderArray(JsonNode arrayNode, boolean inactive, List<DrugOrderSpec> target) {
+	private void resolveDrugOrderArray(JsonNode arrayNode, boolean inactive, List<DrugOrderDescriptor> target) {
 		if (arrayNode == null || arrayNode.isMissingNode() || arrayNode.isNull()) {
 			return;
 		}
@@ -524,7 +497,7 @@ public class FixturePatientLoader {
 				autoExpire = resolveDateOffset(autoExpireNode);
 			}
 
-			target.add(new DrugOrderSpec()
+			target.add(new DrugOrderDescriptor()
 					.setDrugConcept(drugConcept)
 					.setDrug(drug)
 					.setDrugName(entry.path("drugName").asText(null))
@@ -623,7 +596,7 @@ public class FixturePatientLoader {
 		}
 	}
 
-	private void applyDrugOrders(Patient patient, List<DrugOrderSpec> specs) {
+	private void applyDrugOrders(Patient patient, List<DrugOrderDescriptor> specs) {
 		if (specs.isEmpty()) {
 			return;
 		}
@@ -632,7 +605,7 @@ public class FixturePatientLoader {
 		Location location = resolveDefaultLocation();
 		Provider provider = providerGenerator.getRandomClinician();
 
-		for (DrugOrderSpec spec : specs) {
+		for (DrugOrderDescriptor spec : specs) {
 			Encounter encounter = createDatedEncounter(patient, spec.getStartDate(), encounterType, location,
 					provider, clinicianRole);
 			orderGenerator.createDatedDrugOrder(encounter, spec);
