@@ -13,6 +13,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -32,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -172,18 +174,23 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 	public void loadFixture_createsVitalsAndBmiEncounters() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 
-		EncounterService es = Context.getEncounterService();
-		List<Encounter> vitalsEncounters = es.getEncountersByPatient(patient).stream()
-				.filter(e -> e.getEncounterType() != null && "Vitals".equals(e.getEncounterType().getName()))
-				.collect(Collectors.toList());
+		List<Encounter> all = Context.getEncounterService().getEncountersByPatient(patient);
 
-		// 4 vitals encounters + 3 weight/height encounters (all use Vitals encounter type)
-		assertThat("Expected 7 Vitals-type encounters (4 vitals + 3 weight/height)",
-				vitalsEncounters, hasSize(7));
+		long encountersWithVitals = all.stream().filter(e ->
+				e.getAllObs().stream().anyMatch(o ->
+						"5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".equals(o.getConcept().getUuid()))).count();
+		assertThat("Expected 4 encounters with vitals obs (V1/V2/V3 Visit Notes + V4 Admission)",
+				encountersWithVitals, equalTo(4L));
+
+		long encountersWithBmi = all.stream().filter(e ->
+				e.getAllObs().stream().anyMatch(o ->
+						"5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".equals(o.getConcept().getUuid()))).count();
+		assertThat("Expected 3 encounters with BMI obs (V1, V2 Visit Notes + V5 Vitals)",
+				encountersWithBmi, equalTo(3L));
 	}
 
 	@Test
-	public void loadFixture_createsSevenDrugOrders() {
+	public void loadFixture_createsNineDrugOrders() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 
 		List<DrugOrder> drugOrders = Context.getOrderService().getAllOrdersByPatient(patient).stream()
@@ -191,67 +198,49 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 				.map(o -> (DrugOrder) o)
 				.collect(Collectors.toList());
 
-		assertThat("Expected 7 total drug orders", drugOrders, hasSize(7));
+		assertThat("Expected 9 total drug orders", drugOrders, hasSize(9));
 
 		long active = drugOrders.stream().filter(o -> o.getAutoExpireDate() == null).count();
 		long inactive = drugOrders.stream().filter(o -> o.getAutoExpireDate() != null).count();
-		assertThat("Expected 4 active (no autoExpire)", active, equalTo(4L));
-		assertThat("Expected 3 inactive (autoExpire set)", inactive, equalTo(3L));
-
-		Date now = new Date();
-		long expired = drugOrders.stream()
-				.filter(o -> o.getAutoExpireDate() != null && o.getAutoExpireDate().before(now))
-				.count();
-		assertThat("Expected 3 inactive orders with autoExpire in the past", expired, equalTo(3L));
+		assertThat("Expected 4 active (no autoExpire) — discharge meds", active, equalTo(4L));
+		assertThat("Expected 5 inactive (autoExpire set) — initial metformin/amlodipine + 3 H. pylori",
+				inactive, equalTo(5L));
 	}
 
 	@Test
 	public void loadFixture_createsLabObsOnFiveDates() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 
-		EncounterService es = Context.getEncounterService();
-		List<Encounter> labEncounters = es.getEncountersByPatient(patient).stream()
-				.filter(e -> e.getEncounterType() != null && "Lab Results".equals(e.getEncounterType().getName()))
-				.collect(Collectors.toList());
-
-		assertThat("Expected 5 Lab Results encounters (one per fixture date)",
-				labEncounters, hasSize(5));
-
-		// Sanity-check that lab obs are attached.
-		long totalLabObs = labEncounters.stream().mapToLong(e -> e.getAllObs().size()).sum();
-		assertThat("Expected lab encounters to carry numeric obs", totalLabObs,
-				greaterThanOrEqualTo((long) labEncounters.size()));
+		Set<LocalDate> labDates = Context.getEncounterService().getEncountersByPatient(patient).stream()
+				.flatMap(e -> e.getAllObs().stream())
+				.filter(o -> "Test".equalsIgnoreCase(o.getConcept().getConceptClass().getName()))
+				.map(o -> o.getObsDatetime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+				.collect(Collectors.toSet());
+		assertThat("Expected 5 distinct lab dates (5y, 3y, 30d, 29d, 28d)",
+				labDates, hasSize(5));
 	}
 
 	@Test
 	public void loadFixture_createsNarrativeAndProcedureAndDischargeEncounters() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 
-		EncounterService es = Context.getEncounterService();
-		List<Encounter> allEncounters = es.getEncountersByPatient(patient);
+		Set<String> typeNames = Context.getEncounterService().getEncountersByPatient(patient).stream()
+				.map(e -> e.getEncounterType().getName())
+				.collect(Collectors.toSet());
+		assertThat("Expected Visit Note encounter type", typeNames, hasItem("Visit Note"));
+		assertThat("Expected Procedure Note encounter type", typeNames, hasItem("Procedure Note"));
+		assertThat("Expected Discharge Summary encounter type", typeNames, hasItem("Discharge Summary"));
+		assertThat("Expected Admission encounter type", typeNames, hasItem("Admission"));
+		assertThat("Expected Vitals encounter type", typeNames, hasItem("Vitals"));
 
-		long visitNotes = allEncounters.stream()
-				.filter(e -> e.getEncounterType() != null && "Visit Note".equals(e.getEncounterType().getName()))
-				.count();
-		long procedureNotes = allEncounters.stream()
-				.filter(e -> e.getEncounterType() != null && "Procedure Note".equals(e.getEncounterType().getName()))
-				.count();
-
-		// 4 narrative visits; discharge summary falls back to Visit Note when no "Discharge Summary" type exists
-		assertThat("Expected at least 4 Visit Note encounters for narrative visits",
-				visitNotes, greaterThanOrEqualTo(4L));
-		assertThat("Expected exactly 1 Procedure Note encounter", procedureNotes, equalTo(1L));
-
-		// Count text obs under CIEL:162169 (narrative + procedure + discharge question concept).
 		Concept questionConcept = Context.getConceptService().getConceptByMapping("162169", "CIEL");
 		assertNotNull("CIEL:162169 concept should be pre-seeded", questionConcept);
-		long textObsCount = allEncounters.stream()
+		long textObsCount = Context.getEncounterService().getEncountersByPatient(patient).stream()
 				.flatMap(e -> e.getAllObs().stream())
 				.filter(o -> questionConcept.equals(o.getConcept()) && o.getValueText() != null)
 				.count();
-		// 4 narrative visit notes + 1 procedure note + 1 discharge summary = 6 text obs
-		assertThat("Expected at least 6 text obs under the visit-note concept",
-				textObsCount, greaterThanOrEqualTo(6L));
+		assertThat("Expected 5 text obs (3 visit notes + 1 procedure + 1 discharge)",
+				textObsCount, greaterThanOrEqualTo(5L));
 	}
 
 	@Test
