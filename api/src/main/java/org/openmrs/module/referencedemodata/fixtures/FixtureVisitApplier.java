@@ -160,11 +160,51 @@ class FixtureVisitApplier {
         if (re.diagnoses != null)  applyDiagnoses(patient, encounter, re.diagnoses);
     }
 
-    // Stubs — filled in Task 5
-    private void applyVitals(Patient p, Encounter e, ResolvedVitals v, Location l) { /* Task 5 */ }
-    private void applyBmi(Patient p, Encounter e, ResolvedBmi b, Location l) { /* Task 5 */ }
-    private void applyLabs(Patient p, Encounter e, List<ResolvedNumericObs> labs, Location l) { /* Task 5 */ }
-    private void applyDrugOrders(Encounter e, List<DrugOrderDescriptor> orders) { /* Task 5 */ }
-    private void applyNote(Patient p, Encounter e, String text, Location l) { /* Task 5 */ }
-    private void applyDiagnoses(Patient p, Encounter e, List<ResolvedDiagnosis> dxs) { /* Task 5 */ }
+    private void applyVitals(Patient patient, Encounter encounter, ResolvedVitals v, Location location) {
+        Date date = encounter.getEncounterDatetime();
+        if (v.systolicBp != null)
+            obsGenerator.createNumericObs("5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.systolicBp, patient, encounter, date, location);
+        if (v.diastolicBp != null)
+            obsGenerator.createNumericObs("5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.diastolicBp, patient, encounter, date, location);
+        if (v.heartRate != null)
+            obsGenerator.createNumericObs("5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.heartRate, patient, encounter, date, location);
+        if (v.temperatureC != null)
+            obsGenerator.createNumericObs("5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.temperatureC, patient, encounter, date, location);
+        if (v.respiratoryRate != null)
+            obsGenerator.createNumericObs("5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.respiratoryRate, patient, encounter, date, location);
+        if (v.oxygenSaturation != null)
+            obsGenerator.createNumericObs("5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.oxygenSaturation, patient, encounter, date, location);
+    }
+
+    private void applyBmi(Patient patient, Encounter encounter, ResolvedBmi b, Location location) {
+        Date date = encounter.getEncounterDatetime();
+        if (b.weightKg != null)
+            obsGenerator.createNumericObs("5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", b.weightKg, patient, encounter, date, location);
+        if (b.heightCm != null)
+            obsGenerator.createNumericObs("5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", b.heightCm, patient, encounter, date, location);
+    }
+
+    private void applyLabs(Patient patient, Encounter encounter, List<ResolvedNumericObs> labs, Location location) {
+        Date date = encounter.getEncounterDatetime();
+        for (ResolvedNumericObs lab : labs) {
+            obsGenerator.createNumericObs(lab.conceptUuid, lab.value, patient, encounter, date, location);
+        }
+    }
+
+    private void applyDrugOrders(Encounter encounter, List<DrugOrderDescriptor> orders) {
+        for (DrugOrderDescriptor spec : orders) {
+            orderGenerator.createDatedDrugOrder(encounter, spec);
+        }
+    }
+
+    private void applyNote(Patient patient, Encounter encounter, String text, Location location) {
+        obsGenerator.createTextObs(VISIT_NOTE_TEXT_CONCEPT_UUID, text, patient, encounter,
+                encounter.getEncounterDatetime(), location);
+    }
+
+    private void applyDiagnoses(Patient patient, Encounter encounter, List<ResolvedDiagnosis> diagnoses) {
+        for (ResolvedDiagnosis d : diagnoses) {
+            diagnosisGenerator.createDiagnosis(d.primary, patient, encounter, d.concept);
+        }
+    }
 }
