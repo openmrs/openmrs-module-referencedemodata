@@ -29,7 +29,9 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -211,9 +213,19 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 	public void loadFixture_createsLabObsOnFiveDates() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 
+		// Lab CIEL codes from the spec doc's labs table.
+		Set<String> labCielCodes = new HashSet<>(Arrays.asList(
+				"21", "678", "729", "1006", "857", "790", "1133", "887", "159644"));
+		ConceptService cs = Context.getConceptService();
+		Set<Integer> labConceptIds = labCielCodes.stream()
+				.map(code -> cs.getConceptByMapping(code, "CIEL"))
+				.filter(c -> c != null)
+				.map(Concept::getConceptId)
+				.collect(Collectors.toSet());
+
 		Set<LocalDate> labDates = Context.getEncounterService().getEncountersByPatient(patient).stream()
 				.flatMap(e -> e.getAllObs().stream())
-				.filter(o -> "Test".equalsIgnoreCase(o.getConcept().getConceptClass().getName()))
+				.filter(o -> labConceptIds.contains(o.getConcept().getConceptId()))
 				.map(o -> o.getObsDatetime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
 				.collect(Collectors.toSet());
 		assertThat("Expected 5 distinct lab dates (5y, 3y, 30d, 29d, 28d)",
