@@ -9,15 +9,11 @@
  */
 package org.openmrs.module.referencedemodata.orders;
 
-import java.util.Date;
-
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
@@ -76,7 +72,7 @@ public class DemoOrderGenerator {
 		getTaskTranslator().create(orderTask);
 	}
 
-	public DrugOrder createDatedDrugOrder(Encounter encounter, DrugOrderSpec spec) {
+	public DrugOrder createDatedDrugOrder(Encounter encounter, DrugOrderDescriptor spec) {
 		DrugOrder order = new DrugOrder();
 		order.setAction(Order.Action.NEW);
 		order.setUrgency(Order.Urgency.ROUTINE);
@@ -155,118 +151,5 @@ public class DemoOrderGenerator {
 		}
 
 		return fhirTaskService;
-	}
-
-	public static final class DrugOrderSpec {
-
-		private Concept drugConcept;
-
-		private Drug drug;
-
-		private String drugName;
-
-		private double doseValue;
-
-		private Concept doseUnits;
-
-		private Concept route;
-
-		private OrderFrequency frequency;
-
-		private Concept indication;
-
-		private Date startDate;
-
-		private Date autoExpireDate;
-
-		public Concept getDrugConcept() {
-			return drugConcept;
-		}
-
-		public DrugOrderSpec setDrugConcept(Concept drugConcept) {
-			this.drugConcept = drugConcept;
-			return this;
-		}
-
-		public Drug getDrug() {
-			return drug;
-		}
-
-		public DrugOrderSpec setDrug(Drug drug) {
-			this.drug = drug;
-			return this;
-		}
-
-		public String getDrugName() {
-			return drugName;
-		}
-
-		public DrugOrderSpec setDrugName(String drugName) {
-			this.drugName = drugName;
-			return this;
-		}
-
-		public double getDoseValue() {
-			return doseValue;
-		}
-
-		public DrugOrderSpec setDoseValue(double doseValue) {
-			this.doseValue = doseValue;
-			return this;
-		}
-
-		public Concept getDoseUnits() {
-			return doseUnits;
-		}
-
-		public DrugOrderSpec setDoseUnits(Concept doseUnits) {
-			this.doseUnits = doseUnits;
-			return this;
-		}
-
-		public Concept getRoute() {
-			return route;
-		}
-
-		public DrugOrderSpec setRoute(Concept route) {
-			this.route = route;
-			return this;
-		}
-
-		public OrderFrequency getFrequency() {
-			return frequency;
-		}
-
-		public DrugOrderSpec setFrequency(OrderFrequency frequency) {
-			this.frequency = frequency;
-			return this;
-		}
-
-		public Concept getIndication() {
-			return indication;
-		}
-
-		public DrugOrderSpec setIndication(Concept indication) {
-			this.indication = indication;
-			return this;
-		}
-
-		public Date getStartDate() {
-			return startDate;
-		}
-
-		public DrugOrderSpec setStartDate(Date startDate) {
-			this.startDate = startDate;
-			return this;
-		}
-
-		public Date getAutoExpireDate() {
-			return autoExpireDate;
-		}
-
-		public DrugOrderSpec setAutoExpireDate(Date autoExpireDate) {
-			this.autoExpireDate = autoExpireDate;
-			return this;
-		}
 	}
 }

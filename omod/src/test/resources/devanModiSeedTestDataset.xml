@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    Seed data for the Devan Modi fixture exercised by ReferenceDemoDataActivatorTest:
+      - CIEL reference term + map rows for the codes the fixture references via CIEL:<code>.
+        For codes whose UUIDs are already present in requiredDataTestDataset.xml (vitals/labs:
+        21, 1015, 1133, 856) we just attach the CIEL map; for everything else we add fresh
+        concept rows alongside the term + map.
+      - Three "convenience set" concepts plus member links plus the global_property rows that
+        configure the order validator (order.drugDosingUnitsConceptUuid, order.drugRoutesConceptUuid,
+        order.drugDispensingUnitsConceptUuid).
+      - The "Clinician" encounter_role row used when attaching providers to fixture encounters.
+
+    Primary keys start at 100000 to stay clear of requiredDataTestDataset.xml and the standard
+    OpenMRS initial dataset.
+-->
+<dataset>
+    <!-- Diagnosis concepts (CIEL) -->
+    <concept concept_id="100001" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100001AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100001" concept_id="100001" name="Type 2 Diabetes Mellitus [142474]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100001BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100001" concept_source_id="16" code="142474" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100001CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100001" concept_reference_term_id="100001" concept_map_type_id="2"
+                           concept_id="100001" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100001DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100002" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100002AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100002" concept_id="100002" name="Hypertension [117399]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100002BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100002" concept_source_id="16" code="117399" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100002CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100002" concept_reference_term_id="100002" concept_map_type_id="2"
+                           concept_id="100002" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100002DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100003" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100003AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100003" concept_id="100003" name="Peptic Ulcer Disease [114262]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100003BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100003" concept_source_id="16" code="114262" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100003CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100003" concept_reference_term_id="100003" concept_map_type_id="2"
+                           concept_id="100003" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100003DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100004" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100004AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100004" concept_id="100004" name="Non-bleeding gastric ulcer [123529]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100004BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100004" concept_source_id="16" code="123529" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100004CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100004" concept_reference_term_id="100004" concept_map_type_id="2"
+                           concept_id="100004" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100004DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100005" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100005AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100005" concept_id="100005" name="Upper GI Bleed [123569]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100005BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100005" concept_source_id="16" code="123569" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100005CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100005" concept_reference_term_id="100005" concept_map_type_id="2"
+                           concept_id="100005" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100005DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100006" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100006AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100006" concept_id="100006" name="H. pylori infection [117152]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100006BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100006" concept_source_id="16" code="117152" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100006CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100006" concept_reference_term_id="100006" concept_map_type_id="2"
+                           concept_id="100006" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100006DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Drug concepts (CIEL) -->
+    <concept concept_id="100010" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100010AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100010" concept_id="100010" name="Esomeprazole [75875]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100010BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100010" concept_source_id="16" code="75875" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100010CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100010" concept_reference_term_id="100010" concept_map_type_id="2"
+                           concept_id="100010" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100010DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100011" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100011AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100011" concept_id="100011" name="Hydrochlorothiazide [77696]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100011BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100011" concept_source_id="16" code="77696" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100011CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100011" concept_reference_term_id="100011" concept_map_type_id="2"
+                           concept_id="100011" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100011DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100012" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100012AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100012" concept_id="100012" name="Amlodipine [71137]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100012BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100012" concept_source_id="16" code="71137" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100012CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100012" concept_reference_term_id="100012" concept_map_type_id="2"
+                           concept_id="100012" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100012DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100013" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100013AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100013" concept_id="100013" name="Metformin [79651]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100013BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100013" concept_source_id="16" code="79651" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100013CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100013" concept_reference_term_id="100013" concept_map_type_id="2"
+                           concept_id="100013" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100013DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100014" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100014AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100014" concept_id="100014" name="Bismuth subsalicylate [70116]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100014BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100014" concept_source_id="16" code="70116" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100014CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100014" concept_reference_term_id="100014" concept_map_type_id="2"
+                           concept_id="100014" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100014DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100015" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100015AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100015" concept_id="100015" name="Tetracycline [84893]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100015BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100015" concept_source_id="16" code="84893" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100015CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100015" concept_reference_term_id="100015" concept_map_type_id="2"
+                           concept_id="100015" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100015DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100016" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100016AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100016" concept_id="100016" name="Metronidazole [79782]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100016BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100016" concept_source_id="16" code="79782" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100016CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100016" concept_reference_term_id="100016" concept_map_type_id="2"
+                           concept_id="100016" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100016DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Units of Measure (mg) and Procedure (Oral) - members of drug-order convenience sets -->
+    <concept concept_id="100020" datatype_id="4" class_id="20" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100020AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100020" concept_id="100020" name="mg [1513]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100020BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100020" concept_source_id="16" code="1513" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100020CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100020" concept_reference_term_id="100020" concept_map_type_id="2"
+                           concept_id="100020" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100020DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100021" datatype_id="4" class_id="2" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100021AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100021" concept_id="100021" name="Oral [160240]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100021BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100021" concept_source_id="16" code="160240" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100021CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100021" concept_reference_term_id="100021" concept_map_type_id="2"
+                           concept_id="100021" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100021DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Frequency concepts (CIEL) -->
+    <concept concept_id="100030" datatype_id="4" class_id="19" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100030AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100030" concept_id="100030" name="Twice daily [160858]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100030BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100030" concept_source_id="16" code="160858" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100030CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100030" concept_reference_term_id="100030" concept_map_type_id="2"
+                           concept_id="100030" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100030DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100031" datatype_id="4" class_id="19" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100031AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100031" concept_id="100031" name="Once daily [160862]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100031BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100031" concept_source_id="16" code="160862" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100031CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100031" concept_reference_term_id="100031" concept_map_type_id="2"
+                           concept_id="100031" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100031DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100032" datatype_id="4" class_id="19" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100032AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100032" concept_id="100032" name="Four times daily [160870]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100032BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100032" concept_source_id="16" code="160870" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100032CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100032" concept_reference_term_id="100032" concept_map_type_id="2"
+                           concept_id="100032" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100032DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Numeric Test concepts (CIEL): 678, 729, 1006, 857, 790, 887, 159644 are new;
+         21, 1015, 1133, 856 already exist as concept rows in requiredDataTestDataset.xml so
+         we just add CIEL term + map rows pointing at those existing concept_ids. -->
+    <concept concept_id="100040" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100040AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100040" allow_decimal="1"/>
+    <concept_name concept_name_id="100040" concept_id="100040" name="WBC [678]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100040BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100040" concept_source_id="16" code="678" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100040CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100040" concept_reference_term_id="100040" concept_map_type_id="2"
+                           concept_id="100040" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100040DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100041" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100041AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100041" allow_decimal="1"/>
+    <concept_name concept_name_id="100041" concept_id="100041" name="Platelets [729]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100041BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100041" concept_source_id="16" code="729" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100041CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100041" concept_reference_term_id="100041" concept_map_type_id="2"
+                           concept_id="100041" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100041DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100042" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100042AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100042" allow_decimal="1"/>
+    <concept_name concept_name_id="100042" concept_id="100042" name="Sodium [1006]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100042BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100042" concept_source_id="16" code="1006" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100042CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100042" concept_reference_term_id="100042" concept_map_type_id="2"
+                           concept_id="100042" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100042DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100043" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100043AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100043" allow_decimal="1"/>
+    <concept_name concept_name_id="100043" concept_id="100043" name="BUN [857]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100043BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100043" concept_source_id="16" code="857" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100043CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100043" concept_reference_term_id="100043" concept_map_type_id="2"
+                           concept_id="100043" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100043DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100044" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100044AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100044" allow_decimal="1"/>
+    <concept_name concept_name_id="100044" concept_id="100044" name="Creatinine [790]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100044BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100044" concept_source_id="16" code="790" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100044CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100044" concept_reference_term_id="100044" concept_map_type_id="2"
+                           concept_id="100044" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100044DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100045" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100045AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100045" allow_decimal="1"/>
+    <concept_name concept_name_id="100045" concept_id="100045" name="Glucose [887]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100045BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100045" concept_source_id="16" code="887" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100045CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100045" concept_reference_term_id="100045" concept_map_type_id="2"
+                           concept_id="100045" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100045DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100046" datatype_id="1" class_id="1" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100046AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_numeric concept_id="100046" allow_decimal="1"/>
+    <concept_name concept_name_id="100046" concept_id="100046" name="HbA1c [159644]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100046BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100046" concept_source_id="16" code="159644" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100046CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100046" concept_reference_term_id="100046" concept_map_type_id="2"
+                           concept_id="100046" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100046DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- CIEL maps for concepts already present in requiredDataTestDataset.xml -->
+    <!-- Haemoglobin (concept 10014, uuid 21AAAA...) -> CIEL:21 -->
+    <concept_reference_term concept_reference_term_id="100050" concept_source_id="16" code="21" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100050CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100050" concept_reference_term_id="100050" concept_map_type_id="2"
+                           concept_id="10014" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100050DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- BUN-like / 856 (concept 10015) -> CIEL:856 -->
+    <concept_reference_term concept_reference_term_id="100051" concept_source_id="16" code="856" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100051CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100051" concept_reference_term_id="100051" concept_map_type_id="2"
+                           concept_id="10015" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100051DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Serum potassium (concept 10016, uuid 1133AAAA...) -> CIEL:1133 -->
+    <concept_reference_term concept_reference_term_id="100052" concept_source_id="16" code="1133" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100052CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100052" concept_reference_term_id="100052" concept_map_type_id="2"
+                           concept_id="10016" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100052DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Hematocrit (concept 10017, uuid 1015AAAA...) -> CIEL:1015 -->
+    <concept_reference_term concept_reference_term_id="100053" concept_source_id="16" code="1015" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100053CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100053" concept_reference_term_id="100053" concept_map_type_id="2"
+                           concept_id="10017" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100053DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <!-- Drug-order-validation convenience sets and their members -->
+    <concept concept_id="100070" datatype_id="4" class_id="10" creator="1" is_set="1"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100070AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100070" concept_id="100070" name="Drug Dosing Units Test Set" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100070BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_set concept_set_id="100070" concept_id="100020" concept_set="100070" sort_weight="0.0" creator="1"
+                 date_created="2024-01-01 00:00:00.0" uuid="100070EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+
+    <concept concept_id="100071" datatype_id="4" class_id="10" creator="1" is_set="1"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100071AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100071" concept_id="100071" name="Drug Routes Test Set" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100071BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_set concept_set_id="100071" concept_id="100021" concept_set="100071" sort_weight="0.0" creator="1"
+                 date_created="2024-01-01 00:00:00.0" uuid="100071EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+
+    <concept concept_id="100072" datatype_id="4" class_id="10" creator="1" is_set="1"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100072AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100072" concept_id="100072" name="Drug Dispensing Units Test Set" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100072BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_set concept_set_id="100072" concept_id="100020" concept_set="100072" sort_weight="0.0" creator="1"
+                 date_created="2024-01-01 00:00:00.0" uuid="100072EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+
+    <!-- Order validator GPs pointing at the convenience sets above. -->
+    <global_property property="order.drugDosingUnitsConceptUuid" property_value="100070AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                     description="UUID of the concept set that holds drug dosing units"
+                     uuid="100070FF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"/>
+    <global_property property="order.drugRoutesConceptUuid" property_value="100071AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                     description="UUID of the concept set that holds drug routes"
+                     uuid="100071FF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"/>
+    <global_property property="order.drugDispensingUnitsConceptUuid"
+                     property_value="100072AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+                     description="UUID of the concept set that holds drug dispensing units"
+                     uuid="100072FF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"/>
+
+    <!-- Encounter role used when attaching providers to the fixture's encounters. -->
+    <encounter_role encounter_role_id="100001" name="Clinician"
+                    description="Provider responsible for care during an encounter" creator="1"
+                    date_created="2024-01-01 00:00:00.0" retired="false"
+                    uuid="100001EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+</dataset>

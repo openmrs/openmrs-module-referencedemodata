@@ -24,32 +24,32 @@ import org.openmrs.api.context.Context;
 import static org.openmrs.module.referencedemodata.Randomizer.randomListEntry;
 
 public class DemoConditionGenerator {
-
+	
 	private ConditionService conditionService = null;
-
+	
 	public Condition createCondition(Patient patient, Encounter encounter, List<Concept> allConditions) {
 		Concept codedConcept = randomListEntry(allConditions);
-
+		
 		if (codedConcept == null) {
 			return null;
 		}
-
+		
 		Condition condition = new Condition();
 		condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getName(Context.getLocale()), "Some non-coded condition"));
 		condition.setClinicalStatus(ConditionClinicalStatus.ACTIVE);
 		condition.setPatient(patient);
 		condition.setDateCreated(encounter.getEncounterDatetime());
-
+		
 		return getConditionService().saveCondition(condition);
 	}
-
+	
 	public Condition createDatedCondition(Patient patient, Concept codedConcept, Date onsetDate, ConditionClinicalStatus status) {
 		Condition condition = new Condition();
 		condition.setCondition(new CodedOrFreeText(codedConcept, codedConcept.getName(Context.getLocale()), null));
 		condition.setClinicalStatus(status);
 		condition.setPatient(patient);
 		condition.setOnsetDate(onsetDate);
-
+		
 		return getConditionService().saveCondition(condition);
 	}
 	
