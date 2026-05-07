@@ -3,5 +3,6 @@
   "demographics": { "givenName": "Test", "familyName": "Patient", "gender": "M", "ageYearsAgo": 30 },
   "conditions": [
     { "concept": "CIEL:99999999", "onset": { "yearsAgo": 1 }, "status": "ACTIVE" }
-  ]
+  ],
+  "visits": []
 }
