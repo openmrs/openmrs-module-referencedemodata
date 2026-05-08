@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +22,6 @@ import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.Drug;
 import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.DemoDataConceptCache;
 import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
@@ -38,19 +37,22 @@ class FixtureResolver {
 	}
 	
 	List<ResolvedCondition> resolveConditions(JsonNode conditionsNode) {
-		List<ResolvedCondition> resolved = new ArrayList<>();
-		if (conditionsNode == null || conditionsNode.isMissingNode() || conditionsNode.isNull()) {
+		return resolveArray(conditionsNode, "conditions", entry -> new ResolvedCondition(
+				resolveConcept(entry.path("concept").asText(null)),
+				resolveDateOffset(entry.path("onset")),
+				parseClinicalStatus(entry.path("status").asText(null))));
+	}
+
+	private <T> List<T> resolveArray(JsonNode node, String label, Function<JsonNode, T> mapper) {
+		List<T> resolved = new ArrayList<>();
+		if (node == null || node.isMissingNode() || node.isNull()) {
 			return resolved;
 		}
-		if (!conditionsNode.isArray()) {
-			throw new APIException("Fixture 'conditions' must be an array");
+		if (!node.isArray()) {
+			throw new APIException("Fixture '" + label + "' must be an array");
 		}
-		for (JsonNode entry : conditionsNode) {
-			String conceptId = entry.path("concept").asText(null);
-			Concept concept = resolveConcept(conceptId);
-			Date onset = resolveDateOffset(entry.path("onset"));
-			ConditionClinicalStatus status = parseClinicalStatus(entry.path("status").asText(null));
-			resolved.add(new ResolvedCondition(concept, onset, status));
+		for (JsonNode entry : node) {
+			resolved.add(mapper.apply(entry));
 		}
 		return resolved;
 	}
@@ -168,29 +170,15 @@ class FixtureResolver {
 	}
 	
 	private List<ResolvedNumericObs> resolveLabs(JsonNode node) {
-		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
-		if (!node.isArray()) throw new APIException("Fixture encounter 'labs' must be an array");
-		List<ResolvedNumericObs> resolved = new ArrayList<>();
-		for (JsonNode entry : node) {
-			String conceptId = entry.path("concept").asText(null);
-			Concept concept = resolveConcept(conceptId);
-			double value = entry.path("value").asDouble();
-			resolved.add(new ResolvedNumericObs(concept.getUuid(), value));
-		}
-		return resolved;
+		return resolveArray(node, "labs", entry -> new ResolvedNumericObs(
+				resolveConcept(entry.path("concept").asText(null)).getUuid(),
+				entry.path("value").asDouble()));
 	}
-	
+
 	private List<ResolvedDiagnosis> resolveDiagnoses(JsonNode node) {
-		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
-		if (!node.isArray()) throw new APIException("Fixture encounter 'diagnoses' must be an array");
-		List<ResolvedDiagnosis> resolved = new ArrayList<>();
-		for (JsonNode entry : node) {
-			String conceptId = entry.path("concept").asText(null);
-			Concept concept = resolveConcept(conceptId);
-			boolean primary = entry.path("primary").asBoolean(false);
-			resolved.add(new ResolvedDiagnosis(concept, primary));
-		}
-		return resolved;
+		return resolveArray(node, "diagnoses", entry -> new ResolvedDiagnosis(
+				resolveConcept(entry.path("concept").asText(null)),
+				entry.path("primary").asBoolean(false)));
 	}
 	
 	private Double optionalDouble(JsonNode node, String field) {
@@ -199,64 +187,57 @@ class FixtureResolver {
 	}
 	
 	private List<DrugOrderDescriptor> resolveDrugOrders(JsonNode node, Date encounterDate) {
-		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
-		if (!node.isArray()) throw new APIException("Fixture encounter 'drugOrders' must be an array");
-		List<DrugOrderDescriptor> resolved = new ArrayList<>();
-		ConceptService conceptService = Context.getConceptService();
-		for (JsonNode entry : node) {
-			Concept drugConcept = resolveConcept(entry.path("drug").asText(null));
-			Concept doseUnits = resolveConcept(entry.path("doseUnits").asText(null));
-			Concept route = resolveConcept(entry.path("route").asText(null));
-			Concept frequencyConcept = resolveConcept(entry.path("frequency").asText(null));
-			Concept indication = null;
-			String indicationId = entry.path("indication").asText(null);
-			if (StringUtils.isNotBlank(indicationId)) {
-				indication = resolveConcept(indicationId);
-			}
-			JsonNode doseNode = entry.path("doseValue");
-			if (!doseNode.isNumber()) {
-				throw new APIException("Fixture drug order 'doseValue' must be numeric, got: " + doseNode);
-			}
-			OrderFrequency frequency = resolveOrderFrequency(frequencyConcept);
-			Drug drug = firstDrugForConcept(conceptService, drugConcept);
-			
-			JsonNode startNode = entry.path("start");
-			Date start = (startNode.isMissingNode() || startNode.isNull())
-					? encounterDate : resolveDateOffset(startNode);
-			Date autoExpire = null;
-			JsonNode autoExpireNode = entry.path("autoExpire");
-			if (!autoExpireNode.isMissingNode() && !autoExpireNode.isNull()) {
-				autoExpire = resolveDateOffset(autoExpireNode);
-			}
-			
-			resolved.add(new DrugOrderDescriptor()
-					.setDrugConcept(drugConcept)
-					.setDrug(drug)
-					.setDrugName(entry.path("drugName").asText(null))
-					.setDoseValue(doseNode.asDouble())
-					.setDoseUnits(doseUnits)
-					.setRoute(route)
-					.setFrequency(frequency)
-					.setIndication(indication)
-					.setStartDate(start)
-					.setAutoExpireDate(autoExpire));
+		return resolveArray(node, "drugOrders", entry -> resolveDrugOrder(entry, encounterDate));
+	}
+
+	private DrugOrderDescriptor resolveDrugOrder(JsonNode entry, Date encounterDate) {
+		Concept drugConcept = resolveConcept(entry.path("drug").asText(null));
+		Concept doseUnits = resolveConcept(entry.path("doseUnits").asText(null));
+		Concept route = resolveConcept(entry.path("route").asText(null));
+		Concept frequencyConcept = resolveConcept(entry.path("frequency").asText(null));
+		Concept indication = null;
+		String indicationId = entry.path("indication").asText(null);
+		if (StringUtils.isNotBlank(indicationId)) {
+			indication = resolveConcept(indicationId);
 		}
-		return resolved;
+		JsonNode doseNode = entry.path("doseValue");
+		if (!doseNode.isNumber()) {
+			throw new APIException("Fixture drug order 'doseValue' must be numeric, got: " + doseNode);
+		}
+		JsonNode startNode = entry.path("start");
+		Date start = (startNode.isMissingNode() || startNode.isNull())
+				? encounterDate : resolveDateOffset(startNode);
+		Date autoExpire = null;
+		JsonNode autoExpireNode = entry.path("autoExpire");
+		if (!autoExpireNode.isMissingNode() && !autoExpireNode.isNull()) {
+			autoExpire = resolveDateOffset(autoExpireNode);
+		}
+
+		return new DrugOrderDescriptor()
+				.setDrugConcept(drugConcept)
+				.setDrug(firstDrugForConcept(drugConcept))
+				.setDrugName(entry.path("drugName").asText(null))
+				.setDoseValue(doseNode.asDouble())
+				.setDoseUnits(doseUnits)
+				.setRoute(route)
+				.setFrequency(resolveOrderFrequency(frequencyConcept))
+				.setIndication(indication)
+				.setStartDate(start)
+				.setAutoExpireDate(autoExpire);
 	}
 	
 	private OrderFrequency resolveOrderFrequency(Concept frequencyConcept) {
-		OrderService orderService = Context.getOrderService();
-		OrderFrequency frequency = orderService.getOrderFrequencyByConcept(frequencyConcept);
+		OrderFrequency frequency = Context.getOrderService().getOrderFrequencyByConcept(frequencyConcept);
 		if (frequency == null) {
 			frequency = new OrderFrequency();
 			frequency.setConcept(frequencyConcept);
-			frequency = orderService.saveOrderFrequency(frequency);
+			frequency = Context.getOrderService().saveOrderFrequency(frequency);
 		}
 		return frequency;
 	}
 	
-	private Drug firstDrugForConcept(ConceptService conceptService, Concept drugConcept) {
-		List<Drug> drugs = conceptService.getDrugsByConcept(drugConcept);
+	private Drug firstDrugForConcept(Concept drugConcept) {
+		List<Drug> drugs = Context.getConceptService().getDrugsByConcept(drugConcept);
 		return (drugs == null || drugs.isEmpty()) ? null : drugs.get(0);
 	}
 }

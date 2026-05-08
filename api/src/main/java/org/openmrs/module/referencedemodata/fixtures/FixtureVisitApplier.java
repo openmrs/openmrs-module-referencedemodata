@@ -10,7 +10,9 @@
 package org.openmrs.module.referencedemodata.fixtures;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openmrs.Encounter;
@@ -36,8 +38,18 @@ import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 @Slf4j
 class FixtureVisitApplier {
 	
+	static final String ENC_VISIT_NOTE = "Visit Note";
+
+	static final String ENC_PROCEDURE_NOTE = "Procedure Note";
+
+	static final String ENC_DISCHARGE_SUMMARY = "Discharge Summary";
+
+	static final String ENC_ADMISSION = "Admission";
+
+	static final String ENC_VITALS = "Vitals";
+
 	private static final String VISIT_NOTE_TEXT_CONCEPT_REF = "CIEL:162169";
-	
+
 	private static final String SYSTOLIC_BP_UUID    = "5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	private static final String DIASTOLIC_BP_UUID   = "5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	private static final String HEART_RATE_UUID     = "5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -54,6 +66,8 @@ class FixtureVisitApplier {
 	
 	private EncounterRole clinicianRole;
 	private Form visitNoteForm;
+	private Map<String, VisitType> visitTypeCache;
+	private final Map<String, Location> locationCache = new HashMap<>();
 	
 	FixtureVisitApplier(DemoObsGenerator obsGenerator, DemoOrderGenerator orderGenerator,
 			DemoDiagnosisGenerator diagnosisGenerator, DemoProviderGenerator providerGenerator) {
@@ -64,43 +78,64 @@ class FixtureVisitApplier {
 	}
 	
 	void apply(Patient patient, List<ResolvedVisit> visits) {
+		EncounterService encounterService = Context.getEncounterService();
 		for (ResolvedVisit rv : visits) {
 			VisitType visitType = lookupVisitType(rv.typeName);
 			Location location = resolveLocation(rv.locationName);
-			
+
 			Visit visit = new Visit(patient, visitType, rv.startDate);
 			visit.setStopDatetime(rv.stopDate);
 			visit.setLocation(location);
-			
+
 			for (ResolvedEncounter re : rv.encounters) {
 				Encounter encounter = createEncounter(re.typeName, patient, re.date, location,
 						resolveProvider(re.providerRole));
-				if ("Visit Note".equals(re.typeName)) {
+				if (ENC_VISIT_NOTE.equals(re.typeName)) {
 					encounter.setForm(getVisitNoteForm());
 				}
-				Context.getEncounterService().saveEncounter(encounter);
+				encounterService.saveEncounter(encounter);
 				visit.addEncounter(encounter);
 				applyEncounterPayload(patient, encounter, re, location);
 			}
-			
+
 			Context.getVisitService().saveVisit(visit);
 		}
 	}
 	
 	private VisitType lookupVisitType(String name) {
-		List<VisitType> all = Context.getVisitService().getAllVisitTypes();
-		for (VisitType vt : all) {
-			if (vt.getName().equalsIgnoreCase(name)) return vt;
+		if (visitTypeCache == null) {
+			visitTypeCache = new HashMap<>();
+			for (VisitType vt : Context.getVisitService().getAllVisitTypes()) {
+				visitTypeCache.put(vt.getName().toLowerCase(), vt);
+			}
 		}
+		VisitType match = visitTypeCache.get(name.toLowerCase());
+		if (match != null) return match;
 		log.warn("Fixture visit type '{}' not found in DB; falling back to first available", name);
-		for (VisitType vt : all) {
-			if (!vt.getRetired()) return vt;
+		VisitType firstActive = null;
+		VisitType firstAny = null;
+		for (VisitType vt : visitTypeCache.values()) {
+			if (firstAny == null) firstAny = vt;
+			if (firstActive == null && !vt.getRetired()) firstActive = vt;
 		}
-		if (!all.isEmpty()) return all.get(0);
+		if (firstActive != null) return firstActive;
+		if (firstAny != null) return firstAny;
 		throw new APIException("No VisitType rows exist; cannot fall back for fixture visit type '" + name + "'");
 	}
-	
+
 	private Location resolveLocation(String name) {
+		String key = name != null ? name : "__default__";
+		Location cached = locationCache.get(key);
+		if (cached != null) return cached;
+
+		Location resolved = lookupLocation(name);
+		if (resolved != null) {
+			locationCache.put(key, resolved);
+		}
+		return resolved;
+	}
+
+	private Location lookupLocation(String name) {
 		if (name != null) {
 			Location loc = Context.getLocationService().getLocation(name);
 			if (loc != null) return loc;
@@ -187,42 +222,30 @@ class FixtureVisitApplier {
 	}
 	
 	private void applyVitals(Patient patient, Encounter encounter, ResolvedVitals v, Location location) {
-		Date date = encounter.getEncounterDatetime();
-		if (v.systolicBp != null) {
-			obsGenerator.createNumericObs(SYSTOLIC_BP_UUID, v.systolicBp, patient, encounter, date, location);
-		}
-		if (v.diastolicBp != null) {
-			obsGenerator.createNumericObs(DIASTOLIC_BP_UUID, v.diastolicBp, patient, encounter, date, location);
-		}
-		if (v.heartRate != null) {
-			obsGenerator.createNumericObs(HEART_RATE_UUID, v.heartRate, patient, encounter, date, location);
-		}
-		if (v.temperatureC != null) {
-			obsGenerator.createNumericObs(TEMPERATURE_UUID, v.temperatureC, patient, encounter, date, location);
-		}
-		if (v.respiratoryRate != null) {
-			obsGenerator.createNumericObs(RESPIRATORY_RATE_UUID, v.respiratoryRate, patient, encounter, date, location);
-		}
-		if (v.oxygenSaturation != null) {
-			obsGenerator.createNumericObs(OXYGEN_SATURATION_UUID, v.oxygenSaturation, patient, encounter, date, location);
-		}
+		emitNumericObs(patient, encounter, location, SYSTOLIC_BP_UUID, v.systolicBp);
+		emitNumericObs(patient, encounter, location, DIASTOLIC_BP_UUID, v.diastolicBp);
+		emitNumericObs(patient, encounter, location, HEART_RATE_UUID, v.heartRate);
+		emitNumericObs(patient, encounter, location, TEMPERATURE_UUID, v.temperatureC);
+		emitNumericObs(patient, encounter, location, RESPIRATORY_RATE_UUID, v.respiratoryRate);
+		emitNumericObs(patient, encounter, location, OXYGEN_SATURATION_UUID, v.oxygenSaturation);
 	}
-	
+
 	private void applyBmi(Patient patient, Encounter encounter, ResolvedBmi b, Location location) {
-		Date date = encounter.getEncounterDatetime();
-		if (b.weightKg != null) {
-			obsGenerator.createNumericObs(WEIGHT_KG_UUID, b.weightKg, patient, encounter, date, location);
-		}
-		if (b.heightCm != null) {
-			obsGenerator.createNumericObs(HEIGHT_CM_UUID, b.heightCm, patient, encounter, date, location);
+		emitNumericObs(patient, encounter, location, WEIGHT_KG_UUID, b.weightKg);
+		emitNumericObs(patient, encounter, location, HEIGHT_CM_UUID, b.heightCm);
+	}
+
+	private void applyLabs(Patient patient, Encounter encounter, List<ResolvedNumericObs> labs, Location location) {
+		for (ResolvedNumericObs lab : labs) {
+			emitNumericObs(patient, encounter, location, lab.conceptUuid, lab.value);
 		}
 	}
-	
-	private void applyLabs(Patient patient, Encounter encounter, List<ResolvedNumericObs> labs, Location location) {
-		Date date = encounter.getEncounterDatetime();
-		for (ResolvedNumericObs lab : labs) {
-			obsGenerator.createNumericObs(lab.conceptUuid, lab.value, patient, encounter, date, location);
-		}
+
+	private void emitNumericObs(Patient patient, Encounter encounter, Location location,
+			String conceptRef, Number value) {
+		if (value == null) return;
+		obsGenerator.createNumericObs(conceptRef, value, patient, encounter,
+				encounter.getEncounterDatetime(), location);
 	}
 	
 	private void applyDrugOrders(Encounter encounter, List<DrugOrderDescriptor> orders) {
