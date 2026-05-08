@@ -349,6 +349,45 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 		assertNotNull("Fallback visit type should be assigned", visits.get(0).getVisitType());
 	}
 
+	@Test
+	public void loadFixture_throwsWhenEncounterDateOutsideVisitRange() {
+		try {
+			loader.loadFixture("fixtures/test-encounter-out-of-range.json");
+			fail("Expected APIException for encounter date outside visit range");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("falls outside visit range"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-3333-4444-5555-666666666666"));
+	}
+
+	@Test
+	public void loadFixture_throwsWhenVisitStopBeforeStart() {
+		try {
+			loader.loadFixture("fixtures/test-stop-before-start.json");
+			fail("Expected APIException for stop date before start date");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("'stop' is before 'start'"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-4444-5555-6666-777777777777"));
+	}
+
+	@Test
+	public void loadFixture_attachesVisitNoteFormOnlyToVisitNoteEncounters() {
+		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
+		List<Encounter> all = Context.getEncounterService().getEncountersByPatient(patient);
+		for (Encounter e : all) {
+			if ("Visit Note".equals(e.getEncounterType().getName())) {
+				assertNotNull("Visit Note encounter should have a form attached", e.getForm());
+				assertThat(e.getForm().getName(), equalTo("Visit Note"));
+			} else {
+				assertNull("Non-Visit-Note encounter type '" + e.getEncounterType().getName()
+						+ "' must not have a form attached", e.getForm());
+			}
+		}
+	}
+
 	// ------------------------------------------------------------------------
 	// seeding helpers
 	// ------------------------------------------------------------------------

@@ -57,9 +57,13 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
 public class FixturePatientLoader {
 	
 	private final IdentifierSourceService iss;
+	
 	private final ObjectMapper objectMapper;
+	
 	private final DemoConditionGenerator conditionGenerator;
+	
 	private final FixtureResolver resolver;
+	
 	private final FixtureVisitApplier visitApplier;
 	
 	public FixturePatientLoader(DemoDataConceptCache conceptCache, IdentifierSourceService iss) {

@@ -35,181 +35,210 @@ import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 
 @Slf4j
 class FixtureVisitApplier {
-    
-    private static final String VISIT_NOTE_TEXT_CONCEPT_UUID = "CIEL:162169";
-    
-    private final DemoObsGenerator obsGenerator;
-    private final DemoOrderGenerator orderGenerator;
-    private final DemoDiagnosisGenerator diagnosisGenerator;
-    private final DemoProviderGenerator providerGenerator;
-    
-    private EncounterRole clinicianRole;
-    private Form visitNoteForm;
-    
-    FixtureVisitApplier(DemoObsGenerator obsGenerator, DemoOrderGenerator orderGenerator,
-            DemoDiagnosisGenerator diagnosisGenerator, DemoProviderGenerator providerGenerator) {
-        this.obsGenerator = obsGenerator;
-        this.orderGenerator = orderGenerator;
-        this.diagnosisGenerator = diagnosisGenerator;
-        this.providerGenerator = providerGenerator;
-    }
-    
-    void apply(Patient patient, List<ResolvedVisit> visits) {
-        for (ResolvedVisit rv : visits) {
-            VisitType visitType = lookupVisitType(rv.typeName);
-            Location location = resolveLocation(rv.locationName);
-            
-            Visit visit = new Visit(patient, visitType, rv.startDate);
-            visit.setStopDatetime(rv.stopDate);
-            visit.setLocation(location);
-            
-            for (ResolvedEncounter re : rv.encounters) {
-                Encounter encounter = createEncounter(re.typeName, patient, re.date, location,
-                        resolveProvider(re.providerRole));
-                if ("Visit Note".equals(re.typeName)) {
-                    encounter.setForm(getVisitNoteForm());
-                }
-                Context.getEncounterService().saveEncounter(encounter);
-                visit.addEncounter(encounter);
-                applyEncounterPayload(patient, encounter, re, location);
-            }
-            
-            Context.getVisitService().saveVisit(visit);
-        }
-    }
-    
-    private VisitType lookupVisitType(String name) {
-        List<VisitType> all = Context.getVisitService().getAllVisitTypes();
-        for (VisitType vt : all) {
-            if (vt.getName().equalsIgnoreCase(name)) return vt;
-        }
-        log.warn("Fixture visit type '{}' not found in DB; falling back to first available", name);
-        for (VisitType vt : all) {
-            if (!vt.getRetired()) return vt;
-        }
-        if (!all.isEmpty()) return all.get(0);
-        throw new APIException("No VisitType rows exist; cannot fall back for fixture visit type '" + name + "'");
-    }
-    
-    private Location resolveLocation(String name) {
-        if (name != null) {
-            Location loc = Context.getLocationService().getLocation(name);
-            if (loc != null) return loc;
-            log.warn("Fixture location '{}' not found in DB; falling back to default", name);
-        }
-        Location fallback = Context.getLocationService().getLocation("Outpatient Clinic");
-        if (fallback != null) return fallback;
-        List<Location> roots = Context.getLocationService().getRootLocations(false);
-        return roots.isEmpty() ? null : Randomizer.randomListEntry(roots);
-    }
-    
-    private Encounter createEncounter(String typeName, Patient patient, Date date, Location location,
-            Provider provider) {
-        Encounter encounter = new Encounter();
-        encounter.setEncounterDatetime(date);
-        encounter.setEncounterType(ensureEncounterType(typeName));
-        encounter.setPatient(patient);
-        encounter.setLocation(location);
-        if (provider != null) {
-            encounter.addProvider(getClinicianRole(), provider);
-        }
-        return encounter;
-    }
-    
-    private EncounterType ensureEncounterType(String name) {
-        EncounterService es = Context.getEncounterService();
-        EncounterType t = es.getEncounterType(name);
-        if (t == null) {
-            t = new EncounterType(name, "");
-            t.setDateCreated(new Date());
-            t = es.saveEncounterType(t);
-        }
-        return t;
-    }
-    
-    private EncounterRole getClinicianRole() {
-        if (clinicianRole == null) {
-            clinicianRole = Context.getEncounterService().getEncounterRoleByName("Clinician");
-        }
-        return clinicianRole;
-    }
-    
-    private Form getVisitNoteForm() {
-        if (visitNoteForm == null) {
-            FormService fs = Context.getFormService();
-            visitNoteForm = fs.getForm("Visit Note");
-            if (visitNoteForm == null) {
-                visitNoteForm = new Form();
-                visitNoteForm.setName("Visit Note");
-                visitNoteForm.setVersion("1.0");
-                visitNoteForm = fs.saveForm(visitNoteForm);
-            }
-        }
-        return visitNoteForm;
-    }
-    
-    private Provider resolveProvider(String role) {
-        if ("nurse".equalsIgnoreCase(role)) {
-            return providerGenerator.getNurse();
-        }
-        return providerGenerator.getDoctor();
-    }
-    
-    private void applyEncounterPayload(Patient patient, Encounter encounter, ResolvedEncounter re,
-            Location location) {
-        if (re.vitals != null)     applyVitals(patient, encounter, re.vitals, location);
-        if (re.bmi != null)        applyBmi(patient, encounter, re.bmi, location);
-        if (re.labs != null)       applyLabs(patient, encounter, re.labs, location);
-        if (re.drugOrders != null) applyDrugOrders(encounter, re.drugOrders);
-        if (re.noteText != null)   applyNote(patient, encounter, re.noteText, location);
-        if (re.diagnoses != null)  applyDiagnoses(patient, encounter, re.diagnoses);
-    }
-    
-    private void applyVitals(Patient patient, Encounter encounter, ResolvedVitals v, Location location) {
-        Date date = encounter.getEncounterDatetime();
-        if (v.systolicBp != null)
-            obsGenerator.createNumericObs("5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.systolicBp, patient, encounter, date, location);
-        if (v.diastolicBp != null)
-            obsGenerator.createNumericObs("5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.diastolicBp, patient, encounter, date, location);
-        if (v.heartRate != null)
-            obsGenerator.createNumericObs("5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.heartRate, patient, encounter, date, location);
-        if (v.temperatureC != null)
-            obsGenerator.createNumericObs("5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.temperatureC, patient, encounter, date, location);
-        if (v.respiratoryRate != null)
-            obsGenerator.createNumericObs("5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.respiratoryRate, patient, encounter, date, location);
-        if (v.oxygenSaturation != null)
-            obsGenerator.createNumericObs("5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", v.oxygenSaturation, patient, encounter, date, location);
-    }
-    
-    private void applyBmi(Patient patient, Encounter encounter, ResolvedBmi b, Location location) {
-        Date date = encounter.getEncounterDatetime();
-        if (b.weightKg != null)
-            obsGenerator.createNumericObs("5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", b.weightKg, patient, encounter, date, location);
-        if (b.heightCm != null)
-            obsGenerator.createNumericObs("5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", b.heightCm, patient, encounter, date, location);
-    }
-    
-    private void applyLabs(Patient patient, Encounter encounter, List<ResolvedNumericObs> labs, Location location) {
-        Date date = encounter.getEncounterDatetime();
-        for (ResolvedNumericObs lab : labs) {
-            obsGenerator.createNumericObs(lab.conceptUuid, lab.value, patient, encounter, date, location);
-        }
-    }
-    
-    private void applyDrugOrders(Encounter encounter, List<DrugOrderDescriptor> orders) {
-        for (DrugOrderDescriptor spec : orders) {
-            orderGenerator.createDatedDrugOrder(encounter, spec);
-        }
-    }
-    
-    private void applyNote(Patient patient, Encounter encounter, String text, Location location) {
-        obsGenerator.createTextObs(VISIT_NOTE_TEXT_CONCEPT_UUID, text, patient, encounter,
-                encounter.getEncounterDatetime(), location);
-    }
-    
-    private void applyDiagnoses(Patient patient, Encounter encounter, List<ResolvedDiagnosis> diagnoses) {
-        for (ResolvedDiagnosis d : diagnoses) {
-            diagnosisGenerator.createDiagnosis(d.primary, patient, encounter, d.concept);
-        }
-    }
+	
+	private static final String VISIT_NOTE_TEXT_CONCEPT_REF = "CIEL:162169";
+	
+	private static final String SYSTOLIC_BP_UUID    = "5085AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String DIASTOLIC_BP_UUID   = "5086AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String HEART_RATE_UUID     = "5087AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String TEMPERATURE_UUID    = "5088AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String RESPIRATORY_RATE_UUID = "5242AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String OXYGEN_SATURATION_UUID = "5092AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String WEIGHT_KG_UUID      = "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	private static final String HEIGHT_CM_UUID      = "5090AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	private final DemoObsGenerator obsGenerator;
+	private final DemoOrderGenerator orderGenerator;
+	private final DemoDiagnosisGenerator diagnosisGenerator;
+	private final DemoProviderGenerator providerGenerator;
+	
+	private EncounterRole clinicianRole;
+	private Form visitNoteForm;
+	
+	FixtureVisitApplier(DemoObsGenerator obsGenerator, DemoOrderGenerator orderGenerator,
+			DemoDiagnosisGenerator diagnosisGenerator, DemoProviderGenerator providerGenerator) {
+		this.obsGenerator = obsGenerator;
+		this.orderGenerator = orderGenerator;
+		this.diagnosisGenerator = diagnosisGenerator;
+		this.providerGenerator = providerGenerator;
+	}
+	
+	void apply(Patient patient, List<ResolvedVisit> visits) {
+		for (ResolvedVisit rv : visits) {
+			VisitType visitType = lookupVisitType(rv.typeName);
+			Location location = resolveLocation(rv.locationName);
+			
+			Visit visit = new Visit(patient, visitType, rv.startDate);
+			visit.setStopDatetime(rv.stopDate);
+			visit.setLocation(location);
+			
+			for (ResolvedEncounter re : rv.encounters) {
+				Encounter encounter = createEncounter(re.typeName, patient, re.date, location,
+						resolveProvider(re.providerRole));
+				if ("Visit Note".equals(re.typeName)) {
+					encounter.setForm(getVisitNoteForm());
+				}
+				Context.getEncounterService().saveEncounter(encounter);
+				visit.addEncounter(encounter);
+				applyEncounterPayload(patient, encounter, re, location);
+			}
+			
+			Context.getVisitService().saveVisit(visit);
+		}
+	}
+	
+	private VisitType lookupVisitType(String name) {
+		List<VisitType> all = Context.getVisitService().getAllVisitTypes();
+		for (VisitType vt : all) {
+			if (vt.getName().equalsIgnoreCase(name)) return vt;
+		}
+		log.warn("Fixture visit type '{}' not found in DB; falling back to first available", name);
+		for (VisitType vt : all) {
+			if (!vt.getRetired()) return vt;
+		}
+		if (!all.isEmpty()) return all.get(0);
+		throw new APIException("No VisitType rows exist; cannot fall back for fixture visit type '" + name + "'");
+	}
+	
+	private Location resolveLocation(String name) {
+		if (name != null) {
+			Location loc = Context.getLocationService().getLocation(name);
+			if (loc != null) return loc;
+			log.warn("Fixture location '{}' not found in DB; falling back to default", name);
+		}
+		Location fallback = Context.getLocationService().getLocation("Outpatient Clinic");
+		if (fallback != null) return fallback;
+		List<Location> roots = Context.getLocationService().getRootLocations(false);
+		return roots.isEmpty() ? null : Randomizer.randomListEntry(roots);
+	}
+	
+	private Encounter createEncounter(String typeName, Patient patient, Date date, Location location,
+			Provider provider) {
+		Encounter encounter = new Encounter();
+		encounter.setEncounterDatetime(date);
+		encounter.setEncounterType(ensureEncounterType(typeName));
+		encounter.setPatient(patient);
+		encounter.setLocation(location);
+		if (provider != null) {
+			encounter.addProvider(getClinicianRole(), provider);
+		}
+		return encounter;
+	}
+	
+	private EncounterType ensureEncounterType(String name) {
+		EncounterService es = Context.getEncounterService();
+		EncounterType t = es.getEncounterType(name);
+		if (t == null) {
+			t = new EncounterType(name, "");
+			t.setDateCreated(new Date());
+			t = es.saveEncounterType(t);
+		}
+		return t;
+	}
+	
+	private EncounterRole getClinicianRole() {
+		if (clinicianRole == null) {
+			clinicianRole = Context.getEncounterService().getEncounterRoleByName("Clinician");
+		}
+		return clinicianRole;
+	}
+	
+	private Form getVisitNoteForm() {
+		if (visitNoteForm == null) {
+			FormService fs = Context.getFormService();
+			visitNoteForm = fs.getForm("Visit Note");
+			if (visitNoteForm == null) {
+				visitNoteForm = new Form();
+				visitNoteForm.setName("Visit Note");
+				visitNoteForm.setVersion("1.0");
+				visitNoteForm = fs.saveForm(visitNoteForm);
+			}
+		}
+		return visitNoteForm;
+	}
+	
+	private Provider resolveProvider(String role) {
+		if ("nurse".equalsIgnoreCase(role)) {
+			return providerGenerator.getNurse();
+		}
+		return providerGenerator.getDoctor();
+	}
+	
+	private void applyEncounterPayload(Patient patient, Encounter encounter, ResolvedEncounter re,
+			Location location) {
+		if (re.vitals != null) {
+			applyVitals(patient, encounter, re.vitals, location);
+		}
+		if (re.bmi != null) {
+			applyBmi(patient, encounter, re.bmi, location);
+		}
+		if (!re.labs.isEmpty()) {
+			applyLabs(patient, encounter, re.labs, location);
+		}
+		if (!re.drugOrders.isEmpty()) {
+			applyDrugOrders(encounter, re.drugOrders);
+		}
+		if (re.noteText != null) {
+			applyNote(patient, encounter, re.noteText, location);
+		}
+		if (!re.diagnoses.isEmpty()) {
+			applyDiagnoses(patient, encounter, re.diagnoses);
+		}
+	}
+	
+	private void applyVitals(Patient patient, Encounter encounter, ResolvedVitals v, Location location) {
+		Date date = encounter.getEncounterDatetime();
+		if (v.systolicBp != null) {
+			obsGenerator.createNumericObs(SYSTOLIC_BP_UUID, v.systolicBp, patient, encounter, date, location);
+		}
+		if (v.diastolicBp != null) {
+			obsGenerator.createNumericObs(DIASTOLIC_BP_UUID, v.diastolicBp, patient, encounter, date, location);
+		}
+		if (v.heartRate != null) {
+			obsGenerator.createNumericObs(HEART_RATE_UUID, v.heartRate, patient, encounter, date, location);
+		}
+		if (v.temperatureC != null) {
+			obsGenerator.createNumericObs(TEMPERATURE_UUID, v.temperatureC, patient, encounter, date, location);
+		}
+		if (v.respiratoryRate != null) {
+			obsGenerator.createNumericObs(RESPIRATORY_RATE_UUID, v.respiratoryRate, patient, encounter, date, location);
+		}
+		if (v.oxygenSaturation != null) {
+			obsGenerator.createNumericObs(OXYGEN_SATURATION_UUID, v.oxygenSaturation, patient, encounter, date, location);
+		}
+	}
+	
+	private void applyBmi(Patient patient, Encounter encounter, ResolvedBmi b, Location location) {
+		Date date = encounter.getEncounterDatetime();
+		if (b.weightKg != null) {
+			obsGenerator.createNumericObs(WEIGHT_KG_UUID, b.weightKg, patient, encounter, date, location);
+		}
+		if (b.heightCm != null) {
+			obsGenerator.createNumericObs(HEIGHT_CM_UUID, b.heightCm, patient, encounter, date, location);
+		}
+	}
+	
+	private void applyLabs(Patient patient, Encounter encounter, List<ResolvedNumericObs> labs, Location location) {
+		Date date = encounter.getEncounterDatetime();
+		for (ResolvedNumericObs lab : labs) {
+			obsGenerator.createNumericObs(lab.conceptUuid, lab.value, patient, encounter, date, location);
+		}
+	}
+	
+	private void applyDrugOrders(Encounter encounter, List<DrugOrderDescriptor> orders) {
+		for (DrugOrderDescriptor spec : orders) {
+			orderGenerator.createDatedDrugOrder(encounter, spec);
+		}
+	}
+	
+	private void applyNote(Patient patient, Encounter encounter, String text, Location location) {
+		obsGenerator.createTextObs(VISIT_NOTE_TEXT_CONCEPT_REF, text, patient, encounter,
+				encounter.getEncounterDatetime(), location);
+	}
+	
+	private void applyDiagnoses(Patient patient, Encounter encounter, List<ResolvedDiagnosis> diagnoses) {
+		for (ResolvedDiagnosis d : diagnoses) {
+			diagnosisGenerator.createDiagnosis(d.primary, patient, encounter, d.concept);
+		}
+	}
 }

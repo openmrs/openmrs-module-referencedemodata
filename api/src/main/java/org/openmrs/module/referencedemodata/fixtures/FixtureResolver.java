@@ -119,7 +119,7 @@ class FixtureResolver {
 		return resolved;
 	}
 	
-private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date visitStart, Date visitStop) {
+	private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date visitStart, Date visitStop) {
 		List<ResolvedEncounter> resolved = new ArrayList<>();
 		if (encountersNode == null || encountersNode.isMissingNode() || encountersNode.isNull()) {
 			return resolved;
@@ -168,7 +168,7 @@ private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date 
 	}
 	
 	private List<ResolvedNumericObs> resolveLabs(JsonNode node) {
-		if (node == null || node.isMissingNode() || node.isNull()) return null;
+		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
 		if (!node.isArray()) throw new APIException("Fixture encounter 'labs' must be an array");
 		List<ResolvedNumericObs> resolved = new ArrayList<>();
 		for (JsonNode entry : node) {
@@ -181,7 +181,7 @@ private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date 
 	}
 	
 	private List<ResolvedDiagnosis> resolveDiagnoses(JsonNode node) {
-		if (node == null || node.isMissingNode() || node.isNull()) return null;
+		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
 		if (!node.isArray()) throw new APIException("Fixture encounter 'diagnoses' must be an array");
 		List<ResolvedDiagnosis> resolved = new ArrayList<>();
 		for (JsonNode entry : node) {
@@ -199,7 +199,7 @@ private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date 
 	}
 	
 	private List<DrugOrderDescriptor> resolveDrugOrders(JsonNode node, Date encounterDate) {
-		if (node == null || node.isMissingNode() || node.isNull()) return null;
+		if (node == null || node.isMissingNode() || node.isNull()) return new ArrayList<>();
 		if (!node.isArray()) throw new APIException("Fixture encounter 'drugOrders' must be an array");
 		List<DrugOrderDescriptor> resolved = new ArrayList<>();
 		ConceptService conceptService = Context.getConceptService();
