@@ -12,10 +12,14 @@ package org.openmrs.module.referencedemodata.fixtures;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
@@ -28,10 +32,15 @@ import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
 
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 
+@Slf4j
 class FixtureResolver {
 	
 	private final DemoDataConceptCache conceptCache;
-	
+
+	private final Map<String, Optional<Drug>> drugByConceptUuidCache = new HashMap<>();
+
+	private final Map<String, OrderFrequency> orderFrequencyByConceptUuidCache = new HashMap<>();
+
 	FixtureResolver(DemoDataConceptCache conceptCache) {
 		this.conceptCache = conceptCache;
 	}
@@ -76,24 +85,38 @@ class FixtureResolver {
 	}
 	
 	/**
-	 * Resolves a date-offset node (keys: yearsAgo, monthsAgo, weeksAgo, weeksAgoOffset, daysAgo;
-	 * each defaults to 0) to a Date anchored at LocalDate.now(). Negative values move forward.
+	 * Resolves a date-offset node (keys: yearsAgo, monthsAgo, weeksAgo, daysAgo; each defaults to 0)
+	 * to a Date anchored at LocalDate.now(). Negative values move forward.
 	 */
 	Date resolveDateOffset(JsonNode offsetNode) {
 		if (offsetNode == null || offsetNode.isMissingNode() || offsetNode.isNull() || !offsetNode.isObject()) {
 			throw new APIException("Fixture date offset is missing or not an object: " + offsetNode);
 		}
-		int yearsAgo = offsetNode.path("yearsAgo").asInt(0);
-		int monthsAgo = offsetNode.path("monthsAgo").asInt(0);
-		int weeksAgo = offsetNode.path("weeksAgo").asInt(0) + offsetNode.path("weeksAgoOffset").asInt(0);
-		int daysAgo = offsetNode.path("daysAgo").asInt(0);
-		
+		int yearsAgo = requireIntField(offsetNode, "yearsAgo");
+		int monthsAgo = requireIntField(offsetNode, "monthsAgo");
+		int weeksAgo = requireIntField(offsetNode, "weeksAgo");
+		int daysAgo = requireIntField(offsetNode, "daysAgo");
+
 		LocalDate resolved = LocalDate.now()
 				.minusYears(yearsAgo)
 				.minusMonths(monthsAgo)
 				.minusWeeks(weeksAgo)
 				.minusDays(daysAgo);
 		return toDate(resolved);
+	}
+
+	private int requireIntField(JsonNode parent, String fieldName) {
+		if (!parent.has(fieldName)) {
+			return 0;
+		}
+		JsonNode node = parent.get(fieldName);
+		if (node == null || node.isNull()) {
+			return 0;
+		}
+		if (!node.canConvertToInt()) {
+			throw new APIException("date offset field '" + fieldName + "' must be an integer, got: " + node.toString());
+		}
+		return node.asInt();
 	}
 	
 	List<ResolvedVisit> resolveVisits(JsonNode visitsNode) {
@@ -227,17 +250,36 @@ class FixtureResolver {
 	}
 	
 	private OrderFrequency resolveOrderFrequency(Concept frequencyConcept) {
+		String key = frequencyConcept.getUuid();
+		OrderFrequency cached = orderFrequencyByConceptUuidCache.get(key);
+		if (cached != null) {
+			return cached;
+		}
 		OrderFrequency frequency = Context.getOrderService().getOrderFrequencyByConcept(frequencyConcept);
 		if (frequency == null) {
 			frequency = new OrderFrequency();
 			frequency.setConcept(frequencyConcept);
 			frequency = Context.getOrderService().saveOrderFrequency(frequency);
 		}
+		orderFrequencyByConceptUuidCache.put(key, frequency);
 		return frequency;
 	}
-	
+
 	private Drug firstDrugForConcept(Concept drugConcept) {
+		String key = drugConcept.getUuid();
+		Optional<Drug> cached = drugByConceptUuidCache.get(key);
+		if (cached != null) {
+			return cached.orElse(null);
+		}
 		List<Drug> drugs = Context.getConceptService().getDrugsByConcept(drugConcept);
-		return (drugs == null || drugs.isEmpty()) ? null : drugs.get(0);
+		if (drugs == null || drugs.isEmpty()) {
+			log.warn("No Drug row exists for concept {} ({}); drug order will be unbound",
+					drugConcept.getUuid(), drugConcept.getName());
+			drugByConceptUuidCache.put(key, Optional.empty());
+			return null;
+		}
+		Drug drug = drugs.get(0);
+		drugByConceptUuidCache.put(key, Optional.of(drug));
+		return drug;
 	}
 }

@@ -12,7 +12,6 @@ package org.openmrs.module.referencedemodata.fixtures;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,14 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonAttribute;
-import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.referencedemodata.DemoDataConceptCache;
@@ -37,10 +31,9 @@ import org.openmrs.module.referencedemodata.condition.DemoConditionGenerator;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
+import org.openmrs.module.referencedemodata.patient.DemoPatientGenerator;
 import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.DEMO_PATIENT_ATTR;
-import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OPENMRS_ID_NAME;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.populatePerson;
 
@@ -56,30 +49,39 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
 @Slf4j
 public class FixturePatientLoader {
 	
-	private final IdentifierSourceService iss;
-	
+	private final DemoPatientGenerator patientGenerator;
+
 	private final ObjectMapper objectMapper;
-	
+
 	private final DemoConditionGenerator conditionGenerator;
-	
+
 	private final FixtureResolver resolver;
-	
+
 	private final FixtureVisitApplier visitApplier;
-	
+
 	public FixturePatientLoader(DemoDataConceptCache conceptCache, IdentifierSourceService iss) {
-		this(conceptCache, iss,
+		this(conceptCache, new DemoPatientGenerator(iss),
 				new DemoConditionGenerator(),
 				new DemoObsGenerator(conceptCache),
 				new DemoProviderGenerator(),
 				new DemoOrderGenerator(),
 				null);
 	}
-	
-	FixturePatientLoader(DemoDataConceptCache conceptCache, IdentifierSourceService iss,
+
+	public FixturePatientLoader(DemoDataConceptCache conceptCache, DemoPatientGenerator patientGenerator) {
+		this(conceptCache, patientGenerator,
+				new DemoConditionGenerator(),
+				new DemoObsGenerator(conceptCache),
+				new DemoProviderGenerator(),
+				new DemoOrderGenerator(),
+				null);
+	}
+
+	FixturePatientLoader(DemoDataConceptCache conceptCache, DemoPatientGenerator patientGenerator,
 			DemoConditionGenerator conditionGenerator, DemoObsGenerator obsGenerator,
 			DemoProviderGenerator providerGenerator, DemoOrderGenerator orderGenerator,
 			ObjectMapper objectMapper) {
-		this.iss = iss;
+		this.patientGenerator = patientGenerator;
 		this.objectMapper = objectMapper != null ? objectMapper : new ObjectMapper();
 		this.conditionGenerator = conditionGenerator;
 		DemoDiagnosisGenerator diagnosisGenerator = new DemoDiagnosisGenerator(conceptCache, conditionGenerator);
@@ -123,42 +125,11 @@ public class FixturePatientLoader {
 	}
 	
 	private Patient createPatient(String patientUuid, JsonNode demographics) {
-		PatientService ps = Context.getPatientService();
-		PersonService personService = Context.getPersonService();
-		
-		PatientIdentifierType identifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
-		if (identifierType == null) {
-			throw new APIException("Could not find identifier type " + OPENMRS_ID_NAME);
-		}
-		
-		PersonAttributeType demoAttrType = personService.getPersonAttributeTypeByName(DEMO_PATIENT_ATTR);
-		if (demoAttrType == null) {
-			demoAttrType = new PersonAttributeType();
-			demoAttrType.setName(DEMO_PATIENT_ATTR);
-			demoAttrType.setFormat("java.lang.Boolean");
-			demoAttrType.setSearchable(true);
-			demoAttrType = personService.savePersonAttributeType(demoAttrType);
-		}
-		
-		Patient patient = new Patient();
-		patient.setUuid(patientUuid);
+		Location rootLocation = Randomizer.randomListEntry(Context.getLocationService().getRootLocations(false));
+		Patient patient = patientGenerator.createPatientShell(patientUuid, rootLocation);
 		populatePerson(patient);
 		applyDemographics(patient, demographics);
-		
-		Location rootLocation = Randomizer.randomListEntry(Context.getLocationService().getRootLocations(false));
-		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setIdentifier(iss.generateIdentifier(identifierType, "DemoData"));
-		patientIdentifier.setIdentifierType(identifierType);
-		patientIdentifier.setDateCreated(new Date());
-		patientIdentifier.setLocation(rootLocation);
-		patient.addIdentifier(patientIdentifier);
-		
-		PersonAttribute demoAttr = new PersonAttribute();
-		demoAttr.setAttributeType(demoAttrType);
-		demoAttr.setValue("true");
-		patient.addAttribute(demoAttr);
-		
-		return ps.savePatient(patient);
+		return Context.getPatientService().savePatient(patient);
 	}
 	
 	private void applyConditions(Patient patient, List<ResolvedCondition> conditions) {

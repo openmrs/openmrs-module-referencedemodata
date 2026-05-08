@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
@@ -30,14 +31,14 @@ public class ConceptDeserializer extends StdDeserializer<Concept> {
 		String uuid = p.getText();
 		
 		if (StringUtils.isBlank(uuid)) {
-			throw new IOException(p.getCurrentName() + " cannot be blank");
+			throw JsonMappingException.from(p, "Concept identifier cannot be blank");
 		}
-		
+
 		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConceptNumericByUuid(uuid);
-		
+		Concept concept = cs.getConceptByUuid(uuid);
+
 		if (concept == null) {
-			throw new IOException("Concept [" + uuid + "] does not exist. Please create it.");
+			throw JsonMappingException.from(p, "Concept [" + uuid + "] does not exist; add it to the metadata bundle");
 		}
 		
 		return concept;

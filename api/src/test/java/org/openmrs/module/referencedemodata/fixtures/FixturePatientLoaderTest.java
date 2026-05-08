@@ -374,6 +374,76 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
+	public void loadFixture_throwsWhenVisitMissingType() {
+		try {
+			loader.loadFixture("fixtures/test-missing-visit-type-key.json");
+			fail("Expected APIException for visit missing 'type'");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("'type'"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-5555-6666-7777-888888888888"));
+	}
+
+	@Test
+	public void loadFixture_throwsWhenEncounterMissingType() {
+		try {
+			loader.loadFixture("fixtures/test-missing-encounter-type-key.json");
+			fail("Expected APIException for encounter missing 'type'");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("'type'"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-6666-7777-8888-999999999999"));
+	}
+
+	@Test
+	public void loadFixture_throwsWhenDrugOrderDoseValueNonNumeric() {
+		try {
+			loader.loadFixture("fixtures/test-non-numeric-dose-value.json");
+			fail("Expected APIException for non-numeric drug order doseValue");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("doseValue"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-7777-8888-9999-aaaaaaaaaaaa"));
+	}
+
+	@Test
+	public void loadFixture_throwsWhenAgeYearsAgoNotInteger() {
+		try {
+			loader.loadFixture("fixtures/test-non-integer-age.json");
+			fail("Expected APIException for non-integer ageYearsAgo");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("ageYearsAgo"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-8888-9999-aaaa-bbbbbbbbbbbb"));
+	}
+
+	@Test
+	public void loadFixture_throwsWhenFixtureFileMissingOnClasspath() {
+		try {
+			loader.loadFixture("fixtures/does-not-exist.json");
+			fail("Expected APIException for missing fixture resource");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("not found"));
+		}
+	}
+
+	@Test
+	public void loadFixture_throwsWhenYearsAgoNonNumericInDateOffset() {
+		try {
+			loader.loadFixture("fixtures/test-non-numeric-years-ago.json");
+			fail("Expected APIException for non-numeric yearsAgo in date offset");
+		} catch (APIException expected) {
+			assertThat(expected.getMessage(), containsString("yearsAgo"));
+		}
+		assertNull("No partial patient should be persisted",
+				Context.getPatientService().getPatientByUuid("00000000-9999-aaaa-bbbb-cccccccccccc"));
+	}
+
+	@Test
 	public void loadFixture_attachesVisitNoteFormOnlyToVisitNoteEncounters() {
 		Patient patient = loader.loadFixture("fixtures/devan-modi.json");
 		List<Encounter> all = Context.getEncounterService().getEncountersByPatient(patient);

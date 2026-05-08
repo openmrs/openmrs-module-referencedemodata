@@ -104,11 +104,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 				return;
 			}
 			
+			boolean succeeded = false;
 			try {
 				linkAdminAccountToAProviderIfNecessary();
 				setupUsersAndProvidersIfNecessary();
 				
-				// we temporarily set the database to be case-insensitive
+				// temporarily make string comparisons case-sensitive (some demo metadata lookups depend on it)
 				boolean valueBefore = Context.getAdministrationService().isDatabaseStringComparisonCaseSensitive();
 				try {
 					Context.getAdministrationService()
@@ -120,16 +121,17 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					
 					DemoDataConceptCache conceptCache = new DemoDataConceptCache();
 
+					DemoPatientGenerator patientGenerator = new DemoPatientGenerator(getIdentifierSourceService());
 					List<Integer> createdPatientIds = new ArrayList<>();
-					FixturePatientLoader fixtureLoader = new FixturePatientLoader(conceptCache,
-							getIdentifierSourceService());
+					FixturePatientLoader fixtureLoader = new FixturePatientLoader(conceptCache, patientGenerator);
 					Patient fixturePatient = fixtureLoader.loadFixture("fixtures/devan-modi.json");
 					createdPatientIds.add(fixturePatient.getPatientId());
 
 					int remaining = Math.max(0, patientCount - createdPatientIds.size());
-					List<Integer> randomPatientIds = new DemoPatientGenerator(
-							getIdentifierSourceService()).createDemoPatients(remaining);
-					createdPatientIds.addAll(randomPatientIds);
+					List<Patient> randomPatients = patientGenerator.createDemoPatients(remaining);
+					for (Patient p : randomPatients) {
+						createdPatientIds.add(p.getPatientId());
+					}
 					Context.flushSession();
 
 					log.info("Created {} patients", createdPatientIds.size());
@@ -147,12 +149,11 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 					List<VisitType> visitTypes = getVisitService().getAllVisitTypes().stream()
 							.filter(vt -> !"Offline Visit".equals(vt.getName())).collect(Collectors.toList());
 					
-					// randomPatientIds only — the fixture patient already has visits/appointments/programs
-					// materialized by FixturePatientLoader.
-					for (Integer patientId : randomPatientIds) {
+					// Random patients only — the fixture patient already has its visits materialized by
+					// FixturePatientLoader. Programs and appointments are intentionally not generated for the fixture patient.
+					for (Patient patient : randomPatients) {
 						boolean isInProgram = false;
-						
-						Patient patient = Context.getPatientService().getPatient(patientId);
+
 						int visitCount = randomBetween(1, Math.max(Math.round(patient.getAge() / 10.5f), 1));
 						
 						Location visitLocation = patient.getPatientIdentifier().getLocation();
@@ -181,9 +182,10 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 								catch (NoClassDefFoundError ex) {
 									//appointment module may not be loaded
 									//java.lang.NoClassDefFoundError: org/openmrs/module/appointments/model/Appointment
+									log.warn("Appointments module not loaded; skipping demo appointment", ex);
 								}
 							}
-							
+
 							// about 1/3 patients in their first 2 visits will be registered as part of a program
 							if (!isInProgram && i < 2) {
 								if (shouldRandomEventOccur(.33)) {
@@ -220,6 +222,7 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 										catch (NoClassDefFoundError ex) {
 											//appointment module may not be loaded
 											//java.lang.NoClassDefFoundError: org/openmrs/module/appointments/model/Appointment
+											log.warn("Appointments module not loaded; skipping demo appointment", ex);
 										}
 									}
 								}
@@ -230,39 +233,45 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
 						try {
 							Context.flushSession();
 						}
-						catch (Exception ignored) {
+						catch (Exception e) {
+							log.warn("Failed to flush session while generating demo data", e);
 						}
 					}
-					
+
 					try {
 						Context.flushSession();
 					}
-					catch (Exception ignored) {
+					catch (Exception e) {
+						log.warn("Failed to flush session while generating demo data", e);
 					}
 				}
 				finally {
 					Context.clearSession();
-					
+
 					try {
 						// Restore the value of Global Property
 						Context.getAdministrationService()
 								.setGlobalProperty(GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON,
 										String.valueOf(valueBefore));
 					}
-					catch (Exception ignored) {
+					catch (Exception e) {
+						log.error("Failed to restore {} global property", GP_CASE_SENSITIVE_DATABASE_STRING_COMPARISON, e);
 					}
 				}
+				succeeded = true;
 			}
 			catch (Exception e) {
-				log.error("Exception caught while creating demo data", e);
+				log.error("Demo data generation failed; will retry on next startup", e);
 			}
 			finally {
 				// don't hold a reference to the IdentifierSourceService
 				iss = null;
-				
-				// Set the global property to zero so that we won't create demo patients next time.
-				gp.setPropertyValue("0");
-				as.saveGlobalProperty(gp);
+
+				// Only mark generation as done on the success path; otherwise retry on next startup.
+				if (succeeded) {
+					gp.setPropertyValue("0");
+					as.saveGlobalProperty(gp);
+				}
 			}
 		}
 		catch (Exception e) {

@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -33,56 +34,58 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
 
 @Slf4j
 public class DemoPatientGenerator {
-	
+
 	private final IdentifierSourceService iss;
-	
+
 	public DemoPatientGenerator(IdentifierSourceService iss) {
 		this.iss = iss;
 	}
-	
+
 	/**
-	 * Main entry point to create patients. Creates the specified number of patients and returns a list of database IDs for
-	 * those patients.
+	 * Main entry point to create patients. Creates the specified number of patients and returns the
+	 * created {@link Patient} entities in creation order.
 	 *
 	 * @param patientCount number of patients to create
-	 * @return a list of the primary keys for each patient created
+	 * @return the created patients
 	 */
-	public List<Integer> createDemoPatients(int patientCount) {
-		List<Integer> patientIds = new ArrayList<>(patientCount);
-		
+	public List<Patient> createDemoPatients(int patientCount) {
+		List<Patient> patients = new ArrayList<>(patientCount);
+
 		PatientService ps = Context.getPatientService();
-		PersonService personService = Context.getPersonService();
 		Location rootLocation = Randomizer.randomListEntry(Context.getLocationService().getRootLocations(false));
-		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
-		
-		PersonAttributeType personAttributeType = personService.getPersonAttributeTypeByName(DEMO_PATIENT_ATTR);
-		if (personAttributeType == null) {
-			personAttributeType = new PersonAttributeType();
-			personAttributeType.setName(DEMO_PATIENT_ATTR);
-			personAttributeType.setFormat("java.lang.Boolean");
-			personAttributeType.setSearchable(true);
-			personAttributeType = personService.savePersonAttributeType(personAttributeType);
-		}
-		if (patientIdentifierType == null) {
-			throw new APIException("Could not find identifier type " + OPENMRS_ID_NAME);
-		}
-		
+
 		for (int i = 0; i < patientCount; i++) {
-			Patient patient = createDemoPatient(ps, patientIdentifierType, rootLocation ,personAttributeType);
+			Patient patient = createDemoPatient(ps, rootLocation);
 			log.info("created demo patient: {} {} {} age: {}",
 					new Object[] { patient.getPatientIdentifier(), patient.getGivenName(), patient.getFamilyName(),
 							patient.getAge() });
-			patientIds.add(patient.getId());
+			patients.add(patient);
 		}
-		
-		return patientIds;
+
+		return patients;
 	}
-	
-	private Patient createDemoPatient(PatientService ps, PatientIdentifierType patientIdentifierType, Location location,
-			PersonAttributeType personAttributeType) {
+
+	/**
+	 * Builds an unsaved {@link Patient} skeleton with the given UUID (if non-blank), an OpenMRS
+	 * identifier generated from the {@link IdentifierSourceService} attached at {@code location},
+	 * and the demo person attribute. Callers are responsible for layering demographics and saving.
+	 *
+	 * @param patientUuid the UUID to assign, or {@code null}/blank to let the platform generate one
+	 * @param location the location to attach the patient identifier to
+	 * @return an unsaved {@link Patient} with identifier and demo attribute attached
+	 */
+	public Patient createPatientShell(String patientUuid, Location location) {
+		PatientService ps = Context.getPatientService();
+		PatientIdentifierType patientIdentifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
+		if (patientIdentifierType == null) {
+			throw new APIException("Could not find identifier type " + OPENMRS_ID_NAME);
+		}
+		PersonAttributeType personAttributeType = ensureDemoPatientAttributeType();
+
 		Patient patient = new Patient();
-		
-		populatePerson(patient);
+		if (StringUtils.isNotBlank(patientUuid)) {
+			patient.setUuid(patientUuid);
+		}
 
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier(iss.generateIdentifier(patientIdentifierType, "DemoData"));
@@ -96,7 +99,25 @@ public class DemoPatientGenerator {
 		personAttribute.setValue("true");
 		patient.addAttribute(personAttribute);
 
-		patient = ps.savePatient(patient);
 		return patient;
+	}
+
+	private Patient createDemoPatient(PatientService ps, Location location) {
+		Patient patient = createPatientShell(null, location);
+		populatePerson(patient);
+		return ps.savePatient(patient);
+	}
+
+	private PersonAttributeType ensureDemoPatientAttributeType() {
+		PersonService personService = Context.getPersonService();
+		PersonAttributeType personAttributeType = personService.getPersonAttributeTypeByName(DEMO_PATIENT_ATTR);
+		if (personAttributeType == null) {
+			personAttributeType = new PersonAttributeType();
+			personAttributeType.setName(DEMO_PATIENT_ATTR);
+			personAttributeType.setFormat("java.lang.Boolean");
+			personAttributeType.setSearchable(true);
+			personAttributeType = personService.savePersonAttributeType(personAttributeType);
+		}
+		return personAttributeType;
 	}
 }
