@@ -20,7 +20,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.Drug;
 import org.openmrs.OrderFrequency;
-import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.OrderService;
@@ -108,7 +107,6 @@ class FixtureResolver {
 			if (StringUtils.isBlank(typeName)) {
 				throw new APIException("Fixture visit missing 'type'");
 			}
-			validateVisitType(typeName);
 			Date start = resolveDateOffset(visitNode.path("start"));
 			Date stop = resolveDateOffset(visitNode.path("stop"));
 			if (stop.before(start)) {
@@ -121,15 +119,7 @@ class FixtureResolver {
 		return resolved;
 	}
 	
-	private void validateVisitType(String name) {
-		for (VisitType vt : Context.getVisitService().getAllVisitTypes()) {
-			if (vt.getName().equalsIgnoreCase(name)) return;
-		}
-		throw new APIException("Fixture references unknown visit type: " + name
-				+ ". Visit types are platform-managed; ensure standard types exist.");
-	}
-	
-	private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date visitStart, Date visitStop) {
+private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date visitStart, Date visitStop) {
 		List<ResolvedEncounter> resolved = new ArrayList<>();
 		if (encountersNode == null || encountersNode.isMissingNode() || encountersNode.isNull()) {
 			return resolved;

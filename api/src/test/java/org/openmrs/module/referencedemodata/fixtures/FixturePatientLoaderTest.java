@@ -341,15 +341,12 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 	}
 
 	@Test
-	public void loadFixture_failsWhenVisitTypeMissing() {
-		try {
-			loader.loadFixture("fixtures/test-missing-visit-type.json");
-			fail("Expected APIException for unknown visit type");
-		} catch (APIException expected) {
-			assertThat(expected.getMessage(), containsString("DefinitelyNotARealVisitType"));
-		}
-		assertNull("No partial patient should be persisted",
-				Context.getPatientService().getPatientByUuid("00000000-2222-3333-4444-555555555555"));
+	public void loadFixture_fallsBackWhenVisitTypeMissing() {
+		Patient saved = loader.loadFixture("fixtures/test-missing-visit-type.json");
+		assertNotNull("Loader should fall back, not fail, on unknown visit type", saved);
+		List<Visit> visits = Context.getVisitService().getVisitsByPatient(saved);
+		assertThat("Visit should still be created with a fallback visit type", visits, hasSize(1));
+		assertNotNull("Fallback visit type should be assigned", visits.get(0).getVisitType());
 	}
 
 	// ------------------------------------------------------------------------
