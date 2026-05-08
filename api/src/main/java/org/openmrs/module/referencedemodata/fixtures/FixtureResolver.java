@@ -31,13 +31,13 @@ import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 
 class FixtureResolver {
-
+	
 	private final DemoDataConceptCache conceptCache;
-
+	
 	FixtureResolver(DemoDataConceptCache conceptCache) {
 		this.conceptCache = conceptCache;
 	}
-
+	
 	List<ResolvedCondition> resolveConditions(JsonNode conditionsNode) {
 		List<ResolvedCondition> resolved = new ArrayList<>();
 		if (conditionsNode == null || conditionsNode.isMissingNode() || conditionsNode.isNull()) {
@@ -55,7 +55,7 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private ConditionClinicalStatus parseClinicalStatus(String raw) {
 		if (StringUtils.isBlank(raw)) {
 			return ConditionClinicalStatus.ACTIVE;
@@ -66,14 +66,14 @@ class FixtureResolver {
 			throw new APIException("Fixture condition has unknown clinicalStatus: " + raw, e);
 		}
 	}
-
+	
 	Concept resolveConcept(String conceptIdentifier) {
 		if (StringUtils.isBlank(conceptIdentifier)) {
 			throw new APIException("Fixture references blank concept identifier");
 		}
 		return conceptCache.findConcept(conceptIdentifier);
 	}
-
+	
 	/**
 	 * Resolves a date-offset node (keys: yearsAgo, monthsAgo, weeksAgo, weeksAgoOffset, daysAgo;
 	 * each defaults to 0) to a Date anchored at LocalDate.now(). Negative values move forward.
@@ -86,7 +86,7 @@ class FixtureResolver {
 		int monthsAgo = offsetNode.path("monthsAgo").asInt(0);
 		int weeksAgo = offsetNode.path("weeksAgo").asInt(0) + offsetNode.path("weeksAgoOffset").asInt(0);
 		int daysAgo = offsetNode.path("daysAgo").asInt(0);
-
+		
 		LocalDate resolved = LocalDate.now()
 				.minusYears(yearsAgo)
 				.minusMonths(monthsAgo)
@@ -94,7 +94,7 @@ class FixtureResolver {
 				.minusDays(daysAgo);
 		return toDate(resolved);
 	}
-
+	
 	List<ResolvedVisit> resolveVisits(JsonNode visitsNode) {
 		List<ResolvedVisit> resolved = new ArrayList<>();
 		if (visitsNode == null || visitsNode.isMissingNode() || visitsNode.isNull()) {
@@ -120,7 +120,7 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private void validateVisitType(String name) {
 		for (VisitType vt : Context.getVisitService().getAllVisitTypes()) {
 			if (vt.getName().equalsIgnoreCase(name)) return;
@@ -128,7 +128,7 @@ class FixtureResolver {
 		throw new APIException("Fixture references unknown visit type: " + name
 				+ ". Visit types are platform-managed; ensure standard types exist.");
 	}
-
+	
 	private List<ResolvedEncounter> resolveEncounters(JsonNode encountersNode, Date visitStart, Date visitStop) {
 		List<ResolvedEncounter> resolved = new ArrayList<>();
 		if (encountersNode == null || encountersNode.isMissingNode() || encountersNode.isNull()) {
@@ -160,7 +160,7 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private ResolvedVitals resolveVitals(JsonNode node) {
 		if (node == null || node.isMissingNode() || node.isNull()) return null;
 		return new ResolvedVitals(
@@ -171,12 +171,12 @@ class FixtureResolver {
 				optionalDouble(node, "oxygenSaturation"),
 				optionalDouble(node, "temperatureC"));
 	}
-
+	
 	private ResolvedBmi resolveBmi(JsonNode node) {
 		if (node == null || node.isMissingNode() || node.isNull()) return null;
 		return new ResolvedBmi(optionalDouble(node, "weightKg"), optionalDouble(node, "heightCm"));
 	}
-
+	
 	private List<ResolvedNumericObs> resolveLabs(JsonNode node) {
 		if (node == null || node.isMissingNode() || node.isNull()) return null;
 		if (!node.isArray()) throw new APIException("Fixture encounter 'labs' must be an array");
@@ -189,7 +189,7 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private List<ResolvedDiagnosis> resolveDiagnoses(JsonNode node) {
 		if (node == null || node.isMissingNode() || node.isNull()) return null;
 		if (!node.isArray()) throw new APIException("Fixture encounter 'diagnoses' must be an array");
@@ -202,12 +202,12 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private Double optionalDouble(JsonNode node, String field) {
 		JsonNode v = node.path(field);
 		return v.isMissingNode() || v.isNull() ? null : v.asDouble();
 	}
-
+	
 	private List<DrugOrderDescriptor> resolveDrugOrders(JsonNode node, Date encounterDate) {
 		if (node == null || node.isMissingNode() || node.isNull()) return null;
 		if (!node.isArray()) throw new APIException("Fixture encounter 'drugOrders' must be an array");
@@ -229,7 +229,7 @@ class FixtureResolver {
 			}
 			OrderFrequency frequency = resolveOrderFrequency(frequencyConcept);
 			Drug drug = firstDrugForConcept(conceptService, drugConcept);
-
+			
 			JsonNode startNode = entry.path("start");
 			Date start = (startNode.isMissingNode() || startNode.isNull())
 					? encounterDate : resolveDateOffset(startNode);
@@ -238,7 +238,7 @@ class FixtureResolver {
 			if (!autoExpireNode.isMissingNode() && !autoExpireNode.isNull()) {
 				autoExpire = resolveDateOffset(autoExpireNode);
 			}
-
+			
 			resolved.add(new DrugOrderDescriptor()
 					.setDrugConcept(drugConcept)
 					.setDrug(drug)
@@ -253,7 +253,7 @@ class FixtureResolver {
 		}
 		return resolved;
 	}
-
+	
 	private OrderFrequency resolveOrderFrequency(Concept frequencyConcept) {
 		OrderService orderService = Context.getOrderService();
 		OrderFrequency frequency = orderService.getOrderFrequencyByConcept(frequencyConcept);
@@ -264,7 +264,7 @@ class FixtureResolver {
 		}
 		return frequency;
 	}
-
+	
 	private Drug firstDrugForConcept(ConceptService conceptService, Concept drugConcept) {
 		List<Drug> drugs = conceptService.getDrugsByConcept(drugConcept);
 		return (drugs == null || drugs.isEmpty()) ? null : drugs.get(0);

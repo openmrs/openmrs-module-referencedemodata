@@ -10,11 +10,11 @@
 package org.openmrs.module.referencedemodata.fixtures;
 
 final class ResolvedBmi {
-
+	
 	final Double weightKg;
-
+	
 	final Double heightCm;
-
+	
 	ResolvedBmi(Double weightKg, Double heightCm) {
 		this.weightKg = weightKg;
 		this.heightCm = heightCm;

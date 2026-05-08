@@ -210,7 +210,11 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				obsService.getObservations(null, null, labConcepts, null, null, null, null, null, null, null, null, false),
 				hasSize(greaterThanOrEqualTo(labEncounters.size())));
 		
-		List<Encounter> vitalsEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+		// Exclude Devan's Vitals encounter — his Visit 5 only carries BMI (weight/height),
+		// not the full 8 vitals concepts the random pipeline guarantees.
+		List<Encounter> vitalsEncounters = allVisits.stream()
+				.filter(v -> !DEVAN_PATIENT_UUID.equals(v.getPatient().getUuid()))
+				.flatMap(v -> v.getNonVoidedEncounters().stream())
 				.filter(e -> "Vitals".equals(e.getEncounterType().getName())).collect(Collectors.toList());
 		assertThat("Expected at least one vitals encounter per visit",
 				vitalsEncounters, hasSize(greaterThanOrEqualTo(vitalsEncounters.size())));

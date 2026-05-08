@@ -12,11 +12,11 @@ package org.openmrs.module.referencedemodata.fixtures;
 import org.openmrs.Concept;
 
 final class ResolvedDiagnosis {
-
+	
 	final Concept concept;
-
+	
 	final boolean primary;
-
+	
 	ResolvedDiagnosis(Concept concept, boolean primary) {
 		this.concept = concept;
 		this.primary = primary;

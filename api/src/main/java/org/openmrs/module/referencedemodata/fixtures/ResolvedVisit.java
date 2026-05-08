@@ -13,17 +13,17 @@ import java.util.Date;
 import java.util.List;
 
 final class ResolvedVisit {
-
+	
 	final Date startDate;
-
+	
 	final Date stopDate;
-
+	
 	final String typeName;
-
+	
 	final String locationName;
-
+	
 	final List<ResolvedEncounter> encounters;
-
+	
 	ResolvedVisit(Date startDate, Date stopDate, String typeName, String locationName,
 			List<ResolvedEncounter> encounters) {
 		this.startDate = startDate;

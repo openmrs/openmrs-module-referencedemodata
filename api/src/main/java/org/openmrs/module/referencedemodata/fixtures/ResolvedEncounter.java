@@ -15,25 +15,25 @@ import java.util.List;
 import org.openmrs.module.referencedemodata.orders.DrugOrderDescriptor;
 
 final class ResolvedEncounter {
-
+	
 	final Date date;
-
+	
 	final String typeName;
-
+	
 	final String providerRole;
-
+	
 	final ResolvedVitals vitals;
-
+	
 	final ResolvedBmi bmi;
-
+	
 	final List<ResolvedNumericObs> labs;
-
+	
 	final List<DrugOrderDescriptor> drugOrders;
-
+	
 	final String noteText;
-
+	
 	final List<ResolvedDiagnosis> diagnoses;
-
+	
 	ResolvedEncounter(Date date, String typeName, String providerRole,
 			ResolvedVitals vitals, ResolvedBmi bmi, List<ResolvedNumericObs> labs,
 			List<DrugOrderDescriptor> drugOrders, String noteText,

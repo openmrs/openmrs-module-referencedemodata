@@ -403,4 +403,12 @@
                     description="Provider responsible for care during an encounter" creator="1"
                     date_created="2024-01-01 00:00:00.0" retired="false"
                     uuid="100001EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+
+    <!-- Standard OpenMRS visit types referenced by the Devan Modi fixture. -->
+    <visit_type visit_type_id="100001" name="Outpatient" description="Outpatient visit"
+                creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                uuid="7b0f5697-27e3-40c4-8bae-f4049abfb4ed"/>
+    <visit_type visit_type_id="100002" name="Inpatient" description="Inpatient visit"
+                creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                uuid="a73edbb9-468f-4a4d-9b9b-1ad34c9fa97d"/>
 </dataset>

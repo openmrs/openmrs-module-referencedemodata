@@ -10,19 +10,19 @@
 package org.openmrs.module.referencedemodata.fixtures;
 
 final class ResolvedVitals {
-
+	
 	final Double systolicBp;
-
+	
 	final Double diastolicBp;
-
+	
 	final Double heartRate;
-
+	
 	final Double respiratoryRate;
-
+	
 	final Double oxygenSaturation;
-
+	
 	final Double temperatureC;
-
+	
 	ResolvedVitals(Double systolicBp, Double diastolicBp, Double heartRate,
 			Double respiratoryRate, Double oxygenSaturation, Double temperatureC) {
 		this.systolicBp = systolicBp;

@@ -10,11 +10,11 @@
 package org.openmrs.module.referencedemodata.fixtures;
 
 final class ResolvedNumericObs {
-
+	
 	final String conceptUuid;
-
+	
 	final double value;
-
+	
 	ResolvedNumericObs(String conceptUuid, double value) {
 		this.conceptUuid = conceptUuid;
 		this.value = value;

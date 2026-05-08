@@ -55,13 +55,13 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
  */
 @Slf4j
 public class FixturePatientLoader {
-
+	
 	private final IdentifierSourceService iss;
 	private final ObjectMapper objectMapper;
 	private final DemoConditionGenerator conditionGenerator;
 	private final FixtureResolver resolver;
 	private final FixtureVisitApplier visitApplier;
-
+	
 	public FixturePatientLoader(DemoDataConceptCache conceptCache, IdentifierSourceService iss) {
 		this(conceptCache, iss,
 				new DemoConditionGenerator(),
@@ -70,7 +70,7 @@ public class FixturePatientLoader {
 				new DemoOrderGenerator(),
 				null);
 	}
-
+	
 	FixturePatientLoader(DemoDataConceptCache conceptCache, IdentifierSourceService iss,
 			DemoConditionGenerator conditionGenerator, DemoObsGenerator obsGenerator,
 			DemoProviderGenerator providerGenerator, DemoOrderGenerator orderGenerator,
@@ -83,10 +83,10 @@ public class FixturePatientLoader {
 		this.visitApplier = new FixtureVisitApplier(obsGenerator, orderGenerator,
 				diagnosisGenerator, providerGenerator);
 	}
-
+	
 	public Patient loadFixture(String classpathResourcePath) {
 		JsonNode root = readFixture(classpathResourcePath);
-
+		
 		String patientUuid = root.path("patientUuid").asText(null);
 		if (StringUtils.isBlank(patientUuid)) {
 			throw new APIException("Fixture [" + classpathResourcePath + "] is missing required field 'patientUuid'");
@@ -95,7 +95,7 @@ public class FixturePatientLoader {
 		if (demographics.isMissingNode() || !demographics.isObject()) {
 			throw new APIException("Fixture [" + classpathResourcePath + "] is missing required object 'demographics'");
 		}
-
+		
 		PatientService ps = Context.getPatientService();
 		Patient existing = ps.getPatientByUuid(patientUuid);
 		if (existing != null) {
@@ -103,30 +103,30 @@ public class FixturePatientLoader {
 					new Object[] { existing.getPersonName(), patientUuid, classpathResourcePath });
 			return existing;
 		}
-
+		
 		// Resolve phase — fail loudly before any DB write.
 		List<ResolvedCondition> conditions = resolver.resolveConditions(root.path("conditions"));
 		List<ResolvedVisit> visits = resolver.resolveVisits(root.path("visits"));
-
+		
 		// Apply phase.
 		Patient saved = createPatient(patientUuid, demographics);
 		applyConditions(saved, conditions);
 		visitApplier.apply(saved, visits);
-
+		
 		log.info("Loaded fixture patient {} {} (uuid={})",
 				new Object[] { saved.getGivenName(), saved.getFamilyName(), saved.getUuid() });
 		return saved;
 	}
-
+	
 	private Patient createPatient(String patientUuid, JsonNode demographics) {
 		PatientService ps = Context.getPatientService();
 		PersonService personService = Context.getPersonService();
-
+		
 		PatientIdentifierType identifierType = ps.getPatientIdentifierTypeByName(OPENMRS_ID_NAME);
 		if (identifierType == null) {
 			throw new APIException("Could not find identifier type " + OPENMRS_ID_NAME);
 		}
-
+		
 		PersonAttributeType demoAttrType = personService.getPersonAttributeTypeByName(DEMO_PATIENT_ATTR);
 		if (demoAttrType == null) {
 			demoAttrType = new PersonAttributeType();
@@ -135,12 +135,12 @@ public class FixturePatientLoader {
 			demoAttrType.setSearchable(true);
 			demoAttrType = personService.savePersonAttributeType(demoAttrType);
 		}
-
+		
 		Patient patient = new Patient();
 		patient.setUuid(patientUuid);
 		populatePerson(patient);
 		applyDemographics(patient, demographics);
-
+		
 		Location rootLocation = Randomizer.randomListEntry(Context.getLocationService().getRootLocations(false));
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier(iss.generateIdentifier(identifierType, "DemoData"));
@@ -148,36 +148,36 @@ public class FixturePatientLoader {
 		patientIdentifier.setDateCreated(new Date());
 		patientIdentifier.setLocation(rootLocation);
 		patient.addIdentifier(patientIdentifier);
-
+		
 		PersonAttribute demoAttr = new PersonAttribute();
 		demoAttr.setAttributeType(demoAttrType);
 		demoAttr.setValue("true");
 		patient.addAttribute(demoAttr);
-
+		
 		return ps.savePatient(patient);
 	}
-
+	
 	private void applyConditions(Patient patient, List<ResolvedCondition> conditions) {
 		for (ResolvedCondition rc : conditions) {
 			conditionGenerator.createDatedCondition(patient, rc.concept, rc.onsetDate, rc.status);
 		}
 	}
-
+	
 	private void applyDemographics(Patient patient, JsonNode demographics) {
 		String givenName = demographics.path("givenName").asText(null);
 		String familyName = demographics.path("familyName").asText(null);
 		String gender = demographics.path("gender").asText(null);
-
+		
 		if (StringUtils.isBlank(givenName) || StringUtils.isBlank(familyName) || StringUtils.isBlank(gender)) {
 			throw new APIException("Fixture demographics must provide givenName, familyName, and gender");
 		}
-
+		
 		JsonNode ageNode = demographics.path("ageYearsAgo");
 		if (!ageNode.canConvertToInt()) {
 			throw new APIException("Fixture demographics.ageYearsAgo must be an integer");
 		}
 		int ageYearsAgo = ageNode.asInt();
-
+		
 		PersonName personName = patient.getPersonName();
 		if (personName == null) {
 			personName = new PersonName();
@@ -185,12 +185,12 @@ public class FixturePatientLoader {
 		}
 		personName.setGivenName(givenName);
 		personName.setFamilyName(familyName);
-
+		
 		patient.setGender(gender);
 		patient.setBirthdate(toDate(LocalDate.now().minusYears(ageYearsAgo)));
 		patient.setBirthdateEstimated(false);
 	}
-
+	
 	private JsonNode readFixture(String classpathResourcePath) {
 		String normalized = classpathResourcePath.startsWith("/") ? classpathResourcePath : "/" + classpathResourcePath;
 		try (InputStream in = getClass().getResourceAsStream(normalized)) {

@@ -15,13 +15,13 @@ import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
 
 final class ResolvedCondition {
-
+	
 	final Concept concept;
-
+	
 	final Date onsetDate;
-
+	
 	final ConditionClinicalStatus status;
-
+	
 	ResolvedCondition(Concept concept, Date onsetDate, ConditionClinicalStatus status) {
 		this.concept = concept;
 		this.onsetDate = onsetDate;
