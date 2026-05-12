@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptNumeric;
@@ -62,6 +65,8 @@ public class DemoObsGenerator {
 	private List<NumericObsValueDescriptor> vitalsDescriptors = null;
 	
 	private List<NumericObsValueDescriptor> labDescriptors = null;
+	
+	private final Map<Pair<Integer, Integer>, Double> lastNumericValues = new HashMap<>();
 	
 	private ObsService os = null;
 	
@@ -154,18 +159,20 @@ public class DemoObsGenerator {
 	
 	protected Obs createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
 			Date encounterDateTime, Location location) {
-		Obs previousObs = null;
-		try {
-			previousObs = getMostRecentObs(patient, encounter, descriptor.getConcept()).orElse(null);
-		}
-		catch (Exception ignored) {
-		
+		Pair<Integer, Integer> key = new ImmutablePair<>(patient.getId(), descriptor.getConcept().getConceptId());
+		Double previousValue = null;
+		if (key.getLeft() != null && key.getRight() != null) {
+			previousValue = lastNumericValues.get(key);
 		}
 		
-		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor,
-				previousObs != null ? previousObs.getValueNumeric() : null);
+		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor, previousValue);
 		
-		return createObs(partialObs, patient, encounter, encounterDateTime, location);
+		Obs savedObs = createObs(partialObs, patient, encounter, encounterDateTime, location);
+		if (savedObs.getValueNumeric() != null && key.getLeft() != null && key.getRight() != null) {
+			lastNumericValues.put(key, savedObs.getValueNumeric());
+		}
+		
+		return savedObs;
 	}
 	
 	public Obs createCodedObs(String conceptDescriptor, String conceptAnswerDescriptor, Patient patient, Encounter encounter,
@@ -274,31 +281,6 @@ public class DemoObsGenerator {
 		
 		return os;
 	}
-	
-	private Optional<Obs> getMostRecentObs(Patient patient, Encounter encounter, Concept questionConcept) {
-		List<Obs> potentialObs = getObsService().getObservations(
-				Collections.singletonList(patient),
-				encounter != null ? Collections.singletonList(encounter) : null,
-				Collections.singletonList(questionConcept),
-				null,
-				null,
-				null,
-				null,
-				1,
-				null,
-				null,
-				null,
-				false
-		);
-		
-		if (potentialObs == null || potentialObs.isEmpty() || potentialObs.get(0) == null) {
-			return Optional.empty();
-		}
-		
-		return Optional.of(potentialObs.get(0));
-	}
-	
-	;
 	
 	private Obs createDemoLabObs(Patient patient, Encounter encounter, Date encounterDateTime, Location location,
 			Concept concept) {

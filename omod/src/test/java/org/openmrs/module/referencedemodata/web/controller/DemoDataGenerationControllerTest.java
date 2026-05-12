@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataActivator;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
-import org.openmrs.module.referencedemodata.web.controller.DemoDataGenerationController;
 import org.openmrs.module.webservices.rest.SimpleObject;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.MainResourceControllerTest;
 
