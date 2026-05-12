@@ -42,7 +42,6 @@ import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
 import static org.openmrs.module.referencedemodata.Randomizer.randomArrayEntry;
 import static org.openmrs.module.referencedemodata.Randomizer.randomBetween;
 import static org.openmrs.module.referencedemodata.Randomizer.randomListEntry;
-import static org.openmrs.module.referencedemodata.Randomizer.randomSubArray;
 import static org.openmrs.module.referencedemodata.Randomizer.shouldRandomEventOccur;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toLocalDateTime;

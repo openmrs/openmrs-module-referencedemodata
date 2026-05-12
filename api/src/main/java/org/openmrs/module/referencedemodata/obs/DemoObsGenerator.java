@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptNumeric;
@@ -64,7 +66,7 @@ public class DemoObsGenerator {
 	
 	private List<NumericObsValueDescriptor> labDescriptors = null;
 	
-	private final Map<Integer, Double> lastNumericValues = new HashMap<>();
+	private final Map<Pair<Integer, Integer>, Double> lastNumericValues = new HashMap<>();
 	
 	private ObsService os = null;
 	
@@ -157,14 +159,17 @@ public class DemoObsGenerator {
 	
 	protected Obs createNumericObsFromDescriptor(NumericObsValueDescriptor descriptor, Patient patient, Encounter encounter,
 			Date encounterDateTime, Location location) {
-		Integer conceptId = descriptor.getConcept().getConceptId();
-		Double previousValue = lastNumericValues.get(conceptId);
+		Pair<Integer, Integer> key = new ImmutablePair<>(patient.getId(), descriptor.getConcept().getConceptId());
+		Double previousValue = null;
+		if (key.getLeft() != null && key.getRight() != null) {
+			previousValue = lastNumericValues.get(key);
+		}
 		
 		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor, previousValue);
 		
 		Obs savedObs = createObs(partialObs, patient, encounter, encounterDateTime, location);
-		if (savedObs.getValueNumeric() != null) {
-			lastNumericValues.put(conceptId, savedObs.getValueNumeric());
+		if (savedObs.getValueNumeric() != null && key.getLeft() != null && key.getRight() != null) {
+			lastNumericValues.put(key, savedObs.getValueNumeric());
 		}
 		
 		return savedObs;
