@@ -35,10 +35,11 @@ public class ConceptDeserializer extends StdDeserializer<Concept> {
 		}
 
 		ConceptService cs = Context.getConceptService();
-		Concept concept = cs.getConceptByUuid(uuid);
+		Concept concept = cs.getConceptNumericByUuid(uuid);
 
 		if (concept == null) {
-			throw JsonMappingException.from(p, "Concept [" + uuid + "] does not exist; add it to the metadata bundle");
+			throw JsonMappingException.from(p,
+					"Numeric concept [" + uuid + "] does not exist; add it to the metadata bundle");
 		}
 		
 		return concept;

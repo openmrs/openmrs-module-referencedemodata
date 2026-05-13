@@ -9,11 +9,15 @@
  */
 package org.openmrs.module.referencedemodata.orders;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openmrs.CareSetting;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderFrequency;
 import org.openmrs.OrderType;
 import org.openmrs.Provider;
 import org.openmrs.SimpleDosingInstructions;
@@ -40,6 +44,8 @@ public class DemoOrderGenerator {
 	private CareSetting careSetting = null;
 
 	private FhirTaskService fhirTaskService = null;
+
+	private final Map<String, OrderFrequency> orderFrequencyByConceptUuid = new HashMap<>();
 
 	public void createDemoTestOrder(Encounter encounter, Concept orderConcept) {
 		OrderType orderType = getTestOrderType();
@@ -90,7 +96,7 @@ public class DemoOrderGenerator {
 		order.setDose(spec.getDoseValue());
 		order.setDoseUnits(spec.getDoseUnits());
 		order.setRoute(spec.getRoute());
-		order.setFrequency(spec.getFrequency());
+		order.setFrequency(resolveOrderFrequency(spec.getFrequencyConcept()));
 		// DrugOrderValidator requires quantity/quantityUnits/numRefills even though the fixture has
 		// no real dispense data — use placeholder defaults to satisfy the validator.
 		order.setQuantity(30.0);
@@ -111,6 +117,22 @@ public class DemoOrderGenerator {
 		encounter.addOrder(order);
 		getOrderService().saveOrder(order, null);
 		return order;
+	}
+
+	private OrderFrequency resolveOrderFrequency(Concept frequencyConcept) {
+		String key = frequencyConcept.getUuid();
+		OrderFrequency cached = orderFrequencyByConceptUuid.get(key);
+		if (cached != null) {
+			return cached;
+		}
+		OrderFrequency frequency = getOrderService().getOrderFrequencyByConcept(frequencyConcept);
+		if (frequency == null) {
+			frequency = new OrderFrequency();
+			frequency.setConcept(frequencyConcept);
+			frequency = getOrderService().saveOrderFrequency(frequency);
+		}
+		orderFrequencyByConceptUuid.put(key, frequency);
+		return frequency;
 	}
 
 	protected CareSetting getCareSetting() {

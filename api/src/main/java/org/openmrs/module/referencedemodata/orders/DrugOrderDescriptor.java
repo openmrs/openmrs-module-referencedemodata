@@ -13,7 +13,6 @@ import java.util.Date;
 
 import org.openmrs.Concept;
 import org.openmrs.Drug;
-import org.openmrs.OrderFrequency;
 
 public final class DrugOrderDescriptor {
 	
@@ -29,8 +28,8 @@ public final class DrugOrderDescriptor {
 	
 	private Concept route;
 	
-	private OrderFrequency frequency;
-	
+	private Concept frequencyConcept;
+
 	private Concept indication;
 	
 	private Date startDate;
@@ -91,12 +90,12 @@ public final class DrugOrderDescriptor {
 		return this;
 	}
 	
-	public OrderFrequency getFrequency() {
-		return frequency;
+	public Concept getFrequencyConcept() {
+		return frequencyConcept;
 	}
-	
-	public DrugOrderDescriptor setFrequency(OrderFrequency frequency) {
-		this.frequency = frequency;
+
+	public DrugOrderDescriptor setFrequencyConcept(Concept frequencyConcept) {
+		this.frequencyConcept = frequencyConcept;
 		return this;
 	}
 	

@@ -22,7 +22,6 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
-import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 
 /**
@@ -59,6 +58,7 @@ public class EncounterFactory {
 		EncounterType t = es.getEncounterType(name);
 		if (t == null) {
 			t = new EncounterType(name, "");
+			t.setCreator(Context.getAuthenticatedUser());
 			t.setDateCreated(new Date());
 			t = es.saveEncounterType(t);
 		}
@@ -78,14 +78,7 @@ public class EncounterFactory {
 
 	public Form getVisitNoteForm() {
 		if (visitNoteForm == null) {
-			FormService fs = Context.getFormService();
-			visitNoteForm = fs.getForm("Visit Note");
-			if (visitNoteForm == null) {
-				visitNoteForm = new Form();
-				visitNoteForm.setName("Visit Note");
-				visitNoteForm.setVersion("1.0");
-				visitNoteForm = fs.saveForm(visitNoteForm);
-			}
+			visitNoteForm = Context.getFormService().getForm("Visit Note");
 		}
 		return visitNoteForm;
 	}

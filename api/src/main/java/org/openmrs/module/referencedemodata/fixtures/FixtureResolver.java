@@ -24,7 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.Drug;
-import org.openmrs.OrderFrequency;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.DemoDataConceptCache;
@@ -38,8 +37,6 @@ class FixtureResolver {
 	private final DemoDataConceptCache conceptCache;
 
 	private final Map<String, Optional<Drug>> drugByConceptUuidCache = new HashMap<>();
-
-	private final Map<String, OrderFrequency> orderFrequencyByConceptUuidCache = new HashMap<>();
 
 	FixtureResolver(DemoDataConceptCache conceptCache) {
 		this.conceptCache = conceptCache;
@@ -243,26 +240,10 @@ class FixtureResolver {
 				.setDoseValue(doseNode.asDouble())
 				.setDoseUnits(doseUnits)
 				.setRoute(route)
-				.setFrequency(resolveOrderFrequency(frequencyConcept))
+				.setFrequencyConcept(frequencyConcept)
 				.setIndication(indication)
 				.setStartDate(start)
 				.setAutoExpireDate(autoExpire);
-	}
-	
-	private OrderFrequency resolveOrderFrequency(Concept frequencyConcept) {
-		String key = frequencyConcept.getUuid();
-		OrderFrequency cached = orderFrequencyByConceptUuidCache.get(key);
-		if (cached != null) {
-			return cached;
-		}
-		OrderFrequency frequency = Context.getOrderService().getOrderFrequencyByConcept(frequencyConcept);
-		if (frequency == null) {
-			frequency = new OrderFrequency();
-			frequency.setConcept(frequencyConcept);
-			frequency = Context.getOrderService().saveOrderFrequency(frequency);
-		}
-		orderFrequencyByConceptUuidCache.put(key, frequency);
-		return frequency;
 	}
 
 	private Drug firstDrugForConcept(Concept drugConcept) {
