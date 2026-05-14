@@ -519,14 +519,7 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 		ensureCielConcept("123569", "Upper GI Bleed", "Diagnosis", "N/A");
 		ensureCielConcept("117152", "H. pylori infection", "Diagnosis", "N/A");
 
-		// Drugs (class=Drug, datatype=N/A)
-		ensureCielConcept("75875", "Esomeprazole", "Drug", "N/A");
-		ensureCielConcept("77696", "Hydrochlorothiazide", "Drug", "N/A");
-		ensureCielConcept("71137", "Amlodipine", "Drug", "N/A");
-		ensureCielConcept("79651", "Metformin", "Drug", "N/A");
-		ensureCielConcept("70116", "Bismuth subsalicylate", "Drug", "N/A");
-		ensureCielConcept("84893", "Tetracycline", "Drug", "N/A");
-		ensureCielConcept("79782", "Metronidazole", "Drug", "N/A");
+		// Drug concepts (CIEL) and their Drug rows are pre-seeded by FixturePatientLoaderTestDataset.xml.
 
 		// Units of Measure
 		ensureCielConcept("1513", "mg", "Units of Measure", "N/A");

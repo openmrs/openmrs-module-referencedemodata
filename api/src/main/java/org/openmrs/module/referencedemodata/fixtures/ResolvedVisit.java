@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.referencedemodata.fixtures;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +31,6 @@ final class ResolvedVisit {
 		this.stopDate = stopDate;
 		this.typeName = typeName;
 		this.locationName = locationName;
-		this.encounters = encounters;
+		this.encounters = Collections.unmodifiableList(encounters);
 	}
 }

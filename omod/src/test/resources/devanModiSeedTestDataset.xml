@@ -404,6 +404,22 @@
                     date_created="2024-01-01 00:00:00.0" retired="false"
                     uuid="100001EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
 
+    <!-- Drug rows for the CIEL drug concepts above so FixtureResolver can bind each drug order. -->
+    <drug drug_id="100010" concept_id="100010" name="Esomeprazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100010EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100011" concept_id="100011" name="Hydrochlorothiazide" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100011EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100012" concept_id="100012" name="Amlodipine" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100012EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100013" concept_id="100013" name="Metformin" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100013EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100014" concept_id="100014" name="Bismuth subsalicylate" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100014EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100015" concept_id="100015" name="Tetracycline" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100015EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100016" concept_id="100016" name="Metronidazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100016EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+
     <!-- Standard OpenMRS visit types referenced by the Devan Modi fixture. -->
     <visit_type visit_type_id="100001" name="Outpatient" description="Outpatient visit"
                 creator="1" date_created="2024-01-01 00:00:00.0" retired="false"

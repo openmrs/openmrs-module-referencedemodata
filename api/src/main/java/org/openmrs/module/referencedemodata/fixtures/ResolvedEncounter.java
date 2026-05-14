@@ -9,6 +9,7 @@
  */
 package org.openmrs.module.referencedemodata.fixtures;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -43,9 +44,9 @@ final class ResolvedEncounter {
 		this.providerRole = providerRole;
 		this.vitals = vitals;
 		this.bmi = bmi;
-		this.labs = labs;
-		this.drugOrders = drugOrders;
+		this.labs = Collections.unmodifiableList(labs);
+		this.drugOrders = Collections.unmodifiableList(drugOrders);
 		this.noteText = noteText;
-		this.diagnoses = diagnoses;
+		this.diagnoses = Collections.unmodifiableList(diagnoses);
 	}
 }

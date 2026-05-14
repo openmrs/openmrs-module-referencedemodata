@@ -97,16 +97,13 @@ class FixtureVisitApplier {
 		}
 		VisitType match = visitTypeCache.get(name.toLowerCase());
 		if (match != null) return match;
-		VisitType firstActive = visitTypeCache.values().stream()
+		VisitType fallback = visitTypeCache.values().stream()
 				.filter(vt -> !Boolean.TRUE.equals(vt.getRetired()))
 				.sorted(Comparator.comparing(VisitType::getId))
 				.findFirst().orElse(null);
-		VisitType fallback = firstActive != null ? firstActive
-				: visitTypeCache.values().stream()
-						.sorted(Comparator.comparing(VisitType::getId))
-						.findFirst().orElse(null);
 		if (fallback == null) {
-			throw new APIException("No VisitType rows exist; cannot fall back for fixture visit type '" + name + "'");
+			throw new APIException("No unretired VisitType rows exist; cannot fall back for fixture visit type '"
+					+ name + "'");
 		}
 		log.warn("Fixture visit type '{}' not found; substituting '{}'. " +
 				"Add this VisitType to seed data to make fixtures reproducible.",
@@ -148,10 +145,13 @@ class FixtureVisitApplier {
 	}
 
 	private Provider resolveProvider(String role) {
-		if ("nurse".equalsIgnoreCase(role)) {
-			return providerGenerator.getNurse();
+		boolean wantNurse = "nurse".equalsIgnoreCase(role);
+		Provider provider = wantNurse ? providerGenerator.getNurse() : providerGenerator.getDoctor();
+		if (provider == null) {
+			throw new APIException("Required Provider with identifier '" + (wantNurse ? "nurse" : "doctor")
+					+ "' is missing; ensure ReferenceDemoDataActivator seeded providers before fixture load");
 		}
-		return providerGenerator.getDoctor();
+		return provider;
 	}
 
 	private void applyEncounterPayload(Patient patient, Encounter encounter, ResolvedEncounter re,

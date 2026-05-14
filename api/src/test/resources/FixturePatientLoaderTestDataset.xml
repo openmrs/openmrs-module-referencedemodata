@@ -440,6 +440,106 @@
                            concept_id="10068" creator="1" date_created="2008-06-11 13:22:00.0"
                            uuid="1065FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
 
+    <!-- Drug concepts (CIEL) + Drug rows referenced by fixtures/devan-modi.json drug orders.
+         FixtureResolver requires a Drug row to bind each drug-order concept, otherwise the
+         fixture would need an explicit drugName for drugNonCoded fallback. -->
+    <concept concept_id="10100" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="75875AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10100" concept_id="10100" name="Esomeprazole [75875]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="75875BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="110" concept_source_id="16" name=""
+                            code="75875" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="75875CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="110" concept_reference_term_id="110" concept_map_type_id="2"
+                           concept_id="10100" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="75875FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="100" concept_id="10100" name="Esomeprazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="75875EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10101" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="77696AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10101" concept_id="10101" name="Hydrochlorothiazide [77696]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="77696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="111" concept_source_id="16" name=""
+                            code="77696" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="77696CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="111" concept_reference_term_id="111" concept_map_type_id="2"
+                           concept_id="10101" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="77696FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="101" concept_id="10101" name="Hydrochlorothiazide" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="77696EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10102" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="71137AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10102" concept_id="10102" name="Amlodipine [71137]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="71137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="112" concept_source_id="16" name=""
+                            code="71137" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="71137CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="112" concept_reference_term_id="112" concept_map_type_id="2"
+                           concept_id="10102" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="71137FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="102" concept_id="10102" name="Amlodipine" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="71137EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10103" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="79651AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10103" concept_id="10103" name="Metformin [79651]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="79651BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="113" concept_source_id="16" name=""
+                            code="79651" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="79651CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="113" concept_reference_term_id="113" concept_map_type_id="2"
+                           concept_id="10103" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="79651FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="103" concept_id="10103" name="Metformin" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="79651EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10104" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="70116AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10104" concept_id="10104" name="Bismuth subsalicylate [70116]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="70116BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="114" concept_source_id="16" name=""
+                            code="70116" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="70116CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="114" concept_reference_term_id="114" concept_map_type_id="2"
+                           concept_id="10104" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="70116FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="104" concept_id="10104" name="Bismuth subsalicylate" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="70116EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10105" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10105" concept_id="10105" name="Tetracycline [84893]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="84893BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="115" concept_source_id="16" name=""
+                            code="84893" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="84893CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="115" concept_reference_term_id="115" concept_map_type_id="2"
+                           concept_id="10105" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="84893FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="105" concept_id="10105" name="Tetracycline" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="84893EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
+    <concept concept_id="10106" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="79782AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10106" concept_id="10106" name="Metronidazole [79782]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="79782BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="116" concept_source_id="16" name=""
+                            code="79782" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="79782CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="116" concept_reference_term_id="116" concept_map_type_id="2"
+                           concept_id="10106" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="79782FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="106" concept_id="10106" name="Metronidazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="79782EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
 
     <program program_id="1" concept_id="10027" creator="1" date_created="2022-08-23 12:02:10.0" changed_by="1"
              date_changed="2022-08-23 12:02:11.0" retired="false" name="HIV Care and Treatment test"

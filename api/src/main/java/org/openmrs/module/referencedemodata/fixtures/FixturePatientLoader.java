@@ -33,6 +33,8 @@ import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
 import org.openmrs.module.referencedemodata.patient.DemoPatientGenerator;
 import org.openmrs.module.referencedemodata.providers.DemoProviderGenerator;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataUtils.toDate;
 import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.populatePerson;
@@ -44,7 +46,11 @@ import static org.openmrs.module.referencedemodata.patient.DemoPersonGenerator.p
  * using relative date offsets that are resolved against {@link java.time.LocalDate#now()} at load
  * time. Concept references (UUIDs or {@code CIEL:<code>} mappings) are resolved through
  * {@link DemoDataConceptCache} during a resolve phase that runs before any DB write — any
- * unresolved identifier fails loudly with an {@link APIException} and no partial patient is saved.
+ * unresolved identifier fails loudly with an {@link APIException}.
+ *
+ * <p>The apply phase (patient + conditions + visits + encounters) runs inside a single Spring
+ * transaction via {@link TransactionTemplate}, so a failure midway through apply rolls back the
+ * partially-written patient instead of leaving orphan rows behind.
  */
 @Slf4j
 public class FixturePatientLoader {
@@ -113,15 +119,26 @@ public class FixturePatientLoader {
 		// Resolve phase — fail loudly before any DB write.
 		List<ResolvedCondition> conditions = resolver.resolveConditions(root.path("conditions"));
 		List<ResolvedVisit> visits = resolver.resolveVisits(root.path("visits"));
-		
-		// Apply phase.
-		Patient saved = createPatient(patientUuid, demographics);
-		applyConditions(saved, conditions);
-		visitApplier.apply(saved, visits);
-		
+
+		Patient saved = transactionTemplate().execute(status -> {
+			Patient p = createPatient(patientUuid, demographics);
+			applyConditions(p, conditions);
+			visitApplier.apply(p, visits);
+			return p;
+		});
+
 		log.info("Loaded fixture patient {} {} (uuid={})",
 				new Object[] { saved.getGivenName(), saved.getFamilyName(), saved.getUuid() });
 		return saved;
+	}
+
+	private TransactionTemplate transactionTemplate() {
+		List<PlatformTransactionManager> managers =
+				Context.getRegisteredComponents(PlatformTransactionManager.class);
+		if (managers.isEmpty()) {
+			throw new APIException("No PlatformTransactionManager available; cannot load fixture transactionally");
+		}
+		return new TransactionTemplate(managers.get(0));
 	}
 	
 	private Patient createPatient(String patientUuid, JsonNode demographics) {

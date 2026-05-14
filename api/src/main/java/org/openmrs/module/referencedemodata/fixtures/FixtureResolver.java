@@ -233,10 +233,18 @@ class FixtureResolver {
 			autoExpire = resolveDateOffset(autoExpireNode);
 		}
 
+		Drug drug = firstDrugForConcept(drugConcept);
+		String drugName = entry.path("drugName").asText(null);
+		if (drug == null && StringUtils.isBlank(drugName)) {
+			throw new APIException("Fixture drug order references concept '" + drugConcept.getUuid()
+					+ "' (" + drugConcept.getName() + ") but no Drug row exists; "
+					+ "either seed a Drug for this concept or set 'drugName' in the fixture");
+		}
+
 		return new DrugOrderDescriptor()
 				.setDrugConcept(drugConcept)
-				.setDrug(firstDrugForConcept(drugConcept))
-				.setDrugName(entry.path("drugName").asText(null))
+				.setDrug(drug)
+				.setDrugName(drugName)
 				.setDoseValue(doseNode.asDouble())
 				.setDoseUnits(doseUnits)
 				.setRoute(route)
@@ -253,14 +261,8 @@ class FixtureResolver {
 			return cached.orElse(null);
 		}
 		List<Drug> drugs = Context.getConceptService().getDrugsByConcept(drugConcept);
-		if (drugs == null || drugs.isEmpty()) {
-			log.warn("No Drug row exists for concept {} ({}); drug order will be unbound",
-					drugConcept.getUuid(), drugConcept.getName());
-			drugByConceptUuidCache.put(key, Optional.empty());
-			return null;
-		}
-		Drug drug = drugs.get(0);
-		drugByConceptUuidCache.put(key, Optional.of(drug));
-		return drug;
+		Optional<Drug> resolved = (drugs == null || drugs.isEmpty()) ? Optional.empty() : Optional.of(drugs.get(0));
+		drugByConceptUuidCache.put(key, resolved);
+		return resolved.orElse(null);
 	}
 }
