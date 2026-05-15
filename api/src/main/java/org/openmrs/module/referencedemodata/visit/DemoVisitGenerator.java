@@ -143,22 +143,31 @@ public class DemoVisitGenerator {
 			}
 		} else {
 			visitStart = toLocalDateTime(lastVisit.getStopDatetime())
-					.plusDays(randomBetween(0, 365 - 1))
-					.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
+					.plusDays(randomBetween(1, 365))
+					.plusMinutes(randomBetween(0, 24 * 60 - 1));
 		}
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		if (visitStart.isAfter(LocalDateTime.now())) {
 			visitStart = now.minusMinutes(randomBetween(5 * 60, 24 * 60));
 		}
-		
+
 		if (patientAge <= 5) {
 			shortVisit = true;
 		}
-		
+
 		// just in case the start is today, back it up a few days.
 		if (!shortVisit && LocalDate.now().minusDays(ADMISSION_DAYS_MAX + 1).isBefore(visitStart.toLocalDate())) {
 			visitStart = visitStart.minusDays(ADMISSION_DAYS_MAX + 1);
+		}
+
+		// Final guard: any of the above clamps can pull visitStart back before the prior visit's
+		// stop, which trips the OverlapsAnotherVisit validator.
+		if (lastVisit != null && lastVisit.getStopDatetime() != null) {
+			LocalDateTime priorStop = toLocalDateTime(lastVisit.getStopDatetime());
+			if (!visitStart.isAfter(priorStop)) {
+				visitStart = priorStop.plusMinutes(1);
+			}
 		}
 		
 		Visit visit = new Visit(patient, randomListEntry(visitTypes), toDate(visitStart));

@@ -2,7 +2,7 @@
   "patientUuid": "a1b2c3d4-e5f6-4789-a012-34567890abcd",
   "demographics": { "givenName": "Devan", "familyName": "Modi", "gender": "M", "ageYearsAgo": 65 },
   "conditions": [
-    { "concept": "CIEL:142474", "onset": { "yearsAgo": 5 }, "status": "ACTIVE" },
+    { "concept": "CIEL:142473", "onset": { "yearsAgo": 5 }, "status": "ACTIVE" },
     { "concept": "CIEL:117399", "onset": { "yearsAgo": 25 }, "status": "ACTIVE" },
     { "concept": "CIEL:114262", "onset": { "monthsAgo": 1 }, "status": "ACTIVE" }
   ],
@@ -19,7 +19,7 @@
           "providerRole": "doctor",
           "note": "Pt: Devan Modi DOB 65 years ago\nPrimary Care Physician: Luis Perez\nSubjective: Mr. Modi is a 60-year-old man presenting for a routine physical examination. He was found to have elevated blood sugar on a screening glucose test. Follow-up Hgb A1c was also elevated, leading to a new diagnosis of diabetes. The patient has a history of well-controlled hypertension and is currently taking HCTZ.\n\nObjective: Vital signs: Blood Pressure: 140/85 mmHg, Heart rate: 70 beats per minute, Respiratory rate: 16 breaths per minute, Body temperature: 98.6°F. Physical Exam: The patient appeared in stable condition. Cardiovascular examination revealed regular rate and rhythm with no murmurs, rubs, or gallops. No edema was noted in the lower extremities. Lung exam revealed clear to auscultation bilaterally with good air exchange.\nLabs: Fasting glucose 154, Hgb A1c 7.1\n\nAssessment: 60-year-old man with a history of HTN now with an elevated fasting blood glucose and elevated Hgb A1c consistent with a new diagnosis of Type 2 Diabetes Mellitus.\n\nPlan:\n    Start the patient on metformin 500mg daily with plans to increase this to 1000 mg twice daily over the next few weeks if he tolerates it well.\n    Refer the patient for a follow-up appointment in 4-6 weeks for glucose control monitoring and dose adjustment if needed.\n    Refer the patient for participation in the outpatient diabetes education program\n    Advise the patient to maintain a healthy diet and engage in regular exercise to improve glycemic control.\n    Continue the patient on HCTZ for hypertension control.\n    Recommend regular monitoring of Hgb A1c\n    Refer the patient to a nutritionist or dietitian for dietary counseling.\n\nSigned: Luis Perez",
           "diagnoses": [
-            { "concept": "CIEL:142474", "primary": true }
+            { "concept": "CIEL:142473", "primary": true }
           ],
           "vitals": {
             "systolicBp": 130,
@@ -31,9 +31,9 @@
           },
           "bmi": { "weightKg": 81, "heightCm": 177 },
           "labs": [
-            { "concept": "CIEL:1006", "value": 142 },
+            { "concept": "CIEL:1132", "value": 142 },
             { "concept": "CIEL:857", "value": 14 },
-            { "concept": "CIEL:790", "value": 0.9 },
+            { "concept": "CIEL:164364", "value": 0.9 },
             { "concept": "CIEL:1133", "value": 4.2 },
             { "concept": "CIEL:887", "value": 154 },
             { "concept": "CIEL:159644", "value": 7.1 }
@@ -45,7 +45,7 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160862",
-              "indication": "CIEL:142474",
+              "indication": "CIEL:142473",
               "autoExpire": { "daysAgo": 30 }
             }
           ]
@@ -79,9 +79,9 @@
             { "concept": "CIEL:21", "value": 13.1 },
             { "concept": "CIEL:678", "value": 7.2 },
             { "concept": "CIEL:729", "value": 273 },
-            { "concept": "CIEL:1006", "value": 140 },
+            { "concept": "CIEL:1132", "value": 140 },
             { "concept": "CIEL:857", "value": 14 },
-            { "concept": "CIEL:790", "value": 0.9 },
+            { "concept": "CIEL:164364", "value": 0.9 },
             { "concept": "CIEL:1133", "value": 4.1 },
             { "concept": "CIEL:887", "value": 110 },
             { "concept": "CIEL:159644", "value": 6.2 }
@@ -143,9 +143,9 @@
             { "concept": "CIEL:21", "value": 9.6 },
             { "concept": "CIEL:678", "value": 8.1 },
             { "concept": "CIEL:729", "value": 232 },
-            { "concept": "CIEL:1006", "value": 140 },
+            { "concept": "CIEL:1132", "value": 140 },
             { "concept": "CIEL:857", "value": 20 },
-            { "concept": "CIEL:790", "value": 1.0 },
+            { "concept": "CIEL:164364", "value": 1.0 },
             { "concept": "CIEL:1133", "value": 4.0 },
             { "concept": "CIEL:887", "value": 108 },
             { "concept": "CIEL:159644", "value": 6.4 }
@@ -157,26 +157,26 @@
           "providerRole": "doctor",
           "note": "Study: Esophagogastroduodenoscopy (EGD)\nPATIENT: Devan Modi\nPHYSICIAN: Dr. Joshua Schull\nINDICATION: Upper GI Bleed\nFINDINGS:\nEsophagus: The esophageal mucosa was normal in appearance without any visible ulcers or lesions. No varices seen. GE junction seen at 39 CM. No hiatal hernia.\n\nStomach: The antrum and pylorus demonstrated normal motor activity. There is coffee ground material present in the stomach. A gastric ulcer was seen in the gastric fundus. No active bleed or visible vessel noted. Surrounding mucosa is erythematous. Biopsies were taken.\nDuodenum: No mucosal abnormality seen in the first and second part of the duodenum.\nIMPRESSION: Non-bleeding gastric ulcer\n\nSigned: Dr. Joshua Schull",
           "diagnoses": [
-            { "concept": "CIEL:123529", "primary": true }
+            { "concept": "CIEL:149783", "primary": true }
           ],
           "labs": [
             { "concept": "CIEL:21", "value": 9.3 },
             { "concept": "CIEL:678", "value": 8.0 },
             { "concept": "CIEL:729", "value": 237 },
-            { "concept": "CIEL:1006", "value": 141 },
+            { "concept": "CIEL:1132", "value": 141 },
             { "concept": "CIEL:857", "value": 12 },
-            { "concept": "CIEL:790", "value": 0.8 },
+            { "concept": "CIEL:164364", "value": 0.8 },
             { "concept": "CIEL:1133", "value": 4.2 },
             { "concept": "CIEL:887", "value": 123 }
           ],
           "drugOrders": [
             {
-              "drug": "CIEL:70116",
+              "drug": "CIEL:72241",
               "doseValue": 300,
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160870",
-              "indication": "CIEL:117152",
+              "indication": "CIEL:139041",
               "start": { "daysAgo": 29 },
               "autoExpire": { "daysAgo": 15 }
             },
@@ -186,7 +186,7 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160870",
-              "indication": "CIEL:117152",
+              "indication": "CIEL:139041",
               "start": { "daysAgo": 29 },
               "autoExpire": { "daysAgo": 15 }
             },
@@ -196,7 +196,7 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160870",
-              "indication": "CIEL:117152",
+              "indication": "CIEL:139041",
               "start": { "daysAgo": 29 },
               "autoExpire": { "daysAgo": 15 }
             }
@@ -215,9 +215,9 @@
             { "concept": "CIEL:21", "value": 9.5 },
             { "concept": "CIEL:678", "value": 8.2 },
             { "concept": "CIEL:729", "value": 226 },
-            { "concept": "CIEL:1006", "value": 140 },
+            { "concept": "CIEL:1132", "value": 140 },
             { "concept": "CIEL:857", "value": 13 },
-            { "concept": "CIEL:790", "value": 0.8 },
+            { "concept": "CIEL:164364", "value": 0.8 },
             { "concept": "CIEL:1133", "value": 4.0 },
             { "concept": "CIEL:887", "value": 118 }
           ],
@@ -255,7 +255,7 @@
               "doseUnits": "CIEL:1513",
               "route": "CIEL:160240",
               "frequency": "CIEL:160858",
-              "indication": "CIEL:142474",
+              "indication": "CIEL:142473",
               "start": { "daysAgo": 28 }
             }
           ]
