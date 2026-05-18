@@ -22,7 +22,6 @@ import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
-import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Visit;
@@ -75,7 +74,9 @@ import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.OP
 
 @SkipBaseSetup
 public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiveTest {
-	
+
+	private static final String DEVAN_PATIENT_UUID = "a1b2c3d4-e5f6-4789-a012-34567890abcd";
+
 	@Autowired
 	UserService userService;
 	
@@ -135,6 +136,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 	public void setupDb() throws Exception {
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 		executeDataSet("requiredDataTestDataset.xml");
+		executeDataSet("devanModiSeedTestDataset.xml");
 		getConnection().commit();
 		updateSearchIndex();
 		authenticate();
@@ -208,7 +210,11 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				obsService.getObservations(null, null, labConcepts, null, null, null, null, null, null, null, null, false),
 				hasSize(greaterThanOrEqualTo(labEncounters.size())));
 		
-		List<Encounter> vitalsEncounters = allVisits.stream().flatMap(v -> v.getNonVoidedEncounters().stream())
+		// Exclude Devan's Vitals encounter — his Visit 5 only carries BMI (weight/height),
+		// not the full 8 vitals concepts the random pipeline guarantees.
+		List<Encounter> vitalsEncounters = allVisits.stream()
+				.filter(v -> !DEVAN_PATIENT_UUID.equals(v.getPatient().getUuid()))
+				.flatMap(v -> v.getNonVoidedEncounters().stream())
 				.filter(e -> "Vitals".equals(e.getEncounterType().getName())).collect(Collectors.toList());
 		assertThat("Expected at least one vitals encounter per visit",
 				vitalsEncounters, hasSize(greaterThanOrEqualTo(vitalsEncounters.size())));
@@ -221,7 +227,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				.map(conceptService::getConceptByUuid).collect(Collectors.toList());
 		
 		assertThat("Expected each vitals concept to have a result per vitals encounter",
-				obsService.getObservations(null, null, vitalsConcepts, null, null, null, null, null, null, null, null,
+				obsService.getObservations(null, vitalsEncounters, vitalsConcepts, null, null, null, null, null, null, null, null,
 						false),
 				hasSize(vitalsConcepts.size() * vitalsEncounters.size()));
 		
@@ -258,7 +264,9 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 				greaterThanOrEqualTo((allPatients.size() / 3) - patientErrorFactor));
 		
 		assertThat("Expected a COMPLETED FHIR Task per order",
-				allPatients.stream().map(patient -> orderService.getAllOrdersByPatient(patient).size())
+				allPatients.stream()
+						.filter(p -> !DEVAN_PATIENT_UUID.equals(p.getUuid()))
+						.map(patient -> orderService.getAllOrdersByPatient(patient).size())
 						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(null,null,new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString()))),null,null,null,null).size()));
 
 	   	assertThat("Expected every patient to have demo_patient=true",
@@ -293,5 +301,5 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		seed++;
 		return mockIdGenerator.getIdentifierForSeed(seed);
 	}
-	
+
 }

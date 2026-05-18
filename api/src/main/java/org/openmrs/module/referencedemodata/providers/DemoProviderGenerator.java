@@ -22,18 +22,28 @@ public class DemoProviderGenerator {
 	
 	private ProviderService providerService = null;
 	
-	private List<Provider> clinicians = null;
-	
+	private Provider doctor = null;
+
+	private Provider nurse = null;
+
 	private List<Provider> labTechs = null;
-	
+
 	public Provider getRandomClinician() {
-		if (clinicians == null) {
-			clinicians = new ArrayList<>(2);
-			clinicians.add(getProviderService().getProviderByIdentifier("doctor"));
-			clinicians.add(getProviderService().getProviderByIdentifier("nurse"));
+		return shouldRandomEventOccur(.3) ? getDoctor() : getNurse();
+	}
+
+	public Provider getDoctor() {
+		if (doctor == null) {
+			doctor = getProviderService().getProviderByIdentifier("doctor");
 		}
-		
-		return shouldRandomEventOccur(.3) ? clinicians.get(0) : clinicians.get(1);
+		return doctor;
+	}
+
+	public Provider getNurse() {
+		if (nurse == null) {
+			nurse = getProviderService().getProviderByIdentifier("nurse");
+		}
+		return nurse;
 	}
 	
 	public Provider getRandomLabTech() {

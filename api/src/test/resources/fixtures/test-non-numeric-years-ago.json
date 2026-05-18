@@ -1,0 +1,12 @@
+{
+  "patientUuid": "00000000-9999-aaaa-bbbb-cccccccccccc",
+  "demographics": { "givenName": "T", "familyName": "M", "gender": "M", "ageYearsAgo": 30 },
+  "conditions": [],
+  "visits": [ {
+    "type": "Outpatient",
+    "location": "Outpatient Clinic",
+    "start": { "yearsAgo": "five" },
+    "stop":  { "daysAgo": 1 },
+    "encounters": []
+  } ]
+}

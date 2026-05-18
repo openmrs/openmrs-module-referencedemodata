@@ -9,7 +9,9 @@
  */
 package org.openmrs.module.referencedemodata.diagnosis;
 
+import org.openmrs.Concept;
 import org.openmrs.Condition;
+import org.openmrs.ConditionClinicalStatus;
 import org.openmrs.ConditionVerificationStatus;
 import org.openmrs.Diagnosis;
 import org.openmrs.Encounter;
@@ -50,7 +52,23 @@ public class DemoDiagnosisGenerator {
 		
 		getDiagnosisService().save(diagnosis);
 	}
-	
+
+	public void createDiagnosis(boolean primary, Patient patient, Encounter encounter, Concept diagnosisConcept) {
+		Condition condition = conditionGenerator.createDatedCondition(patient, diagnosisConcept,
+				encounter.getEncounterDatetime(), ConditionClinicalStatus.ACTIVE);
+
+		Diagnosis diagnosis = new Diagnosis();
+		diagnosis.setCondition(condition);
+		diagnosis.setDiagnosis(condition.getCondition());
+		diagnosis.setEncounter(encounter);
+		diagnosis.setCertainty(primary ? ConditionVerificationStatus.PROVISIONAL : ConditionVerificationStatus.CONFIRMED);
+		diagnosis.setPatient(patient);
+		diagnosis.setRank(primary ? 1 : 2);
+		diagnosis.setDateCreated(encounter.getEncounterDatetime());
+
+		getDiagnosisService().save(diagnosis);
+	}
+
 	protected DiagnosisService getDiagnosisService() {
 		if (diagnosisService == null) {
 			diagnosisService = Context.getDiagnosisService();
