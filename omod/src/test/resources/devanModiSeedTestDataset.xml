@@ -17,10 +17,10 @@
     <!-- Diagnosis concepts (CIEL) -->
     <concept concept_id="100001" datatype_id="4" class_id="4" creator="1" is_set="0"
              date_created="2024-01-01 00:00:00.0" retired="false" uuid="100001AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
-    <concept_name concept_name_id="100001" concept_id="100001" name="Type 2 Diabetes Mellitus [142474]" locale="en"
+    <concept_name concept_name_id="100001" concept_id="100001" name="Diabetes mellitus, type 2 [142473]" locale="en"
                   locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
                   concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100001BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
-    <concept_reference_term concept_reference_term_id="100001" concept_source_id="16" code="142474" creator="1"
+    <concept_reference_term concept_reference_term_id="100001" concept_source_id="16" code="142473" creator="1"
                             date_created="2024-01-01 00:00:00.0" retired="false"
                             uuid="100001CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
     <concept_reference_map concept_map_id="100001" concept_reference_term_id="100001" concept_map_type_id="2"
@@ -53,10 +53,10 @@
 
     <concept concept_id="100004" datatype_id="4" class_id="4" creator="1" is_set="0"
              date_created="2024-01-01 00:00:00.0" retired="false" uuid="100004AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
-    <concept_name concept_name_id="100004" concept_id="100004" name="Non-bleeding gastric ulcer [123529]" locale="en"
+    <concept_name concept_name_id="100004" concept_id="100004" name="Bleeding gastric ulcer [149783]" locale="en"
                   locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
                   concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100004BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
-    <concept_reference_term concept_reference_term_id="100004" concept_source_id="16" code="123529" creator="1"
+    <concept_reference_term concept_reference_term_id="100004" concept_source_id="16" code="149783" creator="1"
                             date_created="2024-01-01 00:00:00.0" retired="false"
                             uuid="100004CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
     <concept_reference_map concept_map_id="100004" concept_reference_term_id="100004" concept_map_type_id="2"
@@ -86,6 +86,18 @@
     <concept_reference_map concept_map_id="100006" concept_reference_term_id="100006" concept_map_type_id="2"
                            concept_id="100006" creator="1" date_created="2024-01-01 00:00:00.0"
                            uuid="100006DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100007" datatype_id="4" class_id="4" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100007AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100007" concept_id="100007" name="Peptic ulcer [139041]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100007BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100007" concept_source_id="16" code="139041" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100007CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100007" concept_reference_term_id="100007" concept_map_type_id="2"
+                           concept_id="100007" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100007DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
 
     <!-- Drug concepts (CIEL) -->
     <concept concept_id="100010" datatype_id="4" class_id="3" creator="1" is_set="0"
@@ -171,6 +183,18 @@
     <concept_reference_map concept_map_id="100016" concept_reference_term_id="100016" concept_map_type_id="2"
                            concept_id="100016" creator="1" date_created="2024-01-01 00:00:00.0"
                            uuid="100016DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
+
+    <concept concept_id="100017" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="100017AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
+    <concept_name concept_name_id="100017" concept_id="100017" name="Omeprazole [72241]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100017BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="100017" concept_source_id="16" code="72241" creator="1"
+                            date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="100017CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="100017" concept_reference_term_id="100017" concept_map_type_id="2"
+                           concept_id="100017" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="100017DD-DDDD-DDDD-DDDD-DDDDDDDDDDDD"/>
 
     <!-- Units of Measure (mg) and Procedure (Oral) - members of drug-order convenience sets -->
     <concept concept_id="100020" datatype_id="4" class_id="20" creator="1" is_set="0"
@@ -266,10 +290,10 @@
     <concept concept_id="100042" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2024-01-01 00:00:00.0" retired="false" uuid="100042AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
     <concept_numeric concept_id="100042" allow_decimal="1"/>
-    <concept_name concept_name_id="100042" concept_id="100042" name="Sodium [1006]" locale="en"
+    <concept_name concept_name_id="100042" concept_id="100042" name="Serum sodium [1132]" locale="en"
                   locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
                   concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100042BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
-    <concept_reference_term concept_reference_term_id="100042" concept_source_id="16" code="1006" creator="1"
+    <concept_reference_term concept_reference_term_id="100042" concept_source_id="16" code="1132" creator="1"
                             date_created="2024-01-01 00:00:00.0" retired="false"
                             uuid="100042CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
     <concept_reference_map concept_map_id="100042" concept_reference_term_id="100042" concept_map_type_id="2"
@@ -292,10 +316,10 @@
     <concept concept_id="100044" datatype_id="1" class_id="1" creator="1" is_set="0"
              date_created="2024-01-01 00:00:00.0" retired="false" uuid="100044AA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"/>
     <concept_numeric concept_id="100044" allow_decimal="1"/>
-    <concept_name concept_name_id="100044" concept_id="100044" name="Creatinine [790]" locale="en"
+    <concept_name concept_name_id="100044" concept_id="100044" name="Serum creatinine [164364]" locale="en"
                   locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
                   concept_name_type="FULLY_SPECIFIED" voided="false" uuid="100044BB-BBBB-BBBB-BBBB-BBBBBBBBBBBB"/>
-    <concept_reference_term concept_reference_term_id="100044" concept_source_id="16" code="790" creator="1"
+    <concept_reference_term concept_reference_term_id="100044" concept_source_id="16" code="164364" creator="1"
                             date_created="2024-01-01 00:00:00.0" retired="false"
                             uuid="100044CC-CCCC-CCCC-CCCC-CCCCCCCCCCCC"/>
     <concept_reference_map concept_map_id="100044" concept_reference_term_id="100044" concept_map_type_id="2"
@@ -419,6 +443,8 @@
           date_created="2024-01-01 00:00:00.0" retired="false" uuid="100015EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
     <drug drug_id="100016" concept_id="100016" name="Metronidazole" combination="false" creator="1"
           date_created="2024-01-01 00:00:00.0" retired="false" uuid="100016EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
+    <drug drug_id="100017" concept_id="100017" name="Omeprazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="100017EE-EEEE-EEEE-EEEE-EEEEEEEEEEEE"/>
 
     <!-- Standard OpenMRS visit types referenced by the Devan Modi fixture. -->
     <visit_type visit_type_id="100001" name="Outpatient" description="Outpatient visit"

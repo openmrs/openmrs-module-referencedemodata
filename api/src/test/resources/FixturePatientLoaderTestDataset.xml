@@ -541,6 +541,20 @@
     <drug drug_id="106" concept_id="10106" name="Metronidazole" combination="false" creator="1"
           date_created="2024-01-01 00:00:00.0" retired="false" uuid="79782EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
 
+    <concept concept_id="10107" datatype_id="4" class_id="3" creator="1" is_set="0"
+             date_created="2024-01-01 00:00:00.0" retired="false" uuid="72241AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>
+    <concept_name concept_name_id="10107" concept_id="10107" name="Omeprazole [72241]" locale="en"
+                  locale_preferred="true" creator="1" date_created="2024-01-01 00:00:00.0"
+                  concept_name_type="FULLY_SPECIFIED" voided="false" uuid="72241BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"/>
+    <concept_reference_term concept_reference_term_id="117" concept_source_id="16" name=""
+                            code="72241" creator="1" date_created="2024-01-01 00:00:00.0" retired="false"
+                            uuid="72241CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"/>
+    <concept_reference_map concept_map_id="117" concept_reference_term_id="117" concept_map_type_id="2"
+                           concept_id="10107" creator="1" date_created="2024-01-01 00:00:00.0"
+                           uuid="72241FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"/>
+    <drug drug_id="107" concept_id="10107" name="Omeprazole" combination="false" creator="1"
+          date_created="2024-01-01 00:00:00.0" retired="false" uuid="72241EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"/>
+
     <program program_id="1" concept_id="10027" creator="1" date_created="2022-08-23 12:02:10.0" changed_by="1"
              date_changed="2022-08-23 12:02:11.0" retired="false" name="HIV Care and Treatment test"
              description="HIV Care and Treatment" uuid="64f950e6-1b07-4ac0-8e7e-f3e148f3463f"/>

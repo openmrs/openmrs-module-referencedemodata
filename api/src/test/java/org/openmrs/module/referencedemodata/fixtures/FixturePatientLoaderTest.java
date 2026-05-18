@@ -164,7 +164,7 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 				.map(Concept::getUuid)
 				.collect(java.util.stream.Collectors.toSet());
 
-		String dmUuid = Context.getConceptService().getConceptByMapping("142474", "CIEL").getUuid();
+		String dmUuid = Context.getConceptService().getConceptByMapping("142473", "CIEL").getUuid();
 		String htnUuid = Context.getConceptService().getConceptByMapping("117399", "CIEL").getUuid();
 		String pudUuid = Context.getConceptService().getConceptByMapping("114262", "CIEL").getUuid();
 
@@ -512,12 +512,13 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 
 	private void seedCielConcepts() {
 		// Diagnoses (class=Diagnosis, datatype=N/A)
-		ensureCielConcept("142474", "Type 2 Diabetes Mellitus", "Diagnosis", "N/A");
+		ensureCielConcept("142473", "Diabetes mellitus, type 2", "Diagnosis", "N/A");
 		ensureCielConcept("117399", "Hypertension", "Diagnosis", "N/A");
 		ensureCielConcept("114262", "Peptic Ulcer Disease", "Diagnosis", "N/A");
-		ensureCielConcept("123529", "Non-bleeding gastric ulcer", "Diagnosis", "N/A");
+		ensureCielConcept("149783", "Bleeding gastric ulcer", "Diagnosis", "N/A");
 		ensureCielConcept("123569", "Upper GI Bleed", "Diagnosis", "N/A");
 		ensureCielConcept("117152", "H. pylori infection", "Diagnosis", "N/A");
+		ensureCielConcept("139041", "Peptic ulcer", "Diagnosis", "N/A");
 
 		// Drug concepts (CIEL) and their Drug rows are pre-seeded by FixturePatientLoaderTestDataset.xml.
 
@@ -536,9 +537,9 @@ public class FixturePatientLoaderTest extends BaseModuleContextSensitiveTest {
 		ensureCielConcept("21", "Haemoglobin-CIEL", "Test", "Numeric");
 		ensureCielConcept("678", "WBC", "Test", "Numeric");
 		ensureCielConcept("729", "Platelets", "Test", "Numeric");
-		ensureCielConcept("1006", "Sodium", "Test", "Numeric");
+		ensureCielConcept("1132", "Serum sodium", "Test", "Numeric");
 		ensureCielConcept("857", "BUN", "Test", "Numeric");
-		ensureCielConcept("790", "Creatinine", "Test", "Numeric");
+		ensureCielConcept("164364", "Serum creatinine", "Test", "Numeric");
 		ensureCielConcept("1133", "Potassium-CIEL", "Test", "Numeric");
 		ensureCielConcept("887", "Glucose", "Test", "Numeric");
 		ensureCielConcept("159644", "HbA1c", "Test", "Numeric");
