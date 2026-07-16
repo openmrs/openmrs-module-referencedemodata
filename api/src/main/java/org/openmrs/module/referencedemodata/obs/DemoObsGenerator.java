@@ -37,6 +37,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.ValidationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.referencedemodata.DemoDataConceptCache;
@@ -168,10 +169,10 @@ public class DemoObsGenerator {
 		Obs partialObs = ObsValueGenerator.createObsWithNumericValue(descriptor, previousValue);
 		
 		Obs savedObs = createObs(partialObs, patient, encounter, encounterDateTime, location);
-		if (savedObs.getValueNumeric() != null && key.getLeft() != null && key.getRight() != null) {
+		if (savedObs != null && savedObs.getValueNumeric() != null && key.getLeft() != null && key.getRight() != null) {
 			lastNumericValues.put(key, savedObs.getValueNumeric());
 		}
-		
+
 		return savedObs;
 	}
 	
@@ -209,8 +210,28 @@ public class DemoObsGenerator {
 		partialObs.setPerson(patient);
 		partialObs.setObsDatetime(encounterTime);
 		partialObs.setLocation(location);
-		
-		return getObsService().saveObs(partialObs, null);
+
+		// This relies on saveObs running in its own (outermost) transaction, as it does during demo
+		// generation. If this is ever wrapped in a single enclosing transaction that saveObs
+		// participates in, Spring marks that transaction rollback-only before this catch runs, so
+		// catching here would not stop the eventual commit from failing.
+		try {
+			return getObsService().saveObs(partialObs, null);
+		}
+		catch (ValidationException e) {
+			// A randomly generated numeric value can fall outside the concept's reference range.
+			// On platforms >= 2.7 the core ObsValidator validates numeric obs against the applicable
+			// ConceptReferenceRange (which can be narrower than, or defined where there is no,
+			// ConceptNumeric absolute bound that ObsValueGenerator clamps to), so such a value is
+			// rejected here. Skip the single offending obs instead of letting the exception abort
+			// the entire demo data generation.
+			Integer conceptId = partialObs.getConcept() == null ? null : partialObs.getConcept().getConceptId();
+			log.warn("Skipping demo obs for concept [{}] that failed validation: {}", conceptId, e.getMessage());
+			if (encounter != null) {
+				encounter.removeObs(partialObs);
+			}
+			return null;
+		}
 	}
 	
 	private List<NumericObsValueDescriptor> getVitalsDescriptors() {
