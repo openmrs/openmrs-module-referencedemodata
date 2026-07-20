@@ -65,6 +65,24 @@ public class DemoObsGeneratorTest {
 				encounter.getAllObs(true).contains(partialObs));
 	}
 
+	/**
+	 * Lab-set members are created with a null encounter (see DemoObsGenerator#createDemoLabObs), so
+	 * the validation-failure path must also survive when there is no encounter to remove the obs
+	 * from - otherwise the NPE would re-introduce the very abort this fix prevents.
+	 */
+	@Test
+	public void createObs_shouldSkipObsThatFailsValidationWhenEncounterIsNull() {
+		when(obsService.saveObs(any(Obs.class), any()))
+				.thenThrow(new ValidationException("valueNumeric: error.value.outOfRange.low"));
+
+		Obs partialObs = new Obs();
+		partialObs.setConcept(new Concept(210));
+
+		Obs result = generator.createObs(partialObs, new Patient(), null, new Date(), null);
+
+		assertNull("an obs that fails validation should be skipped even without an encounter", result);
+	}
+
 	@Test
 	public void createObs_shouldReturnTheSavedObsWhenValidationPasses() {
 		Obs saved = new Obs();
