@@ -164,19 +164,19 @@ public class ReferenceDemoDataPerformanceTest extends BaseModuleWebContextSensit
 				new org.openmrs.module.referencedemodata.patient.DemoPatientGenerator(getMockIdentifierSourceService());
 		
 		long startTime = System.currentTimeMillis();
-		List<Integer> patientIds = patientGenerator.createDemoPatients(patientCount);
+		List<Patient> patients = patientGenerator.createDemoPatients(patientCount);
 		Context.flushSession();
 		long patientTime = System.currentTimeMillis() - startTime;
-		
-		assertThat("Expected all patients to be created", patientIds.size(), greaterThan(0));
-		
+
+		assertThat("Expected all patients to be created", patients.size(), greaterThan(0));
+
 		System.out.println();
 		System.out.println("========================================");
 		System.out.println("  Patient Creation Performance");
 		System.out.println("========================================");
-		System.out.println("  Patients created: " + patientIds.size());
+		System.out.println("  Patients created: " + patients.size());
 		System.out.println("  Total time:       " + patientTime + " ms");
-		System.out.println("  Per patient:      " + (patientTime / patientIds.size()) + " ms");
+		System.out.println("  Per patient:      " + (patientTime / patients.size()) + " ms");
 		System.out.println("========================================");
 		System.out.println();
 	}

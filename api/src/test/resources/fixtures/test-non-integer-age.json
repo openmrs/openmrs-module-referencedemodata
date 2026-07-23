@@ -1,0 +1,6 @@
+{
+  "patientUuid": "00000000-8888-9999-aaaa-bbbbbbbbbbbb",
+  "demographics": { "givenName": "T", "familyName": "M", "gender": "M", "ageYearsAgo": "thirty" },
+  "conditions": [],
+  "visits": []
+}
