@@ -15,8 +15,8 @@ package org.openmrs.module.referencedemodata;
 
 import org.hibernate.cfg.Environment;
 import org.hl7.fhir.r4.model.Task;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -40,13 +40,13 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.VisitService;
 import org.openmrs.module.appointments.service.AppointmentsService;
 import org.openmrs.module.fhir2.api.FhirTaskService;
+import org.openmrs.module.fhir2.api.search.param.TaskSearchParams;
 import org.openmrs.module.idgen.SequentialIdentifierGenerator;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.idgen.validator.LuhnMod30IdentifierValidator;
 import org.openmrs.parameter.EncounterSearchCriteria;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import ca.uhn.fhir.rest.param.TokenAndListParam;
@@ -67,7 +67,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.openmrs.module.referencedemodata.ReferenceDemoDataConstants.DEMO_PATIENT_ATTR;
@@ -131,7 +131,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		return props;
 	}
 	
-	@Before
+	@BeforeEach
 	public void setupDb() throws Exception {
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 		executeDataSet("requiredDataTestDataset.xml");
@@ -140,7 +140,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		authenticate();
 	}
 	
-	@Before
+	@BeforeEach
 	public void setupPatientCount() {
 		String demoPatientCountProperty = System.getProperty("demoPatientCount");
 		
@@ -259,7 +259,7 @@ public class ReferenceDemoDataActivatorTest extends BaseModuleWebContextSensitiv
 		
 		assertThat("Expected a COMPLETED FHIR Task per order",
 				allPatients.stream().map(patient -> orderService.getAllOrdersByPatient(patient).size())
-						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(null,null,new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString()))),null,null,null,null).size()));
+						.reduce(0, Integer::sum), equalTo(fhirTaskService.searchForTasks(TaskSearchParams.builder().status(new TokenAndListParam().addAnd(new TokenOrListParam().addOr(new TokenParam().setValue(Task.TaskStatus.COMPLETED.toString())))).build()).getAllResources().size()));
 
 	   	assertThat("Expected every patient to have demo_patient=true",
 				allPatients.stream()
