@@ -118,6 +118,8 @@
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="47b88b9e-9288-9edf-4c7e-b95ae660c46a"/>
     <encounter_type encounter_type_id="26" name="Order" creator="1"
                     date_created="2008-06-11 13:22:00.0" retired="false" uuid="39da3525-afe4-45ff-8977-c53b7b359158"/>
+    <encounter_role encounter_role_id="1" name="Clinician" description="Doctor or Nurse who is the primary provider for an encounter, and will sign the note" creator="1"
+                    date_created="2008-06-11 13:22:00.0" retired="false" uuid="240b26f9-dd88-4172-823d-4a8bfeb7841f"/>
 
     <visit_type visit_type_id="1" name="Initial HIV Clinic Visit" description="Initial HIV Clinic Visit Description"
                 creator="1" date_created="2005-01-01 00:00:00.0" retired="false"
