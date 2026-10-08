@@ -2,6 +2,7 @@ package org.openmrs.module.referencedemodata.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
@@ -11,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataActivator;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
 import org.openmrs.module.webservices.rest.SimpleObject;
@@ -82,7 +84,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
+		assertFalse(Context.getSchedulerService().getTaskByName(DemoDataGenerationController.REFERENCE_DEMO_DATA_TASK_NAME).getStarted());
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("There already exists Demo Data for 4 or more Demo Patients", result.get("outcome"));
 	}
@@ -96,7 +98,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
+		assertNull(Context.getSchedulerService().getTaskByName(DemoDataGenerationController.REFERENCE_DEMO_DATA_TASK_NAME));
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("Could not parse '4e' as an integer", result.get("error"));
 	}

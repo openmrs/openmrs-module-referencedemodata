@@ -39,12 +39,6 @@
             <artifactId>${project.parent.artifactId}-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>initializer-api-2.2</artifactId>
-			<version>${initializer.version}</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod</artifactId>

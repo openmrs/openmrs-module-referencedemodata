@@ -37,11 +37,11 @@
 		<openMRSVersion>3.0.0-SNAPSHOT</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>21</maven.compiler.release>
-		<idgen.version>6.0.0-SNAPSHOT</idgen.version>
-		<initializer.version>3.0.0-SNAPSHOT</initializer.version>
+		<idgen.version>7.0.0-SNAPSHOT</idgen.version>
 		<appointments.version>3.0.0-SNAPSHOT</appointments.version>
 		<fhir2.version>6.0.0-SNAPSHOT</fhir2.version>
 		<webservices.rest.version>5.0.0-SNAPSHOT</webservices.rest.version>
+		<lombok.version>1.18.42</lombok.version>
 	</properties>
 
 	<dependencyManagement>
@@ -95,12 +95,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>initializer-api</artifactId>
-			<version>${initializer.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.bahmni.module</groupId>
 			<artifactId>appointments-api</artifactId>
 			<version>${appointments.version}</version>
@@ -118,7 +112,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.42</version>
+			<version>${lombok.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
@@ -140,6 +134,13 @@
                     <version>3.15.0</version>
 					<configuration>
 						<release>${maven.compiler.release}</release>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 				<plugin>

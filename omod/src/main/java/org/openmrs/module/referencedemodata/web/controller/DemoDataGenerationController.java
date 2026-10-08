@@ -23,7 +23,7 @@ public class DemoDataGenerationController extends BaseRestController {
 	
 	private static ReferenceDemoDataActivator referenceDemoDataActivator;
 	
-	private static final String REFERENCE_DEMO_DATA_TASK_NAME = "Reference demo data generation task";
+	static final String REFERENCE_DEMO_DATA_TASK_NAME = "Reference demo data generation task";
 	
 	public static final String NUMBER_OF_DEMO_PATIENTS_PARAMETER = "numberOfDemoPatients";
 	
