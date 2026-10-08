@@ -1,0 +1,11 @@
+{
+  "concept": "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "initialValue": {
+    "minimum": 48,
+    "maximum": 100
+  },
+  "precision": "integer",
+  "decayType": "linear",
+  "trend": 0,
+  "standardDeviation": 1
+}
