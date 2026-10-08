@@ -350,6 +350,12 @@ public class ReferenceDemoDataActivator extends BaseModuleActivator {
     // TODO Move all this demo-patient stuff to a separate class.
 	private void createDemoPatients() {
 		AdministrationService as = Context.getAdministrationService();
+
+		if ("false".equalsIgnoreCase(Context.getRuntimeProperties()
+				.getProperty(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS, "true"))) {
+			return;
+		}
+
 		GlobalProperty gp = as.getGlobalPropertyObject(ReferenceDemoDataConstants.CREATE_DEMO_PATIENTS_ON_NEXT_STARTUP);
 		if (gp == null || (gp.getPropertyValue().equals("0"))) {
 			return;
