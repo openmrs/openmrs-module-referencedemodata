@@ -14,9 +14,9 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.hibernate.cfg.Environment;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
@@ -32,7 +32,7 @@ import org.openmrs.module.idgen.SequentialIdentifierGenerator;
 import org.openmrs.module.idgen.service.IdentifierSourceService;
 import org.openmrs.module.idgen.validator.LuhnMod30IdentifierValidator;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -88,10 +88,10 @@ public class ReferenceDemoDataPerformanceTest extends BaseModuleWebContextSensit
 		return props;
 	}
 	
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
-		Assume.assumeTrue("Performance tests are skipped by default. Set -DrunPerformanceTests=true to run.",
-				"true".equalsIgnoreCase(System.getProperty("runPerformanceTests")));
+		Assumptions.assumeTrue("true".equalsIgnoreCase(System.getProperty("runPerformanceTests")),
+				"Performance tests are skipped by default. Set -DrunPerformanceTests=true to run.");
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 		executeDataSet("requiredDataTestDataset.xml");

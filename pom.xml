@@ -4,7 +4,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>referencedemodata</artifactId>
-	<version>2.8.0-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Reference Demo Data Module</name>
 	<description>Contains metadata and data required to run an instance of the reference application</description>
@@ -34,15 +34,27 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>2.2.0</openMRSVersion>
+		<openMRSVersion>3.0.0-SNAPSHOT</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<idgen.version>4.4.0</idgen.version>
-		<initializer.version>2.3.0</initializer.version>
-		<appointments.version>2.0.0-20231101.130425-8</appointments.version>
-		<fhir2.version>1.7.0</fhir2.version>
-		<webservices.rest.version>2.33.0</webservices.rest.version>
-		<javaxVersion>3.0.1</javaxVersion>
+		<maven.compiler.release>21</maven.compiler.release>
+		<idgen.version>7.0.0-SNAPSHOT</idgen.version>
+		<appointments.version>3.0.0-SNAPSHOT</appointments.version>
+		<fhir2.version>6.0.0-SNAPSHOT</fhir2.version>
+		<webservices.rest.version>5.0.0-SNAPSHOT</webservices.rest.version>
+		<lombok.version>1.18.42</lombok.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.openmrs</groupId>
+				<artifactId>openmrs-bom</artifactId>
+				<version>${openMRSVersion}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
         <dependency>
@@ -77,31 +89,11 @@
         
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
-			<artifactId>fhir2-api-2.1</artifactId>
-			<version>${fhir2.version}</version>
-			<scope>provided</scope>
-		</dependency>
-        
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>fhir2-api-2.2</artifactId>
-			<version>${fhir2.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
 			<artifactId>idgen-api</artifactId>
 			<version>${idgen.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>initializer-api</artifactId>
-			<version>${initializer.version}</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.bahmni.module</groupId>
 			<artifactId>appointments-api</artifactId>
@@ -120,7 +112,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.24</version>
+			<version>${lombok.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		
@@ -139,10 +131,16 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.15.0</version>
 					<configuration>
-						<target>8</target>
-						<source>8</source>
+						<release>${maven.compiler.release}</release>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.projectlombok</groupId>
+								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 				<plugin>

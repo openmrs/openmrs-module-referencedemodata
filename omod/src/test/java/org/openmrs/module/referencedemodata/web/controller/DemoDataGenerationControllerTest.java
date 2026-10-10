@@ -1,16 +1,18 @@
 package org.openmrs.module.referencedemodata.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.doNothing;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataActivator;
 import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
 import org.openmrs.module.webservices.rest.SimpleObject;
@@ -35,10 +37,9 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		return 0;
 	}
 	
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		referenceDemoDataActivatorMock = mock(ReferenceDemoDataActivator.class);
-		doNothing().when(referenceDemoDataActivatorMock).started();
 		DemoDataGenerationController.setReferenceDemoDataActivator(referenceDemoDataActivatorMock);
 	}
 	
@@ -70,8 +71,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
-		verify(referenceDemoDataActivatorMock).started();
+		verify(referenceDemoDataActivatorMock, timeout(TimeUnit.SECONDS.toMillis(60))).started();
 		assertEquals("Generating Demo Data for 6 more Demo Patients to top-up the count of existing patients", result.get("outcome"));
 	}
 	
@@ -84,7 +84,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 4, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
+		assertFalse(Context.getSchedulerService().getTaskByName(DemoDataGenerationController.REFERENCE_DEMO_DATA_TASK_NAME).getStarted());
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("There already exists Demo Data for 4 or more Demo Patients", result.get("outcome"));
 	}
@@ -98,7 +98,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
+		assertNull(Context.getSchedulerService().getTaskByName(DemoDataGenerationController.REFERENCE_DEMO_DATA_TASK_NAME));
 		verify(referenceDemoDataActivatorMock, never()).started();
 		assertEquals("Could not parse '4e' as an integer", result.get("error"));
 	}
@@ -111,8 +111,7 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : 10, \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : false }")));
 		
 		// Verify
-		TimeUnit.SECONDS.sleep(5);
-		verify(referenceDemoDataActivatorMock).started();
+		verify(referenceDemoDataActivatorMock, timeout(TimeUnit.SECONDS.toMillis(60))).started();
 		assertEquals("Generating Demo Data for 10 more Demo Patients to top-up the count of existing patients", result.get("outcome"));
 	}
 	

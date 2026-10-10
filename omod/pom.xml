@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openmrs.module</groupId>
 		<artifactId>referencedemodata</artifactId>
-		<version>2.8.0-SNAPSHOT</version>
+		<version>3.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>referencedemodata-omod</artifactId>
@@ -39,12 +39,6 @@
             <artifactId>${project.parent.artifactId}-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-			<groupId>org.openmrs.module</groupId>
-			<artifactId>initializer-api-2.2</artifactId>
-			<version>${initializer.version}</version>
-			<scope>provided</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>webservices.rest-omod</artifactId>
@@ -69,17 +63,10 @@
 		
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
-			<artifactId>webservices.rest-omod-1.8</artifactId>
+			<artifactId>webservices.rest-omod</artifactId>
 			<version>${webservices.rest.version}</version>
 			<classifier>tests</classifier>
 			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>${javaxVersion}</version>
-			<scope>provided</scope>
 		</dependency>
     </dependencies>
 

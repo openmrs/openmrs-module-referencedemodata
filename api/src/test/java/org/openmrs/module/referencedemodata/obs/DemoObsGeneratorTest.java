@@ -9,17 +9,17 @@
  */
 package org.openmrs.module.referencedemodata.obs;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
@@ -35,7 +35,7 @@ public class DemoObsGeneratorTest {
 
 	private DemoObsGenerator generator;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		obsService = mock(ObsService.class);
 		generator = new DemoObsGenerator(mock(DemoDataConceptCache.class));
@@ -60,9 +60,9 @@ public class DemoObsGeneratorTest {
 
 		Obs result = generator.createObs(partialObs, new Patient(), encounter, new Date(), null);
 
-		assertNull("an obs that fails validation should be skipped, not returned", result);
-		assertFalse("the skipped obs must be removed from the encounter so it is not re-saved on flush",
-				encounter.getAllObs(true).contains(partialObs));
+		assertNull(result, "an obs that fails validation should be skipped, not returned");
+		assertFalse(encounter.getAllObs(true).contains(partialObs),
+				"the skipped obs must be removed from the encounter so it is not re-saved on flush");
 	}
 
 	@Test
