@@ -2,6 +2,7 @@ package org.openmrs.module.referencedemodata.web.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -90,17 +91,17 @@ public class DemoDataGenerationControllerTest extends MainResourceControllerTest
 	}
 	
 	@Test
-	public void generateDemoData_shouldNotRespondWithErrorGivenNumberOfDemoPatientsAttributeIsNonNumeric() throws Exception {
-		// Setup
-		assertFalse(false);
-		
-		// Replay
-		SimpleObject result = deserialize(handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI, "{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \"" + DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }")));
-		
-		// Verify
-		TimeUnit.SECONDS.sleep(5);
+	public void generateDemoData_shouldRejectNonNumericNumberOfDemoPatientsWithBadRequest() throws Exception {
+		try {
+			handle(newPostRequest(getURI() + "/" + ReferenceDemoDataConstants.GENERATE_DEMO_DATA_URI,
+					"{\"" + DemoDataGenerationController.NUMBER_OF_DEMO_PATIENTS_PARAMETER + "\" : \"4e\", \""
+							+ DemoDataGenerationController.CREATE_IF_NOT_EXISTS + "\" : true }"));
+			fail("Expected BadRequest for non-numeric numberOfDemoPatients");
+		}
+		catch (RuntimeException e) {
+			assertEquals("Could not parse '4e' as an integer", e.getMessage());
+		}
 		verify(referenceDemoDataActivatorMock, never()).started();
-		assertEquals("Could not parse '4e' as an integer", result.get("error"));
 	}
 	
 	@Test

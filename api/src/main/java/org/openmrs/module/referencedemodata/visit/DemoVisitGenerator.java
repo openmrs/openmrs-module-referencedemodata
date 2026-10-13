@@ -14,15 +14,12 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
-import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -34,6 +31,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.referencedemodata.ReferenceDemoDataConstants;
 import org.openmrs.module.referencedemodata.diagnosis.DemoDiagnosisGenerator;
 import org.openmrs.module.referencedemodata.obs.DemoObsGenerator;
 import org.openmrs.module.referencedemodata.orders.DemoOrderGenerator;
@@ -97,19 +95,15 @@ public class DemoVisitGenerator {
 	private final DemoDiagnosisGenerator diagnosisGenerator;
 	
 	private FormService fs = null;
-	
+
 	private EncounterService es = null;
-	
+
 	private VisitService vs = null;
-	
-	private EncounterRole clinicianRole = null;
-	
-	private Form visitNoteForm = null;
-	
+
+	private final EncounterFactory encounterFactory = new EncounterFactory();
+
 	private Form covidForm = null;
-	
-	private final Map<String, EncounterType> encounterTypeCache = new HashMap<>();
-	
+
 	private Location outpatientClinicLocation = null;
 	
 	private Location inpatientWardLocation = null;
@@ -149,22 +143,31 @@ public class DemoVisitGenerator {
 			}
 		} else {
 			visitStart = toLocalDateTime(lastVisit.getStopDatetime())
-					.plusDays(randomBetween(0, 365 - 1))
-					.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
+					.plusDays(randomBetween(1, 365))
+					.plusMinutes(randomBetween(0, 24 * 60 - 1));
 		}
-		
+
 		LocalDateTime now = LocalDateTime.now();
 		if (visitStart.isAfter(LocalDateTime.now())) {
 			visitStart = now.minusMinutes(randomBetween(5 * 60, 24 * 60));
 		}
-		
+
 		if (patientAge <= 5) {
 			shortVisit = true;
 		}
-		
+
 		// just in case the start is today, back it up a few days.
 		if (!shortVisit && LocalDate.now().minusDays(ADMISSION_DAYS_MAX + 1).isBefore(visitStart.toLocalDate())) {
 			visitStart = visitStart.minusDays(ADMISSION_DAYS_MAX + 1);
+		}
+
+		// Final guard: any of the above clamps can pull visitStart back before the prior visit's
+		// stop, which trips the OverlapsAnotherVisit validator.
+		if (lastVisit != null && lastVisit.getStopDatetime() != null) {
+			LocalDateTime priorStop = toLocalDateTime(lastVisit.getStopDatetime());
+			if (!visitStart.isAfter(priorStop)) {
+				visitStart = priorStop.plusMinutes(1);
+			}
 		}
 		
 		Visit visit = new Visit(patient, randomListEntry(visitTypes), toDate(visitStart));
@@ -289,7 +292,7 @@ public class DemoVisitGenerator {
 		visitNoteEncounter.setForm(getVisitNoteForm());
 		getEncounterService().saveEncounter(visitNoteEncounter);
 		
-		obsGenerator.createTextObs("CIEL:162169", randomArrayEntry(NOTE_TEXT), patient, visitNoteEncounter, encounterTime,
+		obsGenerator.createTextObs(ReferenceDemoDataConstants.VISIT_NOTE_TEXT_CONCEPT_REF, randomArrayEntry(NOTE_TEXT), patient, visitNoteEncounter, encounterTime,
 				location);
 		
 		diagnosisGenerator.createDiagnosis(true, patient, visitNoteEncounter);
@@ -408,42 +411,15 @@ public class DemoVisitGenerator {
 	
 	protected Encounter createEncounter(String encounterType, Patient patient, Date encounterTime, Location location,
 			Provider provider) {
-		Encounter encounter = new Encounter();
-		encounter.setEncounterDatetime(encounterTime);
-		encounter.setEncounterType(getEncounterType(encounterType));
-		encounter.setPatient(patient);
-		encounter.setLocation(location);
-		encounter.addProvider(getClinicianRole(), provider);
-		return encounter;
+		return encounterFactory.createEncounter(encounterType, patient, encounterTime, location, provider);
 	}
-	
-	private EncounterType getEncounterType(String name) {
-		return encounterTypeCache.computeIfAbsent(name, n -> {
-			EncounterType encounterType = getEncounterService().getEncounterType(n);
-			if (encounterType == null) {
-				encounterType = new EncounterType(n, "");
-				encounterType.setCreator(Context.getAuthenticatedUser());
-				encounterType.setDateCreated(new Date());
-				getEncounterService().saveEncounterType(encounterType);
-			}
-			return encounterType;
-		});
-	}
-	
+
 	protected EncounterRole getClinicianRole() {
-		if (clinicianRole == null) {
-			clinicianRole = getEncounterService().getEncounterRoleByName("Clinician");
-		}
-		
-		return clinicianRole;
+		return encounterFactory.getClinicianRole();
 	}
-	
+
 	protected Form getVisitNoteForm() {
-		if (visitNoteForm == null) {
-			visitNoteForm = getFormService().getForm("Visit Note");
-		}
-		
-		return visitNoteForm;
+		return encounterFactory.getVisitNoteForm();
 	}
 	
 	protected Form getCovidForm() {

@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.type.SimpleType;
@@ -29,7 +30,7 @@ public class RangeDeserializer extends StdDeserializer<Range<Double>> {
 		JsonNode node = p.getCodec().readTree(p);
 		
 		if (!node.has("minimum") || !node.has("maximum")) {
-			throw new IOException(node.asText() + " is not a valid representation of Range");
+			throw JsonMappingException.from(p, node.toString() + " is not a valid representation of Range");
 		}
 		
 		return Range.between(node.get("minimum").asDouble(), node.get("maximum").asDouble());
