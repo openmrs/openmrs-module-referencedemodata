@@ -148,9 +148,12 @@ public class DemoVisitGenerator {
 				}
 			}
 		} else {
+			int dayOffset = randomBetween(0, 365 - 1);
+			// on the same day, never start before the previous visit ended
+			int minuteOffset = randomBetween(dayOffset == 0 ? 1 : -(24 * 60 - 1), 24 * 60 - 1);
 			visitStart = toLocalDateTime(lastVisit.getStopDatetime())
-					.plusDays(randomBetween(0, 365 - 1))
-					.plusMinutes(randomBetween(-(24 * 60 - 1), 24 * 60 - 1));
+					.plusDays(dayOffset)
+					.plusMinutes(minuteOffset);
 		}
 		
 		LocalDateTime now = LocalDateTime.now();
@@ -165,6 +168,19 @@ public class DemoVisitGenerator {
 		// just in case the start is today, back it up a few days.
 		if (!shortVisit && LocalDate.now().minusDays(ADMISSION_DAYS_MAX + 1).isBefore(visitStart.toLocalDate())) {
 			visitStart = visitStart.minusDays(ADMISSION_DAYS_MAX + 1);
+		}
+
+		// the "now" and admission clamps above can move the start back into the previous visit, which core
+		// rejects when visits.allowOverlappingVisits is false
+		if (lastVisit != null && lastVisit.getStopDatetime() != null) {
+			LocalDateTime flooredStart = notBeforePreviousStop(visitStart, toLocalDateTime(lastVisit.getStopDatetime()));
+			if (flooredStart.isAfter(visitStart)) {
+				visitStart = flooredStart;
+				// an admission can last up to ADMISSION_DAYS_MAX days, so it must not run past now
+				if (!shortVisit && !admissionFitsBeforeNow(visitStart, now)) {
+					shortVisit = true;
+				}
+			}
 		}
 		
 		Visit visit = new Visit(patient, randomListEntry(visitTypes), toDate(visitStart));
@@ -282,6 +298,22 @@ public class DemoVisitGenerator {
 				new Object[] { visit.getNonVoidedEncounters().size(), patient.getPatientIdentifier(), visit.getStartDatetime(), visit.getStopDatetime() });
 		
 		return visit;
+	}
+
+	/**
+	 * Visits of the same patient must not overlap, so a visit never starts before the previous one has ended.
+	 */
+	static LocalDateTime notBeforePreviousStop(LocalDateTime visitStart, LocalDateTime previousStop) {
+		LocalDateTime earliestStart = previousStop.plusMinutes(1);
+		return visitStart.isBefore(earliestStart) ? earliestStart : visitStart;
+	}
+	
+	/**
+	 * An admission lasts up to ADMISSION_DAYS_MAX days, so it can only be generated if it starts early enough to be
+	 * finished by now.
+	 */
+	static boolean admissionFitsBeforeNow(LocalDateTime visitStart, LocalDateTime now) {
+		return !visitStart.isAfter(now.minusDays(ADMISSION_DAYS_MAX + 1L));
 	}
 	
 	protected Encounter createVisitNote(Patient patient, Date encounterTime, Location location, Provider provider) {
